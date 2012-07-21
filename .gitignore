@@ -1,6 +1,7 @@
 .fontconfig
 .gem
 .gnupg
+.recentf
 .serverauth.63099
 .ssh
 .vim
