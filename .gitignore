@@ -3,6 +3,7 @@
 .gnupg
 .serverauth.63099
 .ssh
+.vim
 .viminfo
 .zcompdump
 .zsh-update
