@@ -1,10 +1,14 @@
-.ssh
+.fontconfig
+.gem
 .gnupg
+.serverauth.63099
+.ssh
 .viminfo
 .zcompdump
 .zsh-update
 .zsh_history
 .DS_Store
+.Xauthority
 Downloads
 Desktop
 Library
@@ -12,3 +16,4 @@ Music
 Pictures
 Public
 Sites
+repos
