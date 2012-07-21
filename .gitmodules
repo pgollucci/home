@@ -4,3 +4,6 @@
 [submodule ".rbenv"]
 	path = .rbenv
 	url = git@github.com:pgollucci/rbenv.git
+[submodule ".dotfiles"]
+	path = .dotfiles
+	url = git@github.com:pgollucci/dotfiles.git
