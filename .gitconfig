@@ -1,0 +1,17 @@
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[alias]
+	br = branch
+	ci = commit
+	co = checkout
+	dump = cat-file -p
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+	st = status
+	stat = status
+	stauts = status
+	type = cat-file -t
+[github]
+	ssl = true
+
