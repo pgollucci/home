@@ -32,7 +32,7 @@ ZSH_THEME="pgollucci"
 plugins=(bundler cap gem git git-flow github knife perl rbenv)
 
 # PATH
-export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/X11/bin:/opt/local/bin
+export PATH=/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin
 
 source $ZSH/oh-my-zsh.sh
 
