@@ -29,7 +29,7 @@ ZSH_THEME="pgollucci"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(cap gem git git-flow github knife perl rbenv vagrant p6rwsxterm p6rwscd)
+plugins=(cap gem git git-flow github knife perl rbenv vagrant p6rwsxterm p6rwscd p6fbsdxterm)
 
 # PATH
 export PATH=/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin
