@@ -4,12 +4,14 @@
 .recentf
 .serverauth.63099
 .ssh
+.vagrant.d
 .vim
 .viminfo
 .zcompdump
 .zsh-update
 .zsh_history
 .DS_Store
+.Trash
 .Xauthority
 Downloads
 Desktop
@@ -18,4 +20,5 @@ Music
 Pictures
 Public
 Sites
+dev
 repos
