@@ -7,3 +7,6 @@
 [submodule ".dotfiles"]
 	path = .dotfiles
 	url = git@github.com:pgollucci/dotfiles.git
+[submodule ".private"]
+	path = .private
+	url = git@github.com:pgollucci/home-private.git

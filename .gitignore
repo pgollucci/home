@@ -5,13 +5,11 @@
 .gconfd
 .gpg-agent-info
 .gem
-.gnupg
 .local
 .irb_history
 .pki
 .recentf
 .serverauth.*
-.ssh
 .thumbnails
 .thunderbird
 .vagrant.d
