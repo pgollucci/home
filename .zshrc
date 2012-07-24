@@ -33,6 +33,7 @@ plugins=(
 	cap gem git git-flow github knife perl rbenv vagrant 
 	p6rwsxterm p6rwscd 
 	p6fbsdxterm
+	p6alias
 	)
 
 # PATH
