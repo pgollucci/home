@@ -1,0 +1,410 @@
+servers = (
+  {
+    address = "irc.freenode.net";
+    chatnet = "Freenode";
+    port = "6667";
+    use_ssl = "no";
+    ssl_verify = "no";
+    autoconnect = "yes";
+  },
+  {
+    address = "irc.efnet.org";
+    chatnet = "EFNet";
+    port = "6667";
+    use_ssl = "no";
+    ssl_verify = "no";
+    autoconnect = "yes";
+  },
+  {
+    address = "irc.dca1.rws";
+    chatnet = "RWSNet";
+    port = "6667";
+    use_ssl = "no";
+    ssl_verify = "no";
+    autoconnect = "yes";
+  },
+  {
+    address = "irc.perl.org";
+    chatnet = "Perl";
+    port = "6667";
+    use_ssl = "no";
+    ssl_verify = "no";
+    autoconnect = "yes";
+  }
+);
+
+chatnets = {
+  Perl = { type = "IRC"; max_kicks = "4"; max_msgs = "3"; max_whois = "1"; };
+  EFNet = { 
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "1";
+  };
+  Freenode = {
+    type = "IRC";
+    autosendcmd = "/^msg nickserv identify Smgellar; wait -freenode 1000";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "1";
+  };
+  RWSNet = { 
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "1";
+  };
+};
+
+channels = (
+  { name = "#asfinfra"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#asf"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#asfmembers"; chatnet = "Freenode"; autojoin = "Yes"; },
+
+  { name = "#httpd-dev"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#apache-modules"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#apache"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#apr"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#viewvc"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#svn-dev"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#svn"; chatnet = "Freenode"; autojoin = "Yes"; },
+  { name = "#modperl"; chatnet = "Freenode"; autojoin = "Yes"; },
+
+  { name = "#osuosl"; chatnet = "Freenode"; autojoin = "Yes"; },
+
+  { name = "#freebsd-gnome"; chatnet = "Freenode"; autojoin = "Yes"; },
+
+
+  { name = "#bsdports"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { name = "#qatty"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { name = "#bsddev"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { name = "#bsddocs"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { name = "#bsdadmins"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { name = "#freebsd-mobile"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { name = "#freebsd-xorg"; chatnet = "EFNet"; autojoin = "Yes"; },
+  { 
+    name = "#freebsd-bugbusters";
+    chatnet = "EFNet";
+    autojoin = "Yes";
+  },
+
+  { name = "#dev"; chatnet = "RWSNet"; autojoin = "Yes"; },
+
+  { name = "#modperl"; chatnet = "Perl"; autojoin = "Yes"; }
+);
+
+aliases = {
+  J = "join";
+  WJOIN = "join -window";
+  WQUERY = "query -window";
+  LEAVE = "part";
+  BYE = "quit";
+  EXIT = "quit";
+  SIGNOFF = "quit";
+  DESCRIBE = "action";
+  DATE = "time";
+  HOST = "userhost";
+  LAST = "lastlog";
+  SAY = "msg *";
+  WI = "whois";
+  WII = "whois $0 $0";
+  WW = "whowas";
+  W = "who";
+  N = "names";
+  M = "msg";
+  T = "topic";
+  C = "clear";
+  CL = "clear";
+  K = "kick";
+  KB = "kickban";
+  KN = "knockout";
+  BANS = "ban";
+  B = "ban";
+  MUB = "unban *";
+  UB = "unban";
+  IG = "ignore";
+  UNIG = "unignore";
+  SB = "scrollback";
+  UMODE = "mode $N";
+  WC = "window close";
+  WN = "window new hide";
+  SV = "say Irssi $J ($V) - http://irssi.org/";
+  GOTO = "sb goto";
+  CHAT = "dcc chat";
+  RUN = "SCRIPT LOAD";
+  CALC = "exec - if which bc &>/dev/null\\; then echo '$*' | bc | awk '{print \"$*=\"$$1}'\\; else echo bc was not found\\; fi";
+  SBAR = "STATUSBAR";
+  INVITELIST = "mode $C +I";
+  Q = "QUERY";
+  "MANUAL-WINDOWS" = "set use_status_window off;set autocreate_windows off;set autocreate_query_level none;set autoclose_windows off;set reuse_unused_windows on;save";
+  EXEMPTLIST = "mode $C +e";
+  ATAG = "WINDOW SERVER";
+};
+
+settings = {
+  #cmds_max_at_once = "512";
+  #cmd_queue_speed = "10ms";
+
+  core = {
+    real_name = "Philip M. Gollucci";
+    user_name = "pgollucci";
+    nick = "pgollucci";
+  };
+  "fe-text" = { actlist_sort = "refnum"; };
+  "fe-common/core" = {
+    print_active_channel = "yes";
+    autolog = "yes";
+    #    use_status_window = "yes";
+    use_msgs_window = "yes";
+    autocreate_query_level = "DCCMSGS";
+  };
+  "perl/core/scripts" = {
+    awl_display_key = "$Q%K|%n$H$C$S";
+    awl_block = "-15";
+  };
+};
+logs = { };
+windows = {
+  1 = {
+    immortal = "yes";
+    name = "(msgs)";
+    level = "MSGS ACTIONS DCCMSGS ALL";
+  };
+  2 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
+  3 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#asfinfra";
+        tag = "Freenode";
+      }
+    );
+    sticky = "yes";
+  };
+  4 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsdports";
+        tag = "EFNet";
+      }
+    );
+    sticky = "yes";
+  };
+  5 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#asf";
+        tag = "Freenode";
+      }
+    );
+  };
+  6 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#asfmembers";
+        tag = "Freenode";
+      }
+    );
+  };
+  7 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#httpd-dev";
+        tag = "Freenode";
+      }
+    );
+  };
+  8 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#apache-modules";
+        tag = "Freenode";
+      }
+    );
+  };
+  9 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#apache";
+        tag = "Freenode";
+      }
+    );
+  };
+  10 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#apr";
+        tag = "Freenode";
+      }
+    );
+  };
+  11 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#osuosl";
+        tag = "Freenode";
+      }
+    );
+  };
+  12 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-gnome";
+        tag = "Freenode";
+      }
+    );
+  };
+  13 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#viewvc";
+        tag = "Freenode";
+      }
+    );
+  };
+  14 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#svn-dev";
+        tag = "Freenode";
+      }
+    );
+  };
+  15 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#svn";
+        tag = "Freenode";
+      }
+    );
+  };
+  16 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#modperl";
+        tag = "Freenode";
+      }
+    );
+  };
+  17 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsddev";
+        tag = "EFNet";
+      }
+    );
+  };
+  18 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsddocs";
+        tag = "EFNet";
+      }
+    );
+  };
+  19 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-mobile";
+        tag = "EFNet";
+      }
+    );
+  };
+  20 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-xorg";
+        tag = "EFNet";
+      }
+    );
+  };
+  21 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-bugbusters";
+        tag = "EFNet";
+      }
+    );
+  };
+  22 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#qatty";
+        tag = "EFNet";
+      }
+    );
+  };
+  23 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#dev";
+        tag = "RWSNet";
+      }
+    );
+  };
+};
+mainwindows = {
+  4 = { first_line = "1"; lines = "25"; };
+  3 = { first_line = "26"; lines = "25"; };
+  23 = { first_line = "26"; lines = "35"; };
+};
+# 22 = { first_line = "51"; lines = "25"; };
+statusbar = {
+  default = {
+    awl_0 = {
+      items = {
+        barstart = { priority = "100"; };
+        awl_0 = { };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
+    awl_1 = {
+      items = {
+        barstart = { priority = "100"; };
+        awl_1 = { };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
+  };
+};
