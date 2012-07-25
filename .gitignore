@@ -1,5 +1,6 @@
 .cache
 .config
+.dotfiles
 .dbus
 .fontconfig
 .gconfd
@@ -7,7 +8,10 @@
 .gem
 .local
 .irb_history
+.oh-my-zsh
 .pki
+.private
+.rbenv
 .recentf
 .serverauth.*
 .thumbnails
