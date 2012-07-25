@@ -30,6 +30,7 @@ git clone git@github.com:pgollucci/home-private.git 	$HOME/.private
 if [ $Private -eq 1 ]; then
   cd $HOME/.ssh
   ln -s $HOME/.private/ssh/id* .
+  chmod 600 $HOME/.private/ssh/id*
 fi
 
 cat $HOME/.private/ssh/id*.pub >> $HOME/.ssh/authorized_keys
