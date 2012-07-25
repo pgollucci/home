@@ -1,7 +1,5 @@
 #!/bin/sh
 
-HOME=/tmp/pgollucci
-
 Private=0
 Help=0
 
