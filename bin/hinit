@@ -1,5 +1,7 @@
 #!/bin/sh
 
+THOME=/tmp/$LOGNAME
+
 #### Options
 Private=0
 Help=0
@@ -12,18 +14,21 @@ while getopts hp o; do
 done
 
 #### Main Setup
-sudo mkdir $HOME
-sudo chown $LOGNAME $HOME
-git clone git@github.com:pgollucci/home.git 		$HOME
-git clone git@github.com:pgollucci/dotfiles.git 	$HOME/.dotfiles
-git clone git@github.com:pgollucci/oh-my-zsh.git 	$HOME/.oh-my-zsh
-git clone git@github.com:pgollucci/rbenv.git 		$HOME/.rbenv
+sudo mkdir $THOME
+sudo chown $LOGNAME $THOME
+git clone git@github.com:pgollucci/home.git 		$THOME
+git clone git@github.com:pgollucci/dotfiles.git 	$THOME/.dotfiles
+git clone git@github.com:pgollucci/oh-my-zsh.git 	$THOME/.oh-my-zsh
+git clone git@github.com:pgollucci/rbenv.git 		$THOME/.rbenv
 
-cd $HOME/.rbenv
+cd $THOME/.rbenv
 git submodule update --init --recursive >/dev/null
 
-cd $HOME/.dotfiles/
+cd $THOME/.dotfiles/
 git submodule update --init --recursive >/dev/null
+
+rsync -avtz --delete $THOME/ $HOME/
+rm -rf $THOME
 
 #### Private Repo
 git clone git@github.com:pgollucci/home-private.git 	$HOME/.private
