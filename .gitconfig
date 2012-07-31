@@ -4,6 +4,7 @@
 	branch = auto
 [alias]
 	br = branch
+	tg = tag
 	ci = commit
 	co = checkout
 	dump = cat-file -p
