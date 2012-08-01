@@ -1,12 +1,15 @@
 .adobe
 .cache
+.chef
 .config
 .dotfiles
 .dbus
 .fontconfig
 .gconfd
-.gpg-agent-info
 .gem
+.gimp-2.6
+.gpg-agent-info
+.lesshst
 .local
 .irb_history
 .oh-my-zsh
@@ -14,6 +17,7 @@
 .private
 .rbenv
 .recentf
+.rnd
 .serverauth.*
 .thumbnails
 .thunderbird
