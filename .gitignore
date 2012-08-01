@@ -30,6 +30,7 @@
 .DS_Store
 .ICEauthority
 .Trash
+.VirtualBox
 .Xauthority
 DCP_1294.jpg
 DCP_1368.jpg
@@ -40,6 +41,7 @@ Music
 Pictures
 Public
 Sites
+VirtualBox VMs
 dev
 irclogs
 repos
