@@ -24,6 +24,7 @@
 .vagrant.d
 .vim
 .viminfo
+.wireshark
 .zcompdump
 .zsh-update
 .zsh_history
