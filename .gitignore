@@ -12,6 +12,7 @@
 .lesshst
 .local
 .irb_history
+.mysql_history
 .oh-my-zsh
 .pki
 .private
