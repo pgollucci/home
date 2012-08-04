@@ -1,0 +1,25 @@
+#!/bin/sh
+
+pkg_add -r sudo vim-lite emacs-nox11 rsync git zsh bash
+
+cd /
+mkdir -p /usr/home
+ln -s /usr/home home
+
+pw user add -D
+perl -pi -e 's,^shellpath.*,shellpath = "/bin:/usr/local/bin", ; s/tcsh"/tcsh","zsh"/' /etc/pw.conf
+
+pw group add pgollucci
+pw user add pgollucci -g pgollucci -G wheel -c "Philip M. Gollucci" -s zsh
+
+cat <<EOF>/etc/rc.conf
+ifconfig_xn0="DHCP"
+sshd_enable="YES"
+dumpdev="AUTO"
+EOF
+
+echo uname -a > /etc/motd
+
+echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
+
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /usr/local/etc/sudoers
