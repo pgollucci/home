@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/sh -x
 
-THOME=/tmp/$LOGNAME
+USER=pgollucci
+THOME=/tmp/$USER
+HOME=/home/pgollucci
 
 #### Options
 Private=0
@@ -15,7 +17,7 @@ done
 
 #### Main Setup
 sudo mkdir $THOME
-sudo chown $LOGNAME $THOME
+sudo chown $USER $THOME
 git clone git@github.com:pgollucci/home.git 		$THOME
 git clone git@github.com:pgollucci/dotfiles.git 	$THOME/.dotfiles
 git clone git@github.com:pgollucci/oh-my-zsh.git 	$THOME/.oh-my-zsh
@@ -31,6 +33,7 @@ rsync -avtz --delete $THOME/ $HOME/
 rm -rf $THOME
 
 #### Private Repo
+cd $HOME
 git clone git@github.com:pgollucci/home-private.git 	$HOME/.private
 if [ $Private -eq 1 ]; then
   cd $HOME/.ssh
@@ -43,5 +46,10 @@ cat $HOME/.private/ssh/id*.pub >> $HOME/.ssh/authorized_keys
 if [ $Private -ne 1 ]; then
   rm -rf $HOME/.private
 fi
+
+# symlinks
+chown -Rh $USER $HOME
+
+grep -l /tmp/$USER $HOME |xargs perl -pi -e "s,/tmp/pgollucci,$HOME,g"
 
 echo "Done"
