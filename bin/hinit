@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/sh -x
 
-THOME=/tmp/$LOGNAME
+USER=pgollucci
+THOME=/tmp/$USER
+HOME=/home/pgollucci
 
 #### Options
 Private=0
@@ -15,11 +17,11 @@ done
 
 #### Main Setup
 sudo mkdir $THOME
-sudo chown $LOGNAME $THOME
-git clone git@github.com:pgollucci/home.git 		$THOME
-git clone git@github.com:pgollucci/dotfiles.git 	$THOME/.dotfiles
-git clone git@github.com:pgollucci/oh-my-zsh.git 	$THOME/.oh-my-zsh
-git clone git@github.com:pgollucci/rbenv.git 		$THOME/.rbenv
+sudo chown $USER $THOME
+git clone git@github.com:pgollucci/home.git       $THOME
+git clone git@github.com:pgollucci/dotfiles.git   $THOME/.dotfiles
+git clone git@github.com:pgollucci/oh-my-zsh.git  $THOME/.oh-my-zsh
+git clone git@github.com:pgollucci/rbenv.git      $THOME/.rbenv
 
 cd $THOME/.rbenv
 git submodule update --init --recursive >/dev/null
@@ -31,7 +33,8 @@ rsync -avtz --delete $THOME/ $HOME/
 rm -rf $THOME
 
 #### Private Repo
-git clone git@github.com:pgollucci/home-private.git 	$HOME/.private
+cd $HOME
+git clone git@github.com:pgollucci/home-private.git   $HOME/.private
 if [ $Private -eq 1 ]; then
   cd $HOME/.ssh
   ln -s $HOME/.private/ssh/id* .
@@ -43,5 +46,10 @@ cat $HOME/.private/ssh/id*.pub >> $HOME/.ssh/authorized_keys
 if [ $Private -ne 1 ]; then
   rm -rf $HOME/.private
 fi
+
+# symlinks
+chown -Rh $USER $HOME
+
+grep -lR $THOME $HOME |xargs perl -pi -e "s,$THOME,$HOME,g"
 
 echo "Done"
