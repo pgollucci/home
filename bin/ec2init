@@ -18,7 +18,7 @@ sshd_enable="YES"
 dumpdev="AUTO"
 EOF
 
-echo uname -a > /etc/motd
+echo `uname -a` > /etc/motd
 
 echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
 

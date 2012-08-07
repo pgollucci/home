@@ -12,6 +12,7 @@
 .lesshst
 .local
 .irb_history
+.mysql_history
 .oh-my-zsh
 .pki
 .private
@@ -24,22 +25,26 @@
 .vagrant.d
 .vim
 .viminfo
+.wireshark
 .zcompdump
 .zsh-update
 .zsh_history
 .DS_Store
 .ICEauthority
 .Trash
+.VirtualBox
 .Xauthority
 DCP_1294.jpg
 DCP_1368.jpg
 Downloads
 Desktop
+G-Drive
 Library
 Music
 Pictures
 Public
 Sites
+VirtualBox VMs
 dev
 irclogs
 repos
