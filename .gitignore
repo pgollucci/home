@@ -12,6 +12,7 @@
 .lesshst
 .local
 .irb_history
+.macports
 .mysql_history
 .oh-my-zsh
 .pki
@@ -36,9 +37,12 @@
 .Xauthority
 DCP_1294.jpg
 DCP_1368.jpg
+Documents
 Downloads
+Movies
 Desktop
 G-Drive
+Google Drive
 Library
 Music
 Pictures
