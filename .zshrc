@@ -35,6 +35,7 @@ plugins=(
 	p6fbsdxterm
 	p6alias
 	p6ec2
+	alg4s
 	)
 
 # PATH
