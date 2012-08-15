@@ -14,9 +14,14 @@ for m in $HOME $HOME/.dotfiles $HOME/.oh-my-zsh $HOME/.rbenv; do
   git pull origin
 done
 
-if [ -f $HOME/.private ]; then
+if [ -d $HOME/.private ]; then
   cd $HOME/.private
   git pull origin
+fi
+
+if [ -d $HOME/alg4s ]; then
+  cd $HOME/alg4s
+  git pull orgin
 fi
 
 echo "Done"
