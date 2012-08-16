@@ -47,6 +47,11 @@ if [ $Private -ne 1 ]; then
   rm -rf $HOME/.private
 fi
 
+if [ $Private -eq 1 ]; then
+  cd $HOME
+  git clone git@github.com:pgollucci/alg4s.git alg4s
+fi
+
 # symlinks
 chown -Rh $USER $HOME
 
