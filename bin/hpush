@@ -11,17 +11,12 @@ done
 
 for m in $HOME $HOME/.dotfiles $HOME/.oh-my-zsh $HOME/.rbenv; do
   cd $m
-  git pull origin
+  git push origin
 done
 
-if [ -d $HOME/.private ]; then
+if [ -f $HOME/.private ]; then
   cd $HOME/.private
-  git pull origin
-fi
-
-if [ -d $HOME/algs4 ]; then
-  cd $HOME/algs4
-  git pull origin
+  git push origin
 fi
 
 echo "Done"
