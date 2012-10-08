@@ -2,6 +2,7 @@
 .cache
 .chef
 .config
+.cups
 .dotfiles
 .dbus
 .fontconfig
