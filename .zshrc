@@ -39,7 +39,7 @@ plugins=(
 	)
 
 # PATH
-export PATH=$HOME/bin:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin
+export PATH=$HOME/bin:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin:/usr/local/sbin
 
 source $ZSH/oh-my-zsh.sh
 
