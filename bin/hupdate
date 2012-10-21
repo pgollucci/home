@@ -19,9 +19,4 @@ if [ -d $HOME/.private ]; then
   git pull origin
 fi
 
-if [ -d $HOME/algs4 ]; then
-  cd $HOME/algs4
-  git pull origin
-fi
-
 echo "Done"
