@@ -38,7 +38,7 @@ plugins=(
 	)
 
 # PATH
-export PATH=$HOME/bin:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin:/usr/local/sbin:/Applications/Emacs.app/Contents/MacOS
+export PATH=$HOME/bin:/home/pgollucci/repos/github/gitflow:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin:/usr/local/sbin:/Applications/Emacs.app/Contents/MacOS
 
 source $ZSH/oh-my-zsh.sh
 
