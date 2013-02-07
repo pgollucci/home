@@ -30,7 +30,7 @@ DISABLE_AUTO_TITLE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
-	cap gem git git-flow github knife perl rbenv vagrant 
+	cap gem git git-flow github knife perl rbenv vagrant bundler
 	p6rwsxterm p6rwscd 
 	p6fbsdxterm
 	p6alias
@@ -38,7 +38,7 @@ plugins=(
 	)
 
 # PATH
-export PATH=$HOME/bin:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin:/usr/local/sbin
+export PATH=$HOME/bin:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin:/usr/local/sbin:/Applications/Emacs.app/Contents/MacOS
 
 source $ZSH/oh-my-zsh.sh
 
