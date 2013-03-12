@@ -31,10 +31,11 @@ DISABLE_AUTO_TITLE="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
 	cap gem git git-flow github knife perl rbenv vagrant bundler
-	p6rwsxterm p6rwscd 
+	p6rwsxterm p6rwscd p6rwsalias
 	p6fbsdxterm
 	p6alias
 	ec2
+	gh
 	)
 
 # PATH
