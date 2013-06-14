@@ -23,5 +23,3 @@
 	email = pgollucci@p6m7g8.com
 [core]
 	pager = cat
-[push]
-	default = simple
