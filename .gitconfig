@@ -25,3 +25,6 @@
 	pager = cat
 [push]
 	default = simple
+
+[remote "origin"]
+  fetch = +refs/pull/*/head:refs/remotes/origin/pr/*
