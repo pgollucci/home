@@ -56,3 +56,12 @@ dev
 irclogs
 repos
 tmp
+.chef.d
+.cvspass
+.gstreamer-0.10/
+.gtk-bookmarks
+.java/
+.nv/
+.swn
+.swo
+.swp

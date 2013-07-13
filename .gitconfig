@@ -23,3 +23,6 @@
 	email = pgollucci@p6m7g8.com
 [core]
 	pager = cat
+
+[remote "origin"]
+  fetch = +refs/pull/*/head:refs/remotes/origin/pr/*
