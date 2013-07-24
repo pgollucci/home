@@ -23,10 +23,8 @@ git clone git@github.com:pgollucci/dotfiles.git   $THOME/.dotfiles
 git clone git@github.com:pgollucci/oh-my-zsh.git  $THOME/.oh-my-zsh
 
 git clone git://github.com/sstephenson/rbenv.git  $THOME/.rbenv
-mkdir -p $THOME/plugins
-git clone git://github.com/sstephenson/ruby-build.git ruby-build
-git clone git://github.com/jamis/rbenv-gemset.git rbenv-gemset
-
+mkdir -p $THOME/.rbenv/plugins
+git clone git://github.com/sstephenson/ruby-build.git $THOME/.rbenv/plugins/ruby-build
 
 cd $THOME/.dotfiles/
 git submodule update --init --recursive >/dev/null
