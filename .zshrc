@@ -39,7 +39,27 @@ plugins=(
 	)
 
 # PATH
-export PATH=$HOME/bin:/home/pgollucci/repos/github/gitflow:/opt/local/bin:/opt/X11/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/bin:/usr/local/sbin:/Applications/Emacs.app/Contents/MacOS
+function path_if {
+  local dir=$1
+  if [ -d $dir ]; then
+    PATH="$dir:${PATH}"
+  fi
+}
+PATH=
+
+path_if $HOME/bin
+path_if $HOME/repos/github/gitflow
+path_if /opt/X11/bin
+path_if /bin
+path_if /sbin
+path_if /usr/bin
+path_if /usr/sbin
+path_if /usr/local/bin
+path_if /usr/local/sbin
+
+path_if /Applications/Emacs.app/Contents/MacOS
+
+export PATH
 
 source $ZSH/oh-my-zsh.sh
 
