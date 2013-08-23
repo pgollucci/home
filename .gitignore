@@ -22,6 +22,7 @@
 .recentf
 .rnd
 .serverauth.*
+.ssh/known_hosts
 .thumbnails
 .thunderbird
 .vagrant.d
