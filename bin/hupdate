@@ -9,7 +9,7 @@ while getopts h o; do
   esac
 done
 
-for m in $HOME $HOME/.dotfiles $HOME/.oh-my-zsh $HOME/.rbenv; do
+for m in $HOME $HOME/.dotfiles $HOME/.oh-my-zsh $HOME/.rbenv $HOME/.rbenv/plugins/ruby-build; do
   cd $m
   git pull origin
 done
