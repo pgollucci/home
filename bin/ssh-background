@@ -38,7 +38,7 @@ blue="054cf2"
 cyan="3beaf6"
 purple="973bcc"
 lpurple="eb5bd5"
-pink="38c1e8"
+pink="f213d5"
 brown="542323"
 black="000000"
 white="ffffff"
@@ -65,6 +65,8 @@ nermal_fg=$white;    nermal_bg=$cyan
 otrs_fg=$black;      otrs_bg=$white
 rogue_fg=$yellow;    rogue_bg=$purple
 thing_fg=$white;     thing_bg=$lpurple
+quicksilver_fg=$black; quicksilver_bg=$brown
+chef_bg=$black;      chef_fg=$green
 
 ## prod
 # lb
@@ -101,7 +103,7 @@ dagger_fg=$yellow;  dagger_bg=$white
 # nfs
 dream_fg=$black; dream_bg=$green
 # pimvpn
-thor_fg=$black; thor_bg=$dlue
+thor_fg=$black; thor_bg=$dblue
 
 # office non windows infra
 #spout
@@ -115,10 +117,31 @@ rorschach_fg=$white; rorschach_bg=$dgreen
 storm_fg=$white; storm_bg=$dgreen
 
 # networking
+gwdca1_fg=$white; gwdca1_bg=$pink
+gwhq_fg=$black;  gwhq_bg=$pink
+
+ssh_args=
 
 ## Args
-host=$1
-Thost=$(echo $host |sed -e 's,\.,_,g')
+case $1 in
+  gwdca1)
+   host=192.168.0.1
+   Thost=$1
+   ;;
+  gwhq)
+   host=172.24.1.1
+   Thost=$1
+   ;;
+  chef)
+   host=10.240.2.161
+   ssh_args="-i repos/rws/devops-chef/.chef/bootstrap.pem -l ubuntu"
+   Thost=$1
+   ;;
+  *)
+   host=$1
+   Thost=$(echo $host |sed -e 's,\.,_,g')
+   ;;
+esac
 
 ## Magic
 eval fg=\$${Thost}_fg
@@ -132,7 +155,7 @@ case $host in
    ;;
   *)
    set_color_name $host $fg $bg $opaque
-   ssh $host
-   set_color_name $host $white $black $opaque
+   ssh $ssh_args $host
+   set_color_name $host $white $black 0.0
    ;;
 esac
