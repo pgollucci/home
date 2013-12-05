@@ -57,7 +57,6 @@ path_if /usr/sbin
 path_if /usr/local/bin
 path_if /usr/local/sbin
 
-path_if /Applications/Emacs.app/Contents/MacOS
 path_if $HOME/repos/aws/ec2-api-tools/bin
 
 export PATH
