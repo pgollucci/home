@@ -68,6 +68,9 @@ thing_fg=$white;     thing_bg=$lpurple
 quicksilver_fg=$black; quicksilver_bg=$brown
 chef_bg=$black;      chef_fg=$green
 
+## offsite
+nyc_bg=$cyan;    nyc_fg=$black
+
 ## prod
 # lb
 coruscant_fg=$yellow; coruscant_bg=$black
@@ -99,7 +102,7 @@ ironman_fg=$white; ironman_bg=$orange
 bionicwoman_fg=$black; bionicwoman_bg=$orange
 # mk/xds/acc/shed
 cloak_fg=$black;    cloak_bg=$white
-dagger_fg=$yellow;  dagger_bg=$white
+dagger_fg=$red;  dagger_bg=$white
 # nfs
 dream_fg=$black; dream_bg=$green
 # pimvpn
@@ -119,6 +122,9 @@ storm_fg=$white; storm_bg=$dgreen
 # networking
 gwdca1_fg=$white; gwdca1_bg=$pink
 gwhq_fg=$black;  gwhq_bg=$pink
+
+# me
+philip_fg=$purple; philip_bg=$black
 
 ssh_args=
 
