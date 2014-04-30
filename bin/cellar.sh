@@ -8,7 +8,7 @@ brew update
 brew tap homebrew/versions
 brew tap homebrew/dupes
 
-for pkg in git hub irssi nmap rdesktop swaks wireshark xz; do
+for pkg in git hub irssi nmap rdesktop swaks xz; do
   brew install $pkg
 done
 
