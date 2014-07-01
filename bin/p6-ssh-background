@@ -1,0 +1,78 @@
+#!/bin/sh
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+set_color_name() {
+  local HOST=$1
+  local HEX_FG=$2
+  local HEX_BG=$3
+  local OPACITY=$4
+
+  local FG_R=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
+  local FG_G=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
+  local FG_B=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
+  local BG_R=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
+  local BG_G=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
+  local BG_B=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
+
+  /usr/bin/osascript <<EOF
+tell application "iTerm"
+   tell current session of current terminal
+      set name to "$HOST"
+      set foreground color to {$FG_R, $FG_G, $FG_B}
+      set background color to {$BG_R, $BG_G, $BG_B}
+      set transparency to "$OPACITY"
+   end tell
+end tell
+EOF
+}
+
+## colors
+red="fa053e"
+orange="fa6b05"
+yellow="dedb86"
+green="1c6928"
+dgreen="064a10"
+dblue="1a2261"
+blue="054cf2"
+cyan="3beaf6"
+purple="973bcc"
+lpurple="eb5bd5"
+pink="f213d5"
+brown="542323"
+black="000000"
+white="ffffff"
+
+## opacities
+opaque=0.0
+
+## hosts
+freefall_fg=$black; freefall_bg=$white
+hub_fg=$purple;     hub_bg=$white
+crush_fg=$blue;     crush_bg=$whie
+
+## Args
+case $1 in
+  *)
+   host=$1
+   Thost=$(echo $host |sed -e 's,\.,_,g')
+   ;;
+esac
+
+## Magic
+eval fg=\$${Thost}_fg
+eval bg=\$${Thost}_bg
+
+## DO-IT!
+
+case $host in
+   na)
+     rdesktop -g 1024x768 -u $USER $host
+     ;;
+   *)
+     shost=$host
+esac
+
+set_color_name $host $fg $bg $opaque
+ssh $ssh_args $shost
+set_color_name $host $white $black 0.0
