@@ -7,6 +7,7 @@ brew update
 
 brew tap homebrew/versions
 brew tap homebrew/dupes
+brew tap homebrew/binaries
 
 for pkg in git hub irssi nmap rdesktop swaks xz; do
   brew install $pkg

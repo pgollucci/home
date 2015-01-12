@@ -49,6 +49,7 @@ PATH=
 
 path_if $HOME/bin
 path_if $HOME/repos/github/gitflow
+path_if /usr/local/packer/bin
 path_if /opt/X11/bin
 path_if /bin
 path_if /sbin
