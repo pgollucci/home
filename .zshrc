@@ -31,7 +31,7 @@ DISABLE_AUTO_TITLE="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
         python pyenv
-	cap gem git git-flow github knife perl rbenv vagrant bundler
+	cap rake gem git git-flow github knife perl rbenv vagrant bundler
 	p6rwscd p6rwsalias
 	p6alias
 	ec2
