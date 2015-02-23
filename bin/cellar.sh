@@ -13,6 +13,10 @@ for pkg in git hub irssi nmap rdesktop swaks xz; do
   brew install $pkg
 done
 
+for pkg in mysql postgresql; do
+  brew install $pkg
+done
+
 for pkg in ilibyaml pyenv packer ansible; do
   brew install $pkg
 done
