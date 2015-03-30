@@ -28,51 +28,60 @@ EOF
 }
 
 ## colors
-red="fa053e"
-orange="fa6b05"
-yellow="dedb86"
-green="1c6928"
-dgreen="064a10"
-dblue="1a2261"
-blue="054cf2"
-cyan="3beaf6"
-purple="973bcc"
-lpurple="eb5bd5"
-pink="f213d5"
-brown="542323"
-black="000000"
-white="ffffff"
+colors_load() {
+  red="fa053e"
+  orange="fa6b05"
+  yellow="dedb86"
+  green="1c6928"
+  dgreen="064a10"
+  dblue="1a2261"
+  blue="054cf2"
+  cyan="3beaf6"
+  purple="973bcc"
+  lpurple="eb5bd5"
+  pink="f213d5"
+  brown="542323"
+  black="000000"
+  white="ffffff"
 
-## opacities
-opaque=0.0
+  ## opacities
+  opaque=0.0
+}
 
-## hosts
-freefall_fg=$black; freefall_bg=$white
-hub_fg=$purple;     hub_bg=$white
-crush_fg=$blue;     crush_bg=$whie
+hosts_load() {
+  # fbsd
+  freefall_fg=$black; freefall_bg=$white
+  hub_fg=$purple;     hub_bg=$white
+  crush_fg=$blue;     crush_bg=$white
 
-## Args
-case $1 in
-  *)
-   host=$1
-   Thost=$(echo $host |sed -e 's,\.,_,g')
-   ;;
-esac
+  # asf
+  minotaur_fg=$dgreen; minotaur_bg=$black
 
-## Magic
-eval fg=\$${Thost}_fg
-eval bg=\$${Thost}_bg
+  # p6
+}
 
-## DO-IT!
-
-case $host in
-   na)
-     rdesktop -g 1024x768 -u $USER $host
+normalize() {
+  case $1 in
+    *)
+     host=$1
+     Thost=$(echo $host |sed -e 's,\.,_,g')
      ;;
-   *)
-     shost=$host
-esac
+  esac
+}
 
-set_color_name $host $fg $bg $opaque
-ssh $ssh_args $shost
-set_color_name $host $white $black 0.0
+color_magic() {
+  eval fg=\$${Thost}_fg
+  eval bg=\$${Thost}_bg
+}
+
+do_it() {
+  set_color_name $host $fg $bg $opaque
+  ssh $ssh_args $host
+  set_color_name $host $white $black 0.0
+}
+
+colors_load
+hosts_load
+normalize $1
+color_magic
+do_it
