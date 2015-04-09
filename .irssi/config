@@ -163,17 +163,6 @@ windows = {
     level = "MSGS ACTIONS DCCMSGS ALL";
   };
   2 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
-  3 = {
-    items = (
-      {
-        type = "CHANNEL";
-        chat_type = "IRC";
-        name = "#asfinfra";
-        tag = "Freenode";
-      }
-    );
-    sticky = "yes";
-  };
   4 = {
     items = (
       {
@@ -367,10 +356,9 @@ windows = {
   };
 };
 mainwindows = {
-  4 = { first_line = "1"; lines = "25"; };
-  3 = { first_line = "26"; lines = "25"; };
+  4 = { first_line = "1"; lines = "30"; };
+  22 = { first_line = "31"; lines = "30"; };
 };
-# 22 = { first_line = "51"; lines = "25"; };
 statusbar = {
   default = {
     awl_0 = {

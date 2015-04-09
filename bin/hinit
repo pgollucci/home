@@ -1,8 +1,8 @@
 #!/bin/sh -x
 
-USER=pgollucci
+USER=${1:-pgollucci}
 THOME=/tmp/$USER
-HOME=/home/pgollucci
+HOME=/home/$USER
 
 #### Options
 Private=0
