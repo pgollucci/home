@@ -65,3 +65,6 @@ export PATH
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
+
+# added by travis gem
+[ -f /Users/pgollucci/.travis/travis.sh ] && source /Users/pgollucci/.travis/travis.sh
