@@ -30,7 +30,8 @@ DISABLE_AUTO_TITLE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
-        python pyenv
+        golang python pyenv
+	postgresql
 	cap rake gem git git-flow github knife perl rbenv vagrant bundler
 	p6rwscd p6rwsalias
 	p6alias
