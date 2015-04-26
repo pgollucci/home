@@ -5,6 +5,7 @@
 	interactive = auto
 	ui = auto
 [alias]
+	cp = cherry-pick
 	br = branch
 	ba = branch -a
 	tg = tag
