@@ -11,7 +11,7 @@ brew tap homebrew/versions
 brew tap homebrew/dupes
 brew tap homebrew/binary
 
-for pkg in go subversion git hub irssi nmap swaks xz; do
+for pkg in gpg go subversion git hub irssi nmap swaks xz; do
   brew install $pkg
 done
 
