@@ -62,7 +62,7 @@
 .vim
 .viminfo
 .wireshark
-.zcompdump
+.zcompdump*
 .zsh-update
 .zsh_history
 Applications
