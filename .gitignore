@@ -35,10 +35,12 @@
 .macports
 .matplotlib
 .mysql_history
+.my.cnf
 .netextender
 .nv
 .oh-my-zsh
 .pearrc
+.pgpass
 .pip
 .pki
 .pow
