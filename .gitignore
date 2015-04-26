@@ -1,3 +1,4 @@
+.*~
 .CFUserTextEncoding
 .DS_Store
 .ICEauthority
@@ -14,6 +15,7 @@
 .cpan
 .cups
 .cvspass
+.dbs
 .dbus
 .dotfiles
 .dropbox
@@ -53,9 +55,7 @@
 .sh_history
 .sqlite_history
 .ssh/known_hosts
-.swn
-.swo
-.swp
+.sw*
 .thumbnails
 .thunderbird
 .vagrant.d
@@ -85,5 +85,6 @@ VirtualBox VMs
 alg4s
 dev
 irclogs
+pending*
 repos
 tmp
