@@ -1,8 +1,0 @@
-#!/bin/sh -x
-
-hostname=$1
-cd $HOME/bin
-scp hinit ec2init root@$hostname:/tmp
-
-ssh root@$hostname '/tmp/ec2init'
-ssh root@$hostname '/tmp/hinit'
