@@ -1,6 +1,7 @@
 #!/bin/sh -x
 
 rm -rf /usr/local/Cellar /usr/local/.git && brew cleanup && brew cask cleanup
+rm -rf /usr/local
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
@@ -34,10 +35,9 @@ done
 
 ## binary distribution apps
 brew install brew-cask
-for pkg in \
-	alfred aquamacs gitx google-chrome google-drive google-hangouts \
+for pkg in alfred aquamacs gitx google-chrome google-drive google-hangouts \
 	hipchat iterm2 java skype skitch vagrant virtualbox \ 
-	whireshark wkhtmltopdf; do
+	xquartz wireshark wkhtmltopdf; do
   brew cask install $pkg
 done
 
