@@ -49,6 +49,7 @@
 .private
 .psql_history
 .rbenv
+.ruby-install
 .recentf
 .rnd
 .serverauth.*
