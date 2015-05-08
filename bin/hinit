@@ -1,9 +1,5 @@
 #!/bin/sh -x
 
-USER=${1:-pgollucci}
-THOME=/tmp/$USER
-HOME=/home/$USER
-
 #### Options
 Private=0
 Help=0
@@ -14,6 +10,16 @@ while getopts hp o; do
     p) Private=1;;
   esac
 done
+
+shift $(( OPTIND - 1 ));
+
+OS=$(uname -s)
+USER=${1:-pgollucci}
+THOME=/tmp/$USER
+case $OS in
+  Darwin) HOME=/Users/$USER ;;
+  **) HOME=/home/$USER
+esac
 
 #### Main Setup
 sudo mkdir $THOME
