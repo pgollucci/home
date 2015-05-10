@@ -43,13 +43,16 @@ plugins=(
 function path_if {
   local dir=$1
   if [ -d $dir ]; then
-    PATH="$dir:${PATH}"
+    PATH="${PATH}:$dir"
   fi
 }
 PATH=
 
 path_if $HOME/bin
-path_if $HOME/repos/github/gitflow
+path_if $HOME/Applications/Aquamacs.app/Contents/MacOS
+path_if $HOME/Applications/Aquamacs.app/Contents/MacOS/bin
+path_if $HOME/repos/aws/ec2-api-tools/bin
+path_if /usr/local/opt/go/libexec/bin
 path_if /usr/local/packer/bin
 path_if /opt/X11/bin
 path_if /bin
@@ -58,9 +61,6 @@ path_if /usr/bin
 path_if /usr/sbin
 path_if /usr/local/bin
 path_if /usr/local/sbin
-path_if /usr/local/opt/go/libexec/bin
-
-path_if $HOME/repos/aws/ec2-api-tools/bin
 
 export PATH
 
