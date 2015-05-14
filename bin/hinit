@@ -26,7 +26,8 @@ sudo mkdir $THOME
 sudo chown $USER $THOME
 git clone git@github.com:pgollucci/home.git       $THOME
 git clone git@github.com:pgollucci/dotfiles.git   $THOME/.dotfiles
-git clone git@github.com:pgollucci/oh-my-zsh.git  $THOME/.oh-my-zsh
+
+git clone git@github.com:robbyrussell/oh-my-zsh.git  $THOME/.oh-my-zsh
 
 git clone git@github.com:postmodern/ruby-install.git $THOME/.ruby-install
 
