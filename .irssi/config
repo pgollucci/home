@@ -40,12 +40,6 @@ chatnets = {
     max_msgs = "3";
     max_whois = "1";
   };
-  RWSNet = { 
-    type = "IRC";
-    max_kicks = "4";
-    max_msgs = "3";
-    max_whois = "1";
-  };
 };
 
 channels = (
@@ -79,8 +73,6 @@ channels = (
     chatnet = "EFNet";
     autojoin = "Yes";
   },
-
-  { name = "#dev"; chatnet = "RWSNet"; autojoin = "Yes"; },
 
   { name = "#modperl"; chatnet = "Perl"; autojoin = "Yes"; }
 );
@@ -372,13 +364,6 @@ statusbar = {
       items = {
         barstart = { priority = "100"; };
         awl_1 = { };
-        barend = { priority = "100"; alignment = "right"; };
-      };
-    };
-    awl_2 = {
-      items = {
-        barstart = { priority = "100"; };
-        awl_2 = { };
         barend = { priority = "100"; alignment = "right"; };
       };
     };
