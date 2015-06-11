@@ -9,7 +9,7 @@ while getopts h o; do
   esac
 done
 
-for m in $HOME/.dotfiles $HOME/.oh-my-zsh ; do
+for m in $HOME/.dotfiles; do
   if [ -d $m ]; then
     cd $m
     git fetch upstream
