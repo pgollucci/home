@@ -86,4 +86,14 @@ function mkpasswd() {
   echo
 }
 
+#alias irc_attach='screen -r irc'
+#alias irc_init='screen -S irc irssi'
+
+alias irc_attach='tmux attach -t irc'
+alias irc_init='tmux new -s irc irssi'
+function irc () {
+  if ! irc_attach ; then
+    irc_init
+  fi
+}
 
