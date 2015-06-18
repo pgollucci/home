@@ -1,1 +1,1 @@
-.dotfiles/emacs
+.dotfiles/emacs.d
