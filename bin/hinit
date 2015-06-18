@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 #### Options
 Private=0
@@ -22,43 +22,45 @@ case $OS in
 esac
 
 #### Main Setup
+echo "Creating Staging Area"
+sudo rm -rf $THOME
 sudo mkdir $THOME
 sudo chown $USER $THOME
-git clone git@github.com:pgollucci/home.git       $THOME
-git clone git@github.com:pgollucci/dotfiles.git   $THOME/.dotfiles
 
-git clone git@github.com:robbyrussell/oh-my-zsh.git  $THOME/.oh-my-zsh
-
-git clone git@github.com:postmodern/ruby-install.git $THOME/.ruby-install
-
-git clone git://github.com/sstephenson/rbenv.git  $THOME/.rbenv
+echo "Cloning Repos"
+git clone -q git@github.com:pgollucci/home.git          $THOME
+git clone -q git@github.com:pgollucci/dotfiles.git      $THOME/.dotfiles
+git clone -q git@github.com:robbyrussell/oh-my-zsh.git  $THOME/.oh-my-zsh
+git clone -q git@github.com:postmodern/ruby-install.git $THOME/.ruby-install
+git clone -q git@github.com:sstephenson/rbenv.git       $THOME/.rbenv
 mkdir -p $THOME/.rbenv/plugins
-git clone git://github.com/sstephenson/ruby-build.git $THOME/.rbenv/plugins/ruby-build
+git clone -q git@github.com:sstephenson/ruby-build.git  $THOME/.rbenv/plugins/ruby-build
 
-cd $THOME/.dotfiles/
-git submodule update --init --recursive >/dev/null
+( cd $THOME/.dotfiles/ ; git submodule -q update -q --init --recursive )
 
-rsync -avtz --delete $THOME/ $HOME/
+echo "Transfering"
+rsync -atz --delete $THOME/ $HOME/
+
+echo "Cleaning"
 rm -rf $THOME
 
 #### Private Repo
-cd $HOME
-git clone git@github.com:pgollucci/home-private.git   $HOME/.private
+echo "Private bits"
+( cd $HOME ; git clone -q git@github.com:pgollucci/home-private.git $HOME/.private )
 if [ $Private -eq 1 ]; then
   cd $HOME/.ssh
   ln -s $HOME/.private/ssh/2/id* .
   chmod 600 $HOME/.private/ssh/2/id*
 fi
 
+echo "SSH Pub Keys"
 cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
 
 if [ $Private -ne 1 ]; then
   rm -rf $HOME/.private
 fi
 
-# symlinks
+echo "Set Owners"
 chown -Rh $USER $HOME
-
-grep -lR $THOME $HOME |xargs perl -pi -e "s,$THOME,$HOME,g"
 
 echo "Done"
