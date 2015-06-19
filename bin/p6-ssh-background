@@ -53,18 +53,22 @@ hosts_load() {
   freefall_fg=$black; freefall_bg=$white
   hub_fg=$purple;     hub_bg=$white
   crush_fg=$blue;     crush_bg=$white
+  kpasswd_fg=$lpurple; kpasswd_bg=$black
 
   # asf
   minotaur_fg=$dgreen; minotaur_bg=$black
 
   # p6
+  web_fg=$dblue; web_bg=$white
+  irc_fg=$white; irc_bg=$black;
+  poudriere_fg=$black; poudriere_bg=$pink  
 }
 
 normalize() {
   case $1 in
     *)
      host=$1
-     Thost=$(echo $host |sed -e 's,\.,_,g')
+     Thost=$(echo $host |sed -e 's,\..*,,' -e 's,\.,_,g')
      ;;
   esac
 }
