@@ -20,10 +20,6 @@ ZSH_THEME_GIT_PROMPT_SUFFIX=
 PROMPT='[${_t}]${_u}@${_h} [${_red}$(git_prompt_info)${_rc} ${_red}$(git_prompt_short_sha)${_rc}] [${_magenta}$(rbenv_prompt_info)${_rc}] ${_v}
 ${_p}
 '
-
-export EDITOR="emacsclient -nc"
-export VISUAL="vim"
-alias emacs="$EDITOR"
 export DIFF_OPTIONS=-u
 export MYSQL_PS1="\v \u@\h:\p (\d)>"
 

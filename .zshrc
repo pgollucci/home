@@ -34,7 +34,7 @@ ZSH_CUSTOM=$HOME/.zsh
 plugins=(
         golang python pyenv
 	postgresql
-	cap rake gem git git-flow github knife perl rbenv vagrant bundler
+	cap emacs rake gem git git-flow github knife perl rbenv vagrant bundler
 	p6rwscd p6rwsalias
 	p6alias
 	ec2
