@@ -1,5 +1,0 @@
-#!/bin/sh
-
-[ -n "$1" ] && export PORTSDIR=/usr/local/poudriere/ports/$1
-
-echo $PORTSDIR
