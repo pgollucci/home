@@ -68,6 +68,7 @@ path_if /usr/local/sbin
 
 export PATH
 
+fpath=(~/.zsh/completion $fpath)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
