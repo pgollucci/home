@@ -51,6 +51,7 @@ function path_if {
 PATH=
 
 path_if $HOME/bin
+path_if $HOME/fbsd/bin
 path_if $HOME/Applications/Aquamacs.app/Contents/MacOS
 path_if $HOME/Applications/Aquamacs.app/Contents/MacOS/bin
 path_if $HOME/repos/aws/ec2-api-tools/bin
