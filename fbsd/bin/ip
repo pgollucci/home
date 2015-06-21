@@ -24,7 +24,7 @@ if ($ARGV[0] =~ /INDEX/) {
   shift @ARGV;
 }
 else {
-  $index = "/usr/ports/INDEX-9";
+  $index = "/usr/local/poudriere/ports/head/INDEX-11";
 }
 
 die "$ARGV[0] is not a valid choice" if !exists $PARTS{$ARGV[0]};
