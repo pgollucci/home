@@ -34,6 +34,7 @@ ZSH_CUSTOM=$HOME/.zsh
 plugins=(
 	emacs git github rbenv
 	p6rwscd p6rwsalias
+        p6fbsdalias
 	p6alias
 	ec2
 	gh
@@ -49,6 +50,7 @@ function path_if {
 PATH=
 
 path_if $HOME/bin
+path_if $HOME/fbsd/bin
 path_if $HOME/Applications/Aquamacs.app/Contents/MacOS
 path_if $HOME/Applications/Aquamacs.app/Contents/MacOS/bin
 path_if $HOME/repos/aws/ec2-api-tools/bin
@@ -66,6 +68,7 @@ path_if /usr/local/sbin
 
 export PATH
 
+fpath=(~/.zsh/completion $fpath)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
