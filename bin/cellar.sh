@@ -1,6 +1,5 @@
 #!/bin/sh -x
 
-rm -rf /usr/local/Cellar /usr/local/.git && brew cleanup && brew cask cleanup
 rm -rf /usr/local
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -29,7 +28,7 @@ for pkg in pyenv packer ansible; do
 done
 
 ## 3rd party apps used by $work
-for pkg in imagemagick netpbm; do
+for pkg in imagemagick netpbm geos redis; do
   brew install $pkg
 done
 

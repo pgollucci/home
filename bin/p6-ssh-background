@@ -40,6 +40,7 @@ colors_load() {
   purple="973bcc"
   lpurple="eb5bd5"
   pink="f213d5"
+  lsalmon3="cd8162"
   brown="542323"
   black="000000"
   white="ffffff"
@@ -61,7 +62,7 @@ hosts_load() {
   # p6
   web_fg=$dblue; web_bg=$white
   irc_fg=$white; irc_bg=$black;
-  poudriere_fg=$black; poudriere_bg=$pink  
+  poudriere_fg=$black; poudriere_bg=$lsalmon3  
 }
 
 normalize() {

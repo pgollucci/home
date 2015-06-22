@@ -1,15 +1,39 @@
 servers = (
-  { address = "chat.freenode.org"; chatnet = "Freenode"; port = "6667"; autoconnect = "yes"; },
-  { address = "irc.efnet.us"; chatnet = "EFnet"; port = "6667"; autoconnect = "yes"; }
+  {
+    address = "chat.freenode.org";
+    chatnet = "Freenode";
+    port = "6667";
+    autoconnect = "yes";
+  },
+  {
+    address = "irc.efnet.us";
+    chatnet = "EFnet";
+    port = "6667";
+    autoconnect = "yes";
+  }
 );
 
 chatnets = {
-  Freenode = { type = "IRC"; max_kicks = "4"; max_msgs = "3"; max_whois = "1"; };
-  EFNet = { type = "IRC"; max_kicks = "4"; max_msgs = "3"; max_whois = "1"; };
+  Freenode = {
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "1";
+  };
+  EFNet = { 
+    type = "IRC";
+    max_kicks = "4";
+    max_msgs = "3";
+    max_whois = "1";
+  };
 };
 
 channels = (
-  { name = "#freebsd-commits"; chatnet = "Freenode"; autojoin = "yes"; },
+  { 
+    name = "#freebsd-commits";
+    chatnet = "Freenode";
+    autojoin = "yes";
+  },
   { name = "#freebsd-ports"; chatnet = "Freenode"; autojoin = "yes"; },
   { name = "#freebsd-python"; chatnet = "Freenode"; autojoin = "yes"; },
   { name = "#pkgng"; chatnet = "Freenode"; autojoin = "yes"; },
@@ -22,10 +46,19 @@ channels = (
   { name = "#bsdports"; chatnet = "EFNet"; autojoin = "yes"; },
   { name = "#bsdtinderbox"; chatnet = "EFNet"; autojoin = "yes"; },
   { name = "#bsdadmins"; chatnet = "EFNet"; autojoin = "yes"; },
-  { name = "#freebsd-bugbusters"; chatnet = "EFNet"; autojoin = "yes"; },
+  { 
+    name = "#freebsd-bugbusters";
+    chatnet = "EFNet";
+    autojoin = "yes";
+  },
   { name = "#freebsd-soc"; chatnet = "EFNet"; autojoin = "yes"; },
   { name = "#rubyports"; chatnet = "EFNet"; autojoin = "yes"; },
-  { name = "#portmgr-lurkers"; chatnet = "EFNet"; autojoin = "yes"; password = "p0rtmgr-lurk3rz"; },
+  {
+    name = "#portmgr-lurkers";
+    chatnet = "EFNet";
+    autojoin = "yes";
+    password = "p0rtmgr-lurk3rz";
+  },
 
   { name = "#osuosl"; chatnet = "Freenode"; autojoin = "Yes"; },
   { name = "#asf"; chatnet = "Freenode"; autojoin = "Yes"; },
@@ -73,28 +106,198 @@ settings = {
 windows = {
   1 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
 
-  2 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#freebsd-commits"; tag = "Freenode"; }); };
-  3 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#freebsd-ports"; tag = "Freenode"; }); };
-  4 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#freebsd-python"; tag = "Freenode"; }); };
-  5 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#pkgng"; tag = "Freenode"; }); };
-  6 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#poudriere"; tag = "Freenode"; }); };
-  7 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#freebsd-src"; tag = "Freenode"; }); };
+  2 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-commits";
+        tag = "Freenode";
+      }
+    );
+  };
+  3 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-ports";
+        tag = "Freenode";
+      }
+    );
+  };
+  4 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-python";
+        tag = "Freenode";
+      }
+    );
+  };
+  5 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#pkgng";
+        tag = "Freenode";
+      }
+    );
+  };
+  6 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#poudriere";
+        tag = "Freenode";
+      }
+    );
+  };
+  7 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-src";
+        tag = "Freenode";
+      }
+    );
+  };
 
-  8 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#bsdcode"; tag = "EFNet"; }); };
-  9 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#bsddev"; tag = "EFNet"; }); };
-  10 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#bsddocs"; tag = "EFNet"; }); };
-  11 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#bsdports"; tag = "EFNet"; }); };
-  12 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#bsdtinderbox"; tag = "EFNet"; }); };
-  13 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#freebsd-bugbusters"; tag = "EFNet"; }); };
-  14 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#freebsd-soc"; tag = "EFNet"; }); };
-  15 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#rubyports"; tag = "EFNet"; }); };
-  16 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#portmgr-lurkers"; tag = "EFNet"; }); }
-;
-  17 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#osuosl`"; tag = "Freenode"; }); };
-  18 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#asf"; tag = "Freenode"; }); };
-  19 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "#asfmembers"; tag = "Freenode"; }); };
+  8 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsdcode";
+        tag = "EFNet";
+      }
+    );
+  };
+  9 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsddev";
+        tag = "EFNet";
+      }
+    );
+  };
+  10 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsddocs";
+        tag = "EFNet";
+      }
+    );
+  };
+  11 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsdports";
+        tag = "EFNet";
+      }
+    );
+  };
+  12 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#bsdtinderbox";
+        tag = "EFNet";
+      }
+    );
+  };
+  13 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-bugbusters";
+        tag = "EFNet";
+      }
+    );
+  };
+  14 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#freebsd-soc";
+        tag = "EFNet";
+      }
+    );
+  };
+  15 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#rubyports";
+        tag = "EFNet";
+      }
+    );
+  };
+  16 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#portmgr-lurkers";
+        tag = "EFNet";
+      }
+    );
+  };
+  17 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#osuosl`";
+        tag = "Freenode";
+      }
+    );
+  };
+  18 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#asf";
+        tag = "Freenode";
+      }
+    );
+  };
+  19 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#asfmembers";
+        tag = "Freenode";
+      }
+    );
+  };
 
-  20 = { items = ( { type = "CHANNEL"; chat_type = "IRC"; name = "##mgmt"; tag = "Freenode"; }); };
+  20 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "##mgmt";
+        tag = "Freenode";
+      }
+    );
+  };
 };
 mainwindows = {
   11 = { first_line = "0"; lines = "23"; };
