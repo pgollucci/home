@@ -81,11 +81,12 @@ function psync () {
   cd $PORTSDIR
   git stash save prepsync
   git co master
+  git fetch origin
   git fetch upstream
   git merge upstream/svn_head
   git push
   git svn rebase
-  git stash pop prepsync
+  git stash pop
 }
 
 function pnuke () {
