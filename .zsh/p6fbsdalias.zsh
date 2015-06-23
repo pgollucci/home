@@ -8,13 +8,21 @@ function fi () {
 }
 
 function pjails () {
+  sudo poudriere jail -d -j 84i386
+  sudo poudriere jail -d -j 84amd64
+  sudo poudriere jail -d -j 93i386
+  sudo poudriere jail -d -j 93amd64
   sudo poudriere jail -d -j 101i386
   sudo poudriere jail -d -j 101amd64
   sudo poudriere jail -d -j 110amd64
   sudo poudriere jail -d -j 110i386
 
+  sudo poudriere jail -c -j 84i386   -v 8.4-RELEASE  -a i386
+  sudo poudriere jail -c -j 84amd64  -v 8.4-RELEASE  -a amd64
+  sudo poudriere jail -c -j 93i386   -v 9.3-RELEASE  -a i386
+  sudo poudriere jail -c -j 93amd64  -v 9.3-RELEASE  -a amd64
   sudo poudriere jail -c -j 101i386  -v 10.1-RELEASE -a i386
-  sudo poudriere jail -c -j 101amd64 -v 10.1-STABLE  -a amd64
+  sudo poudriere jail -c -j 101amd64 -v 10.1-RELEASE -a amd64
   sudo poudriere jail -c -j 110amd64 -v 11.0-CURRENT -a amd64
   sudo poudriere jail -c -j 110i386  -v 11.0-CURRENT -a i386
 }
@@ -25,6 +33,63 @@ function pzwork () {
   sudo zfs create zwork/poudriere
   sudo zfs create zwork/ccache
   sudo zfs set mountpoint=/usr/local/poudriere/ccache zwork/ccache
+}
+
+function ip () {
+  local field=$1
+  local regex=$2
+  local modifier=$3
+
+  local pos=-1
+
+  case $field in
+    name)        pos=1;;
+    dir)         pos=2;;
+    prefix)      pos=3;;
+    comment)     pos=4;;
+    desc)        pos=5;;
+    maintainer)  pos=6;;
+    categories)  pos=7;;
+    build)       pos=8;;
+    run)         pos=9;;
+    www)         pos=10;;
+    extract)     pos=11;;
+    patch)       pos=12;;
+    fetch)       pos=13;;
+  esac
+
+  regex=$(echo $regex | sed -e 's,/,\\/,g')
+
+  if [ $field = "deps" ]; then
+    out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $PORTSDIR/INDEX-11)
+  else
+    out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $PORTSDIR/INDEX-11)
+  fi
+
+  if [ "$modifier" = "M" ]; then
+    echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
+  elif [ "$modifier" = "P" ]; then
+    echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
+  elif [ "$modifier" = "D" ]; then
+    echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
+  else
+    echo $out |sed -e 's,/usr/ports/,,'
+  fi
+}
+
+function psync () {
+  cd $PORTSDIR
+  git stash save prepsync
+  git co master
+  git fetch upstream
+  git merge upstream/svn_head
+  git push
+  git svn rebase
+  git stash pop prepsync
+}
+
+function pnuke () {
+  sudo rm -rf /usr/local/poudriere/data
 }
 
 alias cdfb='cd $HOME/fbsd/bin'
