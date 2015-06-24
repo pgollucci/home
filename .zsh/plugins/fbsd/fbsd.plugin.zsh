@@ -90,13 +90,34 @@ function ip () {
 
 function psync () {
   cd $PORTSDIR
+
+  br=$(git branch |grep -- \* |awk '{print $2}')
+
   git stash save prepsync
-  git co master
+  git checkout master
   git fetch origin
   git fetch upstream
   git merge upstream/svn_head
   git push
   git svn rebase
+
+  git checkout $br
+  git stash pop
+}
+
+function poudriere_sync () {
+  cdpoudriere
+  
+  br=$(git branch |grep -- \* |awk '{print $2}')
+
+  git stash save prepsync
+  git checkout master
+  git fetch origin
+  git fetch upstream
+  git merge upstream/master
+  git push
+
+  git checkout $br
   git stash pop
 }
 
