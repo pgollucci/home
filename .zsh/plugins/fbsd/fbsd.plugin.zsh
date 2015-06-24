@@ -12,6 +12,17 @@ function nbuilds () {
   sudo rm -rf /usr/local/poudriere/data/logs/bulk/.data.json
 }
 
+function pbuild () {
+  local port=$1
+  local build=110amd64
+
+  if [ -z $port ]; then
+    port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
+  fi
+
+  tmux new -s $build "sudo poudriere bulk -t -B ${build}-default -j ${build} $port"
+}
+
 function pbulk () {
   local port=$1
 
