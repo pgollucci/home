@@ -3,8 +3,39 @@ function pdir () {
   echo $PORTSDIR
 }
 
-function fi () {
+function mfi () {
   cd $PORTSDIR ; make fetchindex
+}
+
+function nbuilds () {
+  sudo find /usr/local/poudriere/data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf 
+  sudo rm -rf /usr/local/poudriere/data/logs/bulk/.data.json
+}
+
+function pbulk () {
+  local port=$1
+
+  if [ -z $port ]; then
+    port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
+  fi
+
+  builds=$(poudriere jail -l -n -q)  
+  for build in `echo $builds`; do
+    sudo poudriere bulk -t -B ${build}-default-$(echo $port |sed -e 's,/,_,g') -j ${build} $port &
+  done
+}
+
+function pbb () {
+    local build=$1
+    tmux new -s $build "sudo poudriere bulk -t -B ${build}-default -j ${build} -a"
+}
+
+function pg () {
+  local port=$1
+
+  dir=$(ip dir $port |head -1)
+
+  cd $PORTSDIR/$dir
 }
 
 function pijails () {
