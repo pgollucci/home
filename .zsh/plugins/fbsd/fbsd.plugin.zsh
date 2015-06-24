@@ -7,7 +7,7 @@ function fi () {
   cd $PORTSDIR ; make fetchindex
 }
 
-function pjails () {
+function pijails () {
   sudo poudriere jail -d -j 84i386
   sudo poudriere jail -d -j 84amd64
   sudo poudriere jail -d -j 93i386
@@ -17,14 +17,25 @@ function pjails () {
   sudo poudriere jail -d -j 110amd64
   sudo poudriere jail -d -j 110i386
 
-  sudo poudriere jail -c -j 84i386   -v 8.4-RELEASE  -a i386
-  sudo poudriere jail -c -j 84amd64  -v 8.4-RELEASE  -a amd64
-  sudo poudriere jail -c -j 93i386   -v 9.3-RELEASE  -a i386
-  sudo poudriere jail -c -j 93amd64  -v 9.3-RELEASE  -a amd64
-  sudo poudriere jail -c -j 101i386  -v 10.1-RELEASE -a i386
-  sudo poudriere jail -c -j 101amd64 -v 10.1-RELEASE -a amd64
-  sudo poudriere jail -c -j 110amd64 -v 11.0-CURRENT -a amd64
-  sudo poudriere jail -c -j 110i386  -v 11.0-CURRENT -a i386
+  sudo poudriere jail -c -j 84i386   -v 8.4-RELEASE  -a i386 -m http
+  sudo poudriere jail -c -j 84amd64  -v 8.4-RELEASE  -a amd64 -m http
+  sudo poudriere jail -c -j 93i386   -v 9.3-RELEASE  -a i386 -m http
+  sudo poudriere jail -c -j 93amd64  -v 9.3-RELEASE  -a amd64 -m http
+  sudo poudriere jail -c -j 101i386  -v 10.1-RELEASE -a i386 -m http
+  sudo poudriere jail -c -j 101amd64 -v 10.1-RELEASE -a amd64 -m http
+  sudo poudriere jail -c -j 110amd64 -v 11.0-CURRENT -a amd64 -m http
+  sudo poudriere jail -c -j 110i386  -v 11.0-CURRENT -a i386 -m http
+}
+
+function pujails () {
+  sudo poudriere jail -u -j 84i386
+  sudo poudriere jail -u -j 84amd64
+  sudo poudriere jail -u -j 93i386
+  sudo poudriere jail -u -j 93amd64
+  sudo poudriere jail -u -j 101i386
+  sudo poudriere jail -u -j 101amd64
+  sudo poudriere jail -u -j 110amd64
+  sudo poudriere jail -u -j 110i386
 }
 
 function pzwork () {
