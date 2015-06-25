@@ -8,7 +8,7 @@ function mfi () {
 }
 
 function nbuilds () {
-  sudo find /usr/local/poudriere/data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf 
+  sudo find /usr/local/poudriere/data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf
   sudo rm -rf /usr/local/poudriere/data/logs/bulk/.data.json
 }
 
@@ -30,7 +30,7 @@ function pbulk () {
     port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
   fi
 
-  builds=$(poudriere jail -l -n -q)  
+  builds=$(poudriere jail -l -n -q)
   for build in `echo $builds`; do
     sudo poudriere bulk -t -B ${build}-default-$(echo $port |sed -e 's,/,_,g') -j ${build} $port &
   done
@@ -44,7 +44,7 @@ function pbb () {
 function pg () {
   local port=$1
 
-  dir=$(ip dir $port |head -1)
+  dir=$(ip dir $port | head -1)
 
   cd $PORTSDIR/$dir
 }
@@ -149,7 +149,7 @@ function psync () {
 
 function poudriere_sync () {
   cdpoudriere
-  
+
   br=$(git branch |grep -- \* |awk '{print $2}')
 
   git stash save prepsync
@@ -161,10 +161,6 @@ function poudriere_sync () {
 
   git checkout $br
   git stash pop
-}
-
-function pnuke () {
-  sudo rm -rf /usr/local/poudriere/data
 }
 
 alias cdfb='cd $HOME/fbsd/bin'
