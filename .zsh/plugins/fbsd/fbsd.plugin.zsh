@@ -44,7 +44,7 @@ function poud_mfi () {
 
 function poud_nuke_builds () {
 
-  sudo find $_poudriere_data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf
+  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*" \) |grep -v cache |xargs sudo rm -rf
   sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 
@@ -56,7 +56,7 @@ function poud_build () {
     port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
   fi
 
-  tmux new -s $build "sudo poudriere bulk -t -B ${build}-$(echo $port |sed -e 's,/,_,g') -j ${build} $port"
+  tmux new -s $build "sudo poudriere bulk -t -B ${build}-$(echo $port |sed -e 's,/,_,g') -j ${build} -C $port"
 }
 
 function poud_bulk () {
@@ -68,7 +68,7 @@ function poud_bulk () {
 
   builds=$(poudriere jail -l -n -q)
   for build in `echo $builds`; do
-    sudo poudriere bulk -t -B ${build}-default-$(echo $port |sed -e 's,/,_,g') -j ${build} $port &
+    sudo poudriere bulk -t -B ${build}-default-$(echo $port |sed -e 's,/,_,g') -j ${build} -C $port &
   done
 }
 
@@ -385,7 +385,7 @@ function bzpatch () {
 function bzclose () {
   local pr=$1
 
-  $_bz modify -s 'Closed' -r FIXED -c 'Committed. Thanks!' $pr
+  $_bz modify -s 'Closed' -r FIXED $pr
 }
 
 function bzlist () {
