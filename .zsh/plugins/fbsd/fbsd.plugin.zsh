@@ -1,3 +1,15 @@
+function ppkgs () {
+ 
+  if [ `id -u` != 0 ]; then
+    echo "need to be root"
+    return
+  fi
+
+  pkg delete -af -y
+  pkg bootstrap -y
+  pkg install -y bash-static emacs-nox11 git-subversion hub rsync sudo tmux vim-lite zsh
+}
+
 function pdir () {
   [ -n "$1" ] && PORTSDIR=/usr/local/poudriere/ports/$1 && export PORTSDIR
   echo $PORTSDIR
