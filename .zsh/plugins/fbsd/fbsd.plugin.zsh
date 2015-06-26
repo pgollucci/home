@@ -44,8 +44,8 @@ function poud_mfi () {
 
 function poud_nuke_builds () {
 
-  sudo find $poudriere_data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf
-  sudo rm -rf $poudriere_data/logs/bulk/.data.json
+  sudo find $_poudriere_data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf
+  sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 
 function poud_build () {
@@ -266,59 +266,6 @@ function poud_poudriere_sync () {
   git stash pop
 }
 
-# ----------------------------------------------------------------------------
-_pybugz_dir=$_rdir/pybugz
-_pybugz=$_pybugz_dir/bin/bugz
-PYTHONPATH=$_pybugz_dir:$PYTHONPATH; export PYTHONPATH
-
-_bz=$_pybugz
-
-function bzlogin () {
-  $_bz login
-}
-
-function bztake() {
-  local pr=$1
-
-  $_bz modify -a $USER@freebsd.org -s Open -c "Take." $pr
-}
-
-function bzinprog() {
-  local pr=$1
-
-  $_bz modify -s 'In Progress' $pr
-}
-
-function bzpatch() {
-
-  local pr=$1
-
-  local d=/tmp/fbsd/$pr
-  local i=$d/info
-  local pa=$d/patch
-  local n=$d/name
-  local r=$d/reporter
-  local m=$d/maintainer
-
-  mkdir -p $d
-  $_bz get $pr > $d/info
-
-  port=$(\grep Title $i | egrep -o "[a-zA-Z0-9\-_]*/[a-zA-Z0-9\-_]*")
-  attachment=$(\grep Attachment $i | grep patch | awk '{print $2}' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
-  reporter=$(awk -F': ' '/Reporter/ { print $2}' $i)
-
-  $_bz attachment -v $attachment > $p
-
-  ( cd $PORTSDIR/$port ; patch < $p )
-  find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
-
-  maintainer=$( cd $PORTSDIR/$port ; make -V MAINTAINER)
-
-  echo $port > $n
-  echo $reporter > $r
-  echo $maintainer > $m
-}
-
 function poud_ci () {
 
   local pr=$1
@@ -355,7 +302,7 @@ function poud_ci () {
 
   echo >> $cif
 
-  echo "PR:\t\t$pr" >> $cif
+  echo "PR:\t\t\t$pr" >> $cif
 
   if [ $maintainer ]; then
     echo -e "Submitted by:\t$reporter_email (maintainer)" >> $cif
@@ -366,4 +313,82 @@ function poud_ci () {
 
   git add -A $PORTSDIR/$port
   git commit -F $cif
+}
+
+function poud_diff () {
+
+  git diff `git svn dcommit -n | grep '^diff-tree'| cut -f 2,3 -d" "`
+}
+
+# ----------------------------------------------------------------------------
+_pybugz_dir=$_rdir/pybugz
+_pybugz=$_pybugz_dir/bin/bugz
+PYTHONPATH=$_pybugz_dir:$PYTHONPATH; export PYTHONPATH
+
+_bz=$_pybugz
+
+function bzlogin () {
+  $_bz login
+}
+
+function bztake () {
+  local pr=$1
+
+  $_bz modify -a $USER@freebsd.org -s Open -c "Take." $pr
+}
+
+function bzinprog () {
+  local pr=$1
+
+  $_bz modify -s 'In Progress' $pr
+}
+
+function bzmine () {
+  local pr=$1
+
+  bztake $pr
+  bzinprog $pr
+}
+
+function bzpatch () {
+
+  local pr=$1
+
+  local d=/tmp/fbsd/$pr
+  local i=$d/info
+  local p=$d/patch
+  local n=$d/name
+  local r=$d/reporter
+  local m=$d/maintainer
+
+  mkdir -p $d
+  $_bz get $pr > $d/info
+
+  port=$(\grep Title $i | egrep -o "[_a-zA-Z0-9\-]*/[_a-zA-Z0-9\-]*")
+  attachment=$(\grep -i Attachment $i | egrep 'patch|diff' | awk '{print $2}' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  reporter=$(awk -F': ' '/Reporter/ { print $2}' $i)
+
+  $_bz attachment -v $attachment > $p
+
+  ( cd $PORTSDIR/$port ; patch -p5 < $p )
+  find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
+  ( cd $PORTSDIR/$port ; find . -empty | xargs git rm -f)
+  ( cd $PORTSDIR/$port ; git add -A . )
+
+  maintainer=$( cd $PORTSDIR/$port ; make -V MAINTAINER)
+
+  echo $port > $n
+  echo $reporter > $r
+  echo $maintainer > $m
+}
+
+function bzclose () {
+  local pr=$1
+
+  $_bz modify -s 'Closed' -r FIXED -c 'Committed. Thanks!' $pr
+}
+
+function bzlist () {
+
+ echo $_bz
 }
