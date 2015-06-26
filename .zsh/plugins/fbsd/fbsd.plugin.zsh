@@ -1,5 +1,23 @@
-function ppkgs () {
- 
+_rdir=$HOME/repos/fbsd
+_zpool=$(awk -F= '/ZPOOL/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
+_zports=$(awk -F= '/ZPORTS/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
+_poudriere_dir=/usr/local/poudriere
+_poudriere_data=$_poudriere_dir/data
+_poudriere_ports=$_poudriere_dir/ports
+
+_arches="i386 amd64"
+_build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RLEASE 11.0-CURRENT"
+_builds=$(echo $_build_tags |sed -e 's,-.*,,' -e 's,\.,,g')
+
+alias cdpdir='cd $PORTSDIR'
+if [ -d $_rdir ]; then
+  for d in `cd $_rdir ; /bin/ls -1d *`; do
+    alias cd$d="cd $_rdir/$d"
+  done
+fi
+
+function poud_packages () {
+
   if [ `id -u` != 0 ]; then
     echo "need to be root"
     return
@@ -10,32 +28,38 @@ function ppkgs () {
   pkg install -y bash-static emacs-nox11 git-subversion hub rsync sudo tmux vim-lite zsh
 }
 
-function pdir () {
-  [ -n "$1" ] && PORTSDIR=/usr/local/poudriere/ports/$1 && export PORTSDIR
+function poud_ptree () {
+
+  [ -n "$1" ] && \
+      PORTSDIR=$_poudriere_ports/$1 && export PORTSDIR && \
+      _pdir=$1 && export _pdir
+
   echo $PORTSDIR
 }
 
-function mfi () {
+function poud_mfi () {
+
   cd $PORTSDIR ; make fetchindex
 }
 
-function nbuilds () {
-  sudo find /usr/local/poudriere/data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf
-  sudo rm -rf /usr/local/poudriere/data/logs/bulk/.data.json
+function poud_nuke_builds () {
+
+  sudo find $poudriere_data \( -name "*i386*" -o -name "*amd64*" \) | xargs sudo rm -rf
+  sudo rm -rf $poudriere_data/logs/bulk/.data.json
 }
 
-function pbuild () {
-  local port=$1
-  local build=110amd64
+function poud_build () {
+  local build=$1;
+  local port=$2
 
   if [ -z $port ]; then
     port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
   fi
 
-  tmux new -s $build "sudo poudriere bulk -t -B ${build}-default -j ${build} $port"
+  tmux new -s $build "sudo poudriere bulk -t -B ${build}-$(echo $port |sed -e 's,/,_,g') -j ${build} $port"
 }
 
-function pbulk () {
+function poud_bulk () {
   local port=$1
 
   if [ -z $port ]; then
@@ -48,59 +72,58 @@ function pbulk () {
   done
 }
 
-function pbb () {
-    local build=$1
-    tmux new -s $build "sudo poudriere bulk -t -B ${build}-default -j ${build} -a"
+function poud_bulk_all () {
+  local build=$1
+
+  tmux new -s $build "sudo poudriere bulk -t -B ${build}-default -j ${build} -a"
 }
 
-function pg () {
+function poud_go () {
   local port=$1
 
-  dir=$(ip dir $port | head -1)
-
+  dir=$(poud_pi dir $port | head -1)
   cd $PORTSDIR/$dir
 }
 
-function pijails () {
-  sudo poudriere jail -d -j 84i386
-  sudo poudriere jail -d -j 84amd64
-  sudo poudriere jail -d -j 93i386
-  sudo poudriere jail -d -j 93amd64
-  sudo poudriere jail -d -j 101i386
-  sudo poudriere jail -d -j 101amd64
-  sudo poudriere jail -d -j 110amd64
-  sudo poudriere jail -d -j 110i386
+function poud_jails_delete () {
 
-  sudo poudriere jail -c -j 84i386   -v 8.4-RELEASE  -a i386 -m http
-  sudo poudriere jail -c -j 84amd64  -v 8.4-RELEASE  -a amd64 -m http
-  sudo poudriere jail -c -j 93i386   -v 9.3-RELEASE  -a i386 -m http
-  sudo poudriere jail -c -j 93amd64  -v 9.3-RELEASE  -a amd64 -m http
-  sudo poudriere jail -c -j 101i386  -v 10.1-RELEASE -a i386 -m http
-  sudo poudriere jail -c -j 101amd64 -v 10.1-RELEASE -a amd64 -m http
-  sudo poudriere jail -c -j 110amd64 -v 11.0-CURRENT -a amd64 -m http
-  sudo poudriere jail -c -j 110i386  -v 11.0-CURRENT -a i386 -m http
+  for build in $_builds; do
+    for arch in $_arches; do
+      sudo poudriere jail -d -j $build$arch
+    done
+  done
 }
 
-function pujails () {
-  sudo poudriere jail -u -j 84i386
-  sudo poudriere jail -u -j 84amd64
-  sudo poudriere jail -u -j 93i386
-  sudo poudriere jail -u -j 93amd64
-  sudo poudriere jail -u -j 101i386
-  sudo poudriere jail -u -j 101amd64
-  sudo poudriere jail -u -j 110amd64
-  sudo poudriere jail -u -j 110i386
+function poud_jails_create () {
+
+  for build in $_builds_tags; do
+    tag=$(echo $build | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in $_arches; do
+      sudo poudriere jail -c -j $build$arch -v $tag -a $arch
+    done
+  done
 }
 
-function pzwork () {
-  sudo zpool create zwork /dev/xbd1
-  sudo zfs set mountpoint=none zwork
-  sudo zfs create zwork/poudriere
-  sudo zfs create zwork/ccache
-  sudo zfs set mountpoint=/usr/local/poudriere/ccache zwork/ccache
+function poud_jails_update () {
+
+  for build in $_builds; do
+    for arch in $_arches; do
+      sudo poudriere jail -u -j $build$arch
+    done
+  done
 }
 
-function ip () {
+function poud_zfs_init () {
+
+  sudo zpool create $_zpool /dev/xbd1
+  sudo zfs set mountpoint=none $_zpool
+  sudo zfs create $_zpool/poudriere
+  sudo zfs create $_zpool/ccache
+  sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
+}
+
+alias pi="poud_pi"
+function poud_pi () {
   local field=$1
   local regex=$2
   local modifier=$3
@@ -142,24 +165,92 @@ function ip () {
   fi
 }
 
-function psync () {
+function poud_ptree_init () {
+
+  if [ -z $PORTSDIR -o -z $_pdir ]; then
+      echo "must call `pdir foo` 1st"
+      return
+  fi
+
+  git_repo=git@github.com:$USER/freebsd-ports.git
+  git_svn_uri=svn.freebsd.org/ports
+  svn_proto=svn+ssh
+
+  zdir=$_zports/poudriere/ports/$_pdir
+
+  sudo zfs destroy -fr $zdir
+  sudo zfs create $zdir
+  sudo zfs set mountpoint=$PORTSDIR $zdir
+
+  sudo chown pgollucci:pgollucci $PORTSDIR
+  git clone $git_repo $PORTSDIR
+
+  cd $PORTSDIR
+  sha=$(git rev-parse --short HEAD 2> /dev/null)
+  sudo zfs snapshot $zdir@$sha-git-init
+
+  git svn init -T head $svn_proto://$git_svn_uri .
+  sudo zfs snapshot $zdir@$sha-svn-init
+
+  sha=$(git rev-parse --short HEAD 2> /dev/null)
+  cat <<EOF >> .git/config
+[oh-my-zsh]
+        hide-dirty = 1
+[remote "origin"]
+        fetch = +refs/pull/*:refs/remotes/origin/pull/*
+EOF
+
+  git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
+  git svn fetch
+  sudo zfs snapshot $zdir@$sha-svn-fetch
+
+  git checkout trunk;
+  git branch -D master
+  git checkout -b master trunk
+  sudo zfs snapshot $zdir@$sha-svn-branches
+
+  git svn rebase
+  git remote add upstream git@github.com:freebsd/freebsd-ports.git
+  sudo zfs snapshot $zdir@$sha-svn-rebase
+}
+
+function poud_ptree_sync () {
+
+  if [ -z $PORTSDIR ]; then
+      echo "must call `pdir foo` 1st"
+      return
+  fi
+
   cd $PORTSDIR
 
   br=$(git branch |grep -- \* |awk '{print $2}')
 
   git stash save prepsync
-  git checkout master
+
+  if [ $br != "master" ]; then
+      git checkout master
+  fi
+
+  sudo zfs snapshot $zdir@sync_before_origin_fetch
   git fetch origin
+
+  sudo zfs snapshot $zdir@sync_before_upstream_fetch
   git fetch upstream
+
+  sudo zfs snapshot $zdir@sync_before_upstream_fetch
   git merge upstream/svn_head
+  sudo zfs snapshot $zdir@sync_after_upstream_fetch
+
   git push
   git svn rebase
+  sudo zfs snapshot $zdir@sync_after_svn_rebase
 
   git checkout $br
   git stash pop
 }
 
-function poudriere_sync () {
+function poud_poudriere_sync () {
+
   cdpoudriere
 
   br=$(git branch |grep -- \* |awk '{print $2}')
@@ -175,13 +266,48 @@ function poudriere_sync () {
   git stash pop
 }
 
-alias cdfb='cd $HOME/fbsd/bin'
-alias cdpdir='cd $PORTSDIR'
+# ----------------------------------------------------------------------------
+_pybugz_dir=$_rdir/pybugz
+_pybugz=$_pybugz_dir/bin/bugz
+PYTHONPATH=$_pybugz_dir:$PYTHONPATH; export PYTHONPATH
 
-_rdir=$HOME/repos/fbsd
-if [ -d $_rdir ]; then
-  for d in `cd $_rdir ; /bin/ls -1d *`; do
-    alias cd$d="cd $_rdir/$d"
-  done
-fi
-unset _rdir
+_bz=$_pybugz
+
+function bzlogin () {
+  $_bz login
+}
+
+function bztake() {
+  local pr=$1
+
+  $_bz modify -a $USER@freebsd.org -s Open -c "Take." $pr
+}
+
+function bzinprog() {
+  local pr=$1
+
+  $_bz modify -s 'In Progress' $pr
+}
+
+function bzpatch() {
+  local pr=$1
+
+  local d=/tmp/fbsd/$pr
+  local i=$d/info
+  local pa=$d/patch
+  local n=$d/name
+
+  mkdir -p $d
+  $_bz get $pr > $d/info
+
+  port=$(grep Title $i | egrep -o "[a-zA-Z0-9\-_]*/[a-zA-Z0-9\-_]*")
+  attachment=$(grep Attachment $i | grep patch | awk '{print $2}' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+
+  $_bz attachment -v $attachment > $p
+
+  cd $PORTSDIR/$port
+  patch < $p
+  find . -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
+
+  echo $port > $n
+}
