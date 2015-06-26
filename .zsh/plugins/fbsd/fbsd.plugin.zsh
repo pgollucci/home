@@ -204,7 +204,7 @@ EOF
   git svn fetch
   sudo zfs snapshot $zdir@$sha-svn-fetch
 
-  git checkout trunk;
+  git checkout trunk
   git branch -D master
   git checkout -b master trunk
   sudo zfs snapshot $zdir@$sha-svn-branches
@@ -290,24 +290,80 @@ function bzinprog() {
 }
 
 function bzpatch() {
+
   local pr=$1
 
   local d=/tmp/fbsd/$pr
   local i=$d/info
   local pa=$d/patch
   local n=$d/name
+  local r=$d/reporter
+  local m=$d/maintainer
 
   mkdir -p $d
   $_bz get $pr > $d/info
 
-  port=$(grep Title $i | egrep -o "[a-zA-Z0-9\-_]*/[a-zA-Z0-9\-_]*")
-  attachment=$(grep Attachment $i | grep patch | awk '{print $2}' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  port=$(\grep Title $i | egrep -o "[a-zA-Z0-9\-_]*/[a-zA-Z0-9\-_]*")
+  attachment=$(\grep Attachment $i | grep patch | awk '{print $2}' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  reporter=$(awk -F': ' '/Reporter/ { print $2}' $i)
 
   $_bz attachment -v $attachment > $p
 
-  cd $PORTSDIR/$port
-  patch < $p
-  find . -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
+  ( cd $PORTSDIR/$port ; patch < $p )
+  find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
+
+  maintainer=$( cd $PORTSDIR/$port ; make -V MAINTAINER)
 
   echo $port > $n
+  echo $reporter > $r
+  echo $maintainer > $m
+}
+
+function poud_ci () {
+
+  local pr=$1
+
+  local d=/tmp/fbsd/$pr
+  local n=$d/name
+  local r=$d/reporter
+  local m=$d/maintainer
+
+  port=$(cat $n)
+  reporter_email=$(cat $r)
+  maintainer_email=$(cat $m)
+  if [ $maintainer_email = $reporter_email ]; then
+    maintainer=1
+  else
+    maintainer=0
+  fi
+
+  p1=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | head -1 | awk '{print $2}')
+  p2=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | tail -1 | awk '{print $2}')
+
+  if [ $p1 != $p2 ]; then
+    update=1
+  else
+    update=0
+  fi
+
+  cif=$d/cif
+  if [ $update ]; then
+    echo "Update $port $p1 -> $p2" > $cif
+  else
+    echo $port ? $cif
+  fi
+
+  echo >> $cif
+
+  echo "PR:\t\t$pr" >> $cif
+
+  if [ $maintainer ]; then
+    echo -e "Submitted by:\t$reporter_email (maintainer)" >> $cif
+  else
+    echo -e "Submitted by:\t$reporter_email" >> $cif
+    echo -e "Approved by:\t$maintainer_email" >> $cif
+  fi
+
+  git add -A $PORTSDIR/$port
+  git commit -F $cif
 }
