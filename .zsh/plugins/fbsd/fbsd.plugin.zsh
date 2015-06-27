@@ -48,34 +48,47 @@ function poud_nuke_builds () {
   sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 
-function poud_build () {
-  local build=$1;
-  local port=$2
+function _poud_transliterate_port () {
+  local port=$1
 
-  if [ -z $port ]; then
-    port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
-  fi
-
-  tmux new -s $build "sudo poudriere bulk -t -B ${build}-$(echo $port |sed -e 's,/,_,g') -j ${build} -C $port"
+  echo $port |sed -e 's,/,_,g'
 }
 
-function poud_bulk () {
+function _poud_from_dir_or_arg () {
   local port=$1
 
   if [ -z $port ]; then
     port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
   fi
 
+  echo $port
+}
+
+function poud_build () {
+  local build=$1;
+  local port=$2
+
+  tport=$(_poud_transliterate_port $(_poud_from_dir_or_arg $port))
+  tmux new -s $build "sudo poudriere bulk -t -B ${build}-${tport} -j ${build} -C $port"
+}
+
+function poud_bulk () {
+  local port=$1
+
+  port=$(_poud_from_dir_or_arg $port)
+  tport=$(_poud_transliterate_port $port)
   builds=$(poudriere jail -l -n -q)
+
   for build in `echo $builds`; do
-    sudo poudriere bulk -t -B ${build}-default-$(echo $port |sed -e 's,/,_,g') -j ${build} -C $port &
+    sudo poudriere bulk -t -B ${build}-${tport} -j ${build} $port &
+    sleep 2
   done
 }
 
 function poud_bulk_all () {
   local build=$1
 
-  tmux new -s $build "sudo poudriere bulk -t -B ${build}-default -j ${build} -a"
+  tmux new -s $build "sudo poudriere bulk -t -B ${build}-all -j ${build} -a"
 }
 
 function poud_go () {
@@ -148,10 +161,12 @@ function poud_pi () {
 
   regex=$(echo $regex | sed -e 's,/,\\/,g')
 
+  index_file=$PORTSDIR/INDEX-11
+
   if [ $field = "deps" ]; then
-    out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $PORTSDIR/INDEX-11)
+    out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $index_file)
   else
-    out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $PORTSDIR/INDEX-11)
+    out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $index_file)
   fi
 
   if [ "$modifier" = "M" ]; then
@@ -182,17 +197,12 @@ function poud_ptree_init () {
   sudo zfs create $zdir
   sudo zfs set mountpoint=$PORTSDIR $zdir
 
-  sudo chown pgollucci:pgollucci $PORTSDIR
+  sudo chown $USER:$USER $PORTSDIR
   git clone $git_repo $PORTSDIR
 
   cd $PORTSDIR
-  sha=$(git rev-parse --short HEAD 2> /dev/null)
-  sudo zfs snapshot $zdir@$sha-git-init
-
   git svn init -T head $svn_proto://$git_svn_uri .
-  sudo zfs snapshot $zdir@$sha-svn-init
 
-  sha=$(git rev-parse --short HEAD 2> /dev/null)
   cat <<EOF >> .git/config
 [oh-my-zsh]
         hide-dirty = 1
@@ -202,16 +212,14 @@ EOF
 
   git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
   git svn fetch
-  sudo zfs snapshot $zdir@$sha-svn-fetch
 
   git checkout trunk
   git branch -D master
   git checkout -b master trunk
-  sudo zfs snapshot $zdir@$sha-svn-branches
 
   git svn rebase
   git remote add upstream git@github.com:freebsd/freebsd-ports.git
-  sudo zfs snapshot $zdir@$sha-svn-rebase
+  git branch --set-upstream-to=origin/master master
 }
 
 function poud_ptree_sync () {
@@ -223,29 +231,12 @@ function poud_ptree_sync () {
 
   cd $PORTSDIR
 
-  br=$(git branch |grep -- \* |awk '{print $2}')
-
   git stash save prepsync
-
-  if [ $br != "master" ]; then
-      git checkout master
-  fi
-
-  sudo zfs snapshot $zdir@sync_before_origin_fetch
   git fetch origin
-
-  sudo zfs snapshot $zdir@sync_before_upstream_fetch
   git fetch upstream
-
-  sudo zfs snapshot $zdir@sync_before_upstream_fetch
   git merge upstream/svn_head
-  sudo zfs snapshot $zdir@sync_after_upstream_fetch
-
   git push
   git svn rebase
-  sudo zfs snapshot $zdir@sync_after_svn_rebase
-
-  git checkout $br
   git stash pop
 }
 
@@ -253,16 +244,11 @@ function poud_poudriere_sync () {
 
   cdpoudriere
 
-  br=$(git branch |grep -- \* |awk '{print $2}')
-
   git stash save prepsync
-  git checkout master
   git fetch origin
   git fetch upstream
   git merge upstream/master
   git push
-
-  git checkout $br
   git stash pop
 }
 
@@ -350,8 +336,7 @@ function bzmine () {
   bzinprog $pr
 }
 
-function bzpatch () {
-
+function bzget () {
   local pr=$1
 
   local d=/tmp/fbsd/$pr
@@ -359,36 +344,94 @@ function bzpatch () {
   local p=$d/patch
   local n=$d/name
   local r=$d/reporter
-  local m=$d/maintainer
+  local c=$d/created
 
   mkdir -p $d
   $_bz get $pr > $d/info
 
-  port=$(\grep Title $i | egrep -o "[_a-zA-Z0-9\-]*/[_a-zA-Z0-9\-]*")
-  attachment=$(\grep -i Attachment $i | egrep 'patch|diff' | awk '{print $2}' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
-  reporter=$(awk -F': ' '/Reporter/ { print $2}' $i)
+  port=$(\grep Title $i | egrep -o "[_a-zA-Z0-9\-]*/[_a-zA-Z0-9\-]*" | head -1)
+  attachment=$(\grep -i Attachment $i | egrep 'patch|diff' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  if [ -z $attachment ]; then
+      attachment=$(\grep -i Attachment $i | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  fi
+  reporter=$(awk -F': ' '/Reporter/ { print $2 }' $i)
+  created=$(awk -F': '  '/Reported/ { print $2 }' $i | sed -e 's,T.*,,')
+  omaintainer=$( cd $PORTSDIR/$port ; make -V MAINTAINER)
 
-  $_bz attachment -v $attachment > $p
-
-  ( cd $PORTSDIR/$port ; patch -p5 < $p )
-  find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
-  ( cd $PORTSDIR/$port ; find . -empty | xargs git rm -f)
-  ( cd $PORTSDIR/$port ; git add -A . )
-
-  maintainer=$( cd $PORTSDIR/$port ; make -V MAINTAINER)
+  if [ -n $attachment -a $attachment -gt 0 ]; then
+    fetch -o $p "https://bz-attachments.freebsd.org/attachment.cgi?id=$attachment"
+  fi
 
   echo $port > $n
   echo $reporter > $r
-  echo $maintainer > $m
+  echo $created > $c
+  echo $omaintainer > $om
+}
+
+function bzpatch () {
+  local pr=$1
+
+  local d=/tmp/fbsd/$pr
+  local p=$d/patch
+  local om=$d/omaintainer
+  local nm=$d/nmaintainer
+
+  bzget $pr
+
+  if [ -e $p ]; then
+    local l=$(grep ^Index: $p | head -1 | awk '{ print gsub(/\//,"") }')
+
+    ( cd $PORTSDIR/$port ; patch -p$l < $p )
+    find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
+    ( cd $PORTSDIR/$port ; find . -type f -empty | xargs git rm -rf)
+    ( cd $PORTSDIR/$port ; git add -A . )
+
+    omaintainer=$(cat $om)
+
+    if [ $omaintainer != $nmaintainer ]; then
+      echo $nmaintainer > $nm
+    fi
+  fi
 }
 
 function bzclose () {
   local pr=$1
 
   $_bz modify -s 'Closed' -r FIXED $pr
+
+  local d=/tmp/fbsd/$pr
+  rm -rf $d
+}
+
+function bztop () {
+
+ $_bz --encoding=utf8 search -s New --product "Ports & Packages" | awk '{print $3}' | sort | uniq -c | sort -nr -k 1,1 | head $1
 }
 
 function bzlist () {
+  local str="$1"
 
- echo $_bz
+  $_bz --encoding=utf8 search --product "Ports & Packages" "$*"
+}
+
+function bztimeout () {
+  local pr=$1
+
+  local d=/tmp/fbsd/$pr
+  local c=$d/created
+  local om=$d/omaintainer
+
+  bzget $pr
+
+  created=$(cat $c)
+  omaintainer=$(cat $om)
+
+  ethen=$(date -j -f "%Y%m%d" "$created" "+%s")
+  enow=$(date -j -f "%a %b %d %T %Z %Y" "`date`" "+%s")
+
+  days=$(printf "%.0f" $(echo "scale=2; ($enow - $ethen)/(60*60*24)" | bc))
+
+  if [ $days -gt 14 ]; then
+    $_bz modify -c "Maintainer Timeout - $days days ($omaintainer)" $pr
+  fi
 }
