@@ -10,11 +10,28 @@ _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RLEASE 11.0-CURRENT"
 _builds=$(echo $_build_tags |sed -e 's,-.*,,' -e 's,\.,,g')
 
 alias cdpdir='cd $PORTSDIR'
+
 if [ -d $_rdir ]; then
   for d in `cd $_rdir ; /bin/ls -1d *`; do
     alias cd$d="cd $_rdir/$d"
   done
 fi
+
+function _poud_transliterate_port () {
+  local port=$1
+
+  echo $port |sed -e 's,[/ ],_,g'
+}
+
+function _poud_from_dir_or_arg () {
+  local port=$1
+
+  if [ -z $port ]; then
+    port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
+  fi
+
+  echo $port
+}
 
 function poud_packages () {
 
@@ -28,74 +45,13 @@ function poud_packages () {
   pkg install -y bash-static emacs-nox11 git-subversion hub rsync sudo tmux vim-lite zsh
 }
 
-function poud_ptree () {
+function poud_zfs_init () {
 
-  [ -n "$1" ] && \
-      PORTSDIR=$_poudriere_ports/$1 && export PORTSDIR && \
-      _pdir=$1 && export _pdir
-
-  echo $PORTSDIR
-}
-
-function poud_mfi () {
-
-  cd $PORTSDIR ; make fetchindex
-}
-
-function poud_nuke_builds () {
-
-  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*" \) |grep -v cache |xargs sudo rm -rf
-  sudo rm -rf $_poudriere_data/logs/bulk/.data.json
-}
-
-function _poud_transliterate_port () {
-  local port=$1
-
-  echo $port |sed -e 's,/,_,g'
-}
-
-function _poud_from_dir_or_arg () {
-  local port=$1
-
-  if [ -z $port ]; then
-    port=$(echo `pwd` | sed -e "s,$PORTSDIR/,,")
-  fi
-
-  echo $port
-}
-
-function poud_build () {
-  local build=$1;
-  local port=$2
-
-  tport=$(_poud_transliterate_port $(_poud_from_dir_or_arg $port))
-  tmux new -s $build "sudo poudriere bulk -t -B ${build}-${tport} -j ${build} -C $port"
-}
-
-function poud_bulk () {
-  local port=$1
-
-  port=$(_poud_from_dir_or_arg $port)
-  tport=$(_poud_transliterate_port $port)
-  builds=$(poudriere jail -l -n -q)
-
-  for build in `echo $builds`; do
-    sudo poudriere bulk -t -B ${build}-${tport} -j ${build} $port &
-    sleep 2
-  done
-}
-
-function poud_bulk_all () {
-  local build=$1
-
-  tmux new -s $build "sudo poudriere bulk -t -B ${build}-all -j ${build} -a"
-}
-
-function poud_go () {
-  local port=$1
-
-  dir=$(poud_pi dir $port | head -1)
-  cd $PORTSDIR/$dir
+  sudo zpool create $_zpool /dev/xbd1
+  sudo zfs set mountpoint=none $_zpool
+  sudo zfs create $_zpool/poudriere
+  sudo zfs create $_zpool/ccache
+  sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
 }
 
 function poud_jails_delete () {
@@ -126,16 +82,65 @@ function poud_jails_update () {
   done
 }
 
-function poud_zfs_init () {
+function poud_ptree_init () {
 
-  sudo zpool create $_zpool /dev/xbd1
-  sudo zfs set mountpoint=none $_zpool
-  sudo zfs create $_zpool/poudriere
-  sudo zfs create $_zpool/ccache
-  sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
+  if [ -z $PORTSDIR -o -z $_pdir ]; then
+      echo "must call `pdir foo` 1st"
+      return
+  fi
+
+  git_repo=git@github.com:$USER/freebsd-ports.git
+  git_svn_uri=svn.freebsd.org/ports
+  svn_proto=svn+ssh
+
+  zdir=$_zports/poudriere/ports/$_pdir
+
+  sudo zfs destroy -fr $zdir
+  sudo zfs create $zdir
+  sudo zfs set mountpoint=$PORTSDIR $zdir
+
+  sudo chown $USER:$USER $PORTSDIR
+  git clone $git_repo $PORTSDIR
+
+  cd $PORTSDIR
+  git svn init -T head $svn_proto://$git_svn_uri .
+
+    cat <<EOF
+EOF >> .git/config
+[oh-my-zsh]
+        hide-dirty = 1
+[remote "origin"]
+        fetch = +refs/pull/*:refs/remotes/origin/pull/*
+EOF
+
+    git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
+    git svn fetch
+
+    git checkout trunk
+    git branch -D master
+    git checkout -b master trunk
+
+    git svn rebase
+    git remote add upstream git@github.com:freebsd/freebsd-ports.git
+    git branch --set-upstream-to=origin/master master
 }
 
-alias pi="poud_pi"
+function poud_ptree () {
+  local tree=$1
+
+  [ -n "$tree" ] && \
+      PORTSDIR=$_poudriere_ports/$tree && export PORTSDIR && \
+      _pdir=$tree && export _pdir
+
+  echo $PORTSDIR
+}
+
+function poud_mfi () {
+
+  cd $PORTSDIR ; make fetchindex
+}
+
+alias ip="poud_pi"
 function poud_pi () {
   local field=$1
   local regex=$2
@@ -164,146 +169,103 @@ function poud_pi () {
   index_file=$PORTSDIR/INDEX-11
 
   if [ $field = "deps" ]; then
-    out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $index_file)
+      out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $index_file)
   else
     out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $index_file)
   fi
 
   if [ "$modifier" = "M" ]; then
-    echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
+      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
   elif [ "$modifier" = "P" ]; then
-    echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
+      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
   elif [ "$modifier" = "D" ]; then
-    echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
+      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
   else
     echo $out |sed -e 's,/usr/ports/,,'
   fi
 }
 
-function poud_ptree_init () {
+function poud_go () {
+  local port=$1
 
-  if [ -z $PORTSDIR -o -z $_pdir ]; then
-      echo "must call `pdir foo` 1st"
-      return
-  fi
-
-  git_repo=git@github.com:$USER/freebsd-ports.git
-  git_svn_uri=svn.freebsd.org/ports
-  svn_proto=svn+ssh
-
-  zdir=$_zports/poudriere/ports/$_pdir
-
-  sudo zfs destroy -fr $zdir
-  sudo zfs create $zdir
-  sudo zfs set mountpoint=$PORTSDIR $zdir
-
-  sudo chown $USER:$USER $PORTSDIR
-  git clone $git_repo $PORTSDIR
-
-  cd $PORTSDIR
-  git svn init -T head $svn_proto://$git_svn_uri .
-
-  cat <<EOF >> .git/config
-[oh-my-zsh]
-        hide-dirty = 1
-[remote "origin"]
-        fetch = +refs/pull/*:refs/remotes/origin/pull/*
-EOF
-
-  git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
-  git svn fetch
-
-  git checkout trunk
-  git branch -D master
-  git checkout -b master trunk
-
-  git svn rebase
-  git remote add upstream git@github.com:freebsd/freebsd-ports.git
-  git branch --set-upstream-to=origin/master master
+  dir=$(poud_pi dir $port | head -1)
+  cd $PORTSDIR/$dir
 }
 
-function poud_ptree_sync () {
+function poud_build_changed () {
+  local build=$1
 
-  if [ -z $PORTSDIR ]; then
-      echo "must call `pdir foo` 1st"
-      return
-  fi
-
-  cd $PORTSDIR
-
-  git stash save prepsync
-  git fetch origin
-  git fetch upstream
-  git merge upstream/svn_head
-  git push
-  git svn rebase
-  git stash pop
+  ports=$(git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
+  tports=$(_poud_transliterate_port $$ports)
+  tmux new -s $build "sudo poudriere bulk -t -B {tports} -j ${build} -C $ports"
 }
 
-function poud_poudriere_sync () {
+function poud_build_port () {
+  local build=$1
+  local port=$2
 
-  cdpoudriere
-
-  git stash save prepsync
-  git fetch origin
-  git fetch upstream
-  git merge upstream/master
-  git push
-  git stash pop
+  tport=$(_poud_transliterate_port $(_poud_from_dir_or_arg $port))
+  tmux new -s $build "sudo poudriere bulk -t -B ${tport} -j ${build} -C $port"
 }
 
-function poud_ci () {
+function poud_build_all () {
+  local build=$1
 
-  local pr=$1
+  tmux new -s $build "sudo poudriere bulk -t -B all -j ${build} -a"
+}
 
-  local d=/tmp/fbsd/$pr
-  local n=$d/name
-  local r=$d/reporter
-  local m=$d/maintainer
+function poud_builds_nuke () {
 
-  port=$(cat $n)
-  reporter_email=$(cat $r)
-  maintainer_email=$(cat $m)
-  if [ $maintainer_email = $reporter_email ]; then
-    maintainer=1
-  else
-    maintainer=0
-  fi
-
-  p1=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | head -1 | awk '{print $2}')
-  p2=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | tail -1 | awk '{print $2}')
-
-  if [ $p1 != $p2 ]; then
-    update=1
-  else
-    update=0
-  fi
-
-  cif=$d/cif
-  if [ $update ]; then
-    echo "Update $port $p1 -> $p2" > $cif
-  else
-    echo $port ? $cif
-  fi
-
-  echo >> $cif
-
-  echo "PR:\t\t\t$pr" >> $cif
-
-  if [ $maintainer ]; then
-    echo -e "Submitted by:\t$reporter_email (maintainer)" >> $cif
-  else
-    echo -e "Submitted by:\t$reporter_email" >> $cif
-    echo -e "Approved by:\t$maintainer_email" >> $cif
-  fi
-
-  git add -A $PORTSDIR/$port
-  git commit -F $cif
+  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*" \) |grep -v cache |xargs sudo rm -rf
+  sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 
 function poud_diff () {
 
   git diff `git svn dcommit -n | grep '^diff-tree'| cut -f 2,3 -d" "`
+}
+
+function poud_ci () {
+  set -x
+  local pr=$1
+
+  local d=$(_bz_pr_dir $pr)
+
+  local cif=$d/msg
+
+  local title="$(cat $d/title)"
+  local port=$(cat $d/port)
+  local reporter=$(cat $d/reporter)
+  local maintainer=$(cat $d/maintainer)
+  local is_maintainer=$(cat $d/is_maintainer)
+  local days=$(cat $d/days)
+  local update="$(cat $d/update)"
+
+  local submitted_by=""
+  local approved_by=""
+  if [ $is_maintainer -eq 1 ]; then
+    submitted_by="$reporter (maintainer)"
+  else
+    submitted_by="$reporter"
+    if [ -n $days ]; then
+      approved_by="maintainer timeout ($maintainer ; $days days)"
+    else
+      approved_by="$maintainer (maintainer)"
+    fi
+  fi
+
+  cat <<EOF > $cif
+$title
+
+-
+
+PR:                  $pr
+Submitted by:        $submitted_by
+Approved by:         $approved_by
+EOF
+
+  ( cd $PORTSDIR/$port ; git add -A .)
+  ( cd $PORTSDIR/$port ; git commit -F $cif)
 }
 
 # ----------------------------------------------------------------------------
@@ -312,6 +274,102 @@ _pybugz=$_pybugz_dir/bin/bugz
 PYTHONPATH=$_pybugz_dir:$PYTHONPATH; export PYTHONPATH
 
 _bz=$_pybugz
+
+function _bz_pr_dir () {
+  local pr=$1
+
+  local d=/tmp/fbsd/$pr
+  if [ ! -d $d ]; then
+    mkdir -p $d
+  fi
+
+  echo $d
+}
+
+function _bz_get_attachment () {
+  local d=$1
+
+  local id=0
+
+  id=$(grep -i Attachment $d/info | egrep 'patch|diff' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+
+  if [ -z $id ]; then
+     id=$(grep -i Attachment $d/info | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  fi
+
+  if [ -n $id -a $id -gt 0 ]; then
+    fetch -q -o $d/patch "https://bz-attachments.freebsd.org/attachment.cgi?id=$id"
+  fi
+}
+
+function _bz_is_timeout () {
+  local created=$1
+
+  local ethen=$(date -j -f "%Y%m%d" "$created" "+%s")
+  local enow=$(date -j -f "%a %b %d %T %Z %Y" "`date`" "+%s")
+  local days=$(printf "%.0f" $(echo "scale=2; ($enow - $ethen)/(60*60*24)" | bc))
+
+  echo $days
+}
+
+function _bz_is_maintainer () {
+  local reporter=$1
+  local maintainer=$2
+
+  if [ $reporter = $maintainer ]; then
+    is_maintainer=1
+  else
+    is_maintainer=0
+  fi
+
+  echo $is_maintainer
+}
+
+function _bz_is_update () {
+  local pr=$1
+
+  local d=$(_bz_pr_dir $pr)
+  local port=$(cat $d/port)
+
+  p1=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | head -1 | awk '{print $2}')
+  p2=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | tail -1 | awk '{print $2}')
+
+  if [ $p1 != $p2 ]; then
+    echo "$p1 -> $p2" > $d/update
+  else
+    touch $d/update
+  fi
+}
+
+function _bzget () {
+  local pr=$1
+
+  local d=$(_bz_pr_dir $pr)
+
+  $_bz get $pr > $d/info
+
+  local title="$(grep Title $d/info |cut -d: -f 2- |sed -e 's,^ *,,')"
+  local port=$(echo $title| egrep -o "[_a-zA-Z0-9\-]*/[_a-zA-Z0-9\-]*" | head -1)
+  local reporter=$(awk -F': ' '/Reporter/ { print $2 }' $d/info)
+  local created=$(awk -F': '  '/Reported/ { print $2 }' $d/info | sed -e 's,T.*,,')
+  local maintainer=$(cd $PORTSDIR/$port ; make -V MAINTAINER)
+  local days=$(_bz_is_timeout $created)
+  local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
+  _bz_get_attachment $d
+
+  echo $title         > $d/title
+  echo $port          > $d/port
+  echo $reporter      > $d/reporter
+  echo $created       > $d/created
+  echo $maintainer    > $d/maintainer
+  echo $is_maintainer > $d/is_maintainer
+
+  if [ -n $days -a $days -gt 14 ]; then
+    echo $days > $d/days
+  else
+    touch $d/days
+  fi
+}
 
 function bzlogin () {
   $_bz login
@@ -327,6 +385,8 @@ function bzinprog () {
   local pr=$1
 
   $_bz modify -s 'In Progress' $pr
+
+  _bzget $pr
 }
 
 function bzmine () {
@@ -336,62 +396,43 @@ function bzmine () {
   bzinprog $pr
 }
 
-function bzget () {
+function bztimeout () {
   local pr=$1
 
-  local d=/tmp/fbsd/$pr
-  local i=$d/info
-  local p=$d/patch
-  local n=$d/name
-  local r=$d/reporter
-  local c=$d/created
+  local d=$(_bz_pr_dir $pr)
 
-  mkdir -p $d
-  $_bz get $pr > $d/info
+  local days=$(cat $d/days)
+  local maintainer=$(cat $d/maintainer)
 
-  port=$(\grep Title $i | egrep -o "[_a-zA-Z0-9\-]*/[_a-zA-Z0-9\-]*" | head -1)
-  attachment=$(\grep -i Attachment $i | egrep 'patch|diff' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
-  if [ -z $attachment ]; then
-      attachment=$(\grep -i Attachment $i | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
+  if [ -n "$days" ]; then
+    $_bz modify -c "Maintainer Timeout - $days days ($maintainer)" $pr
   fi
-  reporter=$(awk -F': ' '/Reporter/ { print $2 }' $i)
-  created=$(awk -F': '  '/Reported/ { print $2 }' $i | sed -e 's,T.*,,')
-  omaintainer=$( cd $PORTSDIR/$port ; make -V MAINTAINER)
-
-  if [ -n $attachment -a $attachment -gt 0 ]; then
-    fetch -o $p "https://bz-attachments.freebsd.org/attachment.cgi?id=$attachment"
-  fi
-
-  echo $port > $n
-  echo $reporter > $r
-  echo $created > $c
-  echo $omaintainer > $om
 }
 
 function bzpatch () {
+
   local pr=$1
 
-  local d=/tmp/fbsd/$pr
-  local p=$d/patch
-  local om=$d/omaintainer
-  local nm=$d/nmaintainer
+  local d=$(_bz_pr_dir $pr)
+  local port=$(cat $d/port)
 
-  bzget $pr
+  if [ -e $d/patch ]; then
+    local l=$(grep ^Index: $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
 
-  if [ -e $p ]; then
-    local l=$(grep ^Index: $p | head -1 | awk '{ print gsub(/\//,"") }')
-
-    ( cd $PORTSDIR/$port ; patch -p$l < $p )
+    ( cd $PORTSDIR/$port ; patch -p$l < $d/patch )
     find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
     ( cd $PORTSDIR/$port ; find . -type f -empty | xargs git rm -rf)
-    ( cd $PORTSDIR/$port ; git add -A . )
-
-    omaintainer=$(cat $om)
-
-    if [ $omaintainer != $nmaintainer ]; then
-      echo $nmaintainer > $nm
-    fi
   fi
+
+  _bz_is_update $pr
+}
+
+function bzoverto () {
+  local pr=$1
+  local owner=$2
+  local reason=$3
+
+  $_bz modify -a $owner@FreeBSD.org -c "Over to $owner $reason" -s Open $pr
 }
 
 function bzclose () {
@@ -399,7 +440,7 @@ function bzclose () {
 
   $_bz modify -s 'Closed' -r FIXED $pr
 
-  local d=/tmp/fbsd/$pr
+  local d=$(_bz_pr_dir $pr)
   rm -rf $d
 }
 
@@ -412,26 +453,4 @@ function bzlist () {
   local str="$1"
 
   $_bz --encoding=utf8 search --product "Ports & Packages" "$*"
-}
-
-function bztimeout () {
-  local pr=$1
-
-  local d=/tmp/fbsd/$pr
-  local c=$d/created
-  local om=$d/omaintainer
-
-  bzget $pr
-
-  created=$(cat $c)
-  omaintainer=$(cat $om)
-
-  ethen=$(date -j -f "%Y%m%d" "$created" "+%s")
-  enow=$(date -j -f "%a %b %d %T %Z %Y" "`date`" "+%s")
-
-  days=$(printf "%.0f" $(echo "scale=2; ($enow - $ethen)/(60*60*24)" | bc))
-
-  if [ $days -gt 14 ]; then
-    $_bz modify -c "Maintainer Timeout - $days days ($omaintainer)" $pr
-  fi
 }
