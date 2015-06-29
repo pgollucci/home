@@ -42,7 +42,10 @@ function poud_packages () {
 
   pkg delete -af -y
   pkg bootstrap -y
-  pkg install -y bash-static emacs-nox11 git-subversion hub rsync sudo tmux vim-lite zsh
+  pkg install -y \
+      automake bash-static dialog4ports emacs-nox11 git-subversion \
+      hub libtool portlint python34 ruby21-gems rsync sudo swaks \
+      tmux vim-lite zsh
 }
 
 function poud_zfs_init () {
@@ -192,20 +195,29 @@ function poud_go () {
   cd $PORTSDIR/$dir
 }
 
+function poud_uses () {
+  local str=$1
+
+  (cd $PORTSDIR ; poud_pi deps $str M | xargs grep USE |grep $str)
+}
+
 function poud_build_changed () {
   local build=$1
 
-  ports=$(git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
-  tports=$(_poud_transliterate_port $$ports)
-  tmux new -s $build "sudo poudriere bulk -t -B {tports} -j ${build} -C $ports"
+  mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
+  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' | xargs)
+
+  tports=$(_poud_transliterate_port "$mports $nports")
+
+  tmux new -s $build "sudo poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
 }
 
 function poud_build_port () {
   local build=$1
-  local port=$2
+  local port=$(_poud_from_dir_or_arg $port)
 
-  tport=$(_poud_transliterate_port $(_poud_from_dir_or_arg $port))
-  tmux new -s $build "sudo poudriere bulk -t -B ${tport} -j ${build} -C $port"
+  tport=$(_poud_transliterate_port $port)
+  tmux new -s $build "sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
 }
 
 function poud_build_all () {
@@ -226,7 +238,6 @@ function poud_diff () {
 }
 
 function poud_ci () {
-  set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
@@ -237,7 +248,7 @@ function poud_ci () {
   local port=$(cat $d/port)
   local reporter=$(cat $d/reporter)
   local maintainer=$(cat $d/maintainer)
-  local is_maintainer=$(cat $d/is_maintainer)
+  local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
   local days=$(cat $d/days)
   local update="$(cat $d/update)"
 
@@ -287,18 +298,21 @@ function _bz_pr_dir () {
 }
 
 function _bz_get_attachment () {
-  local d=$1
+  local pr=$1
 
+  local d=$(_bz_pr_dir $pr)
   local id=0
 
-  id=$(grep -i Attachment $d/info | egrep 'patch|diff' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
-
-  if [ -z $id ]; then
-     id=$(grep -i Attachment $d/info | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1)
-  fi
-
-  if [ -n $id -a $id -gt 0 ]; then
+  local a_cnt=$(grep Attachments $d/info | cut -d: -f2 | sed -e 's, ,,g')
+  if [ $a_cnt -gt 0 ]; then
+    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
     fetch -q -o $d/patch "https://bz-attachments.freebsd.org/attachment.cgi?id=$id"
+    local s_cnt=$(head -1 $d/patch | grep -c "# This is a shell archive.")
+    if [ $s_cnt -eq 1 ]; then
+        echo "1" > $d/shar
+    fi
+  else
+    echo "0" > $d/shar
   fi
 }
 
@@ -341,6 +355,14 @@ function _bz_is_update () {
   fi
 }
 
+function _bz_get_maintainer () {
+  local port=$1
+
+  if [ -d $PORTSDIR/$port ]; then
+   echo $(cd $PORTSDIR/$port ; make -V MAINTAINER)
+  fi
+}
+
 function _bzget () {
   local pr=$1
 
@@ -352,17 +374,15 @@ function _bzget () {
   local port=$(echo $title| egrep -o "[_a-zA-Z0-9\-]*/[_a-zA-Z0-9\-]*" | head -1)
   local reporter=$(awk -F': ' '/Reporter/ { print $2 }' $d/info)
   local created=$(awk -F': '  '/Reported/ { print $2 }' $d/info | sed -e 's,T.*,,')
-  local maintainer=$(cd $PORTSDIR/$port ; make -V MAINTAINER)
+  local maintainer=$(_bz_get_maintainer $port)
   local days=$(_bz_is_timeout $created)
-  local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
-  _bz_get_attachment $d
+  _bz_get_attachment $pr
 
   echo $title         > $d/title
   echo $port          > $d/port
   echo $reporter      > $d/reporter
   echo $created       > $d/created
   echo $maintainer    > $d/maintainer
-  echo $is_maintainer > $d/is_maintainer
 
   if [ -n $days -a $days -gt 14 ]; then
     echo $days > $d/days
@@ -410,21 +430,49 @@ function bztimeout () {
 }
 
 function bzpatch () {
+  local pr=$1
 
+  local d=$(_bz_pr_dir $pr)
+  local is_shar=$(cat $d/shar)
+
+  if [ -e $d/patch ]; then
+    if [ $is_shar -eq 1 ]; then
+      _bzpatch_shar $pr
+    else
+      _bzpatch_patch $pr
+    fi
+  fi
+}
+
+function _bzpatch_patch () {
+  local pr=$1
+
+  local d=$(_bz_pr_dir $pr)
+  local port=$(cat $d/port)
+  local l=$(grep ^Index: $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
+
+  ( cd $PORTSDIR/$port ; patch -p$l < $d/patch )
+  find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
+  ( cd $PORTSDIR/$port ; find . -type f -empty | xargs git rm -rf)
+  _bz_is_update $pr
+}
+
+function _bzpatch_shar () {
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
   local port=$(cat $d/port)
 
-  if [ -e $d/patch ]; then
-    local l=$(grep ^Index: $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
-
-    ( cd $PORTSDIR/$port ; patch -p$l < $d/patch )
-    find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
-    ( cd $PORTSDIR/$port ; find . -type f -empty | xargs git rm -rf)
+  local l=$(grep /Makefile $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
+  if [ $l -eq 1 ]; then
+    local category=$(awk '/^XCATEGORIES=/ { print $2 }' $d/patch)
+    mkdir -p $d/tmp
+    (cd $d/tmp ; sh $d/patch)
+    mv $d/tmp/* $PORTSDIR/$category
+  else
+    sed -i'' -e 's,/usr/ports/,,' $d/patch
+    (cd $PORTSDIR ; sh $d/patch)
   fi
-
-  _bz_is_update $pr
 }
 
 function bzoverto () {
