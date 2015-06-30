@@ -197,8 +197,9 @@ function poud_go () {
 
 function poud_uses () {
   local str=$1
+  local pattern=${2:-USE}
 
-  (cd $PORTSDIR ; poud_pi deps $str M | xargs grep USE |grep $str)
+  (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
 }
 
 function poud_build_changed () {
@@ -217,7 +218,15 @@ function poud_build_port () {
   local port=$(_poud_from_dir_or_arg $port)
 
   tport=$(_poud_transliterate_port $port)
-  tmux new -s $build "sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
+  tmux new -s $build "sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -I -C $port"
+}
+
+function poud_test_port () {
+  local build=$1
+  local port=$(_poud_from_dir_or_arg $port)
+
+  sudo poudriere testport -j $build -o $port -I
+  sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
 }
 
 function poud_build_all () {
@@ -249,7 +258,7 @@ function poud_ci () {
   local reporter=$(cat $d/reporter)
   local maintainer=$(cat $d/maintainer)
   local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
-  local days=$(cat $d/days)
+  local days=$(_bz_time_from_pr $pr)
   local update="$(cat $d/update)"
 
   local submitted_by=""
@@ -324,6 +333,17 @@ function _bz_is_timeout () {
   local days=$(printf "%.0f" $(echo "scale=2; ($enow - $ethen)/(60*60*24)" | bc))
 
   echo $days
+}
+
+function _bz_timeout_from_pr () {
+  set -x
+  local pr=$1
+
+  local d=$(_bz_pr_dir $pr)
+
+  local str="$(grep "Maintainer Timeout -" $d/info | awk -F'-' '{ print $2 }' | sed -e 's,^ *,,')"
+
+  echo $str
 }
 
 function _bz_is_maintainer () {
@@ -427,6 +447,8 @@ function bztimeout () {
   if [ -n "$days" ]; then
     $_bz modify -c "Maintainer Timeout - $days days ($maintainer)" $pr
   fi
+
+  _bzget $pr
 }
 
 function bzpatch () {
