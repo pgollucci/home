@@ -18,6 +18,7 @@ if [ -d $_rdir ]; then
 fi
 
 function _poud_transliterate_port () {
+set -x
   local port=$1
 
   echo $port |sed -e 's,[/ ],_,g'
@@ -137,6 +138,7 @@ function poud_ptree () {
 
   echo $PORTSDIR
 }
+poud_ptree default
 
 function poud_mfi () {
 
@@ -206,7 +208,7 @@ function poud_build_changed () {
   local build=$1
 
   mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
-  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' | xargs)
+  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | xargs)
 
   tports=$(_poud_transliterate_port "$mports $nports")
 
@@ -214,11 +216,12 @@ function poud_build_changed () {
 }
 
 function poud_build_port () {
+set -x
   local build=$1
-  local port=$(_poud_from_dir_or_arg $port)
+  local port=$(_poud_from_dir_or_arg $2)
 
   tport=$(_poud_transliterate_port $port)
-  tmux new -s $build "sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -I -C $port"
+  sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port
 }
 
 function poud_test_port () {
@@ -307,6 +310,7 @@ function _bz_pr_dir () {
 }
 
 function _bz_get_attachment () {
+set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
@@ -314,7 +318,7 @@ function _bz_get_attachment () {
 
   local a_cnt=$(grep Attachments $d/info | cut -d: -f2 | sed -e 's, ,,g')
   if [ $a_cnt -gt 0 ]; then
-    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
+    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
     fetch -q -o $d/patch "https://bz-attachments.freebsd.org/attachment.cgi?id=$id"
     local s_cnt=$(head -1 $d/patch | grep -c "# This is a shell archive.")
     if [ $s_cnt -eq 1 ]; then
@@ -452,6 +456,7 @@ function bztimeout () {
 }
 
 function bzpatch () {
+set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
