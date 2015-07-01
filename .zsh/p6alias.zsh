@@ -26,8 +26,6 @@ alias rtags="ctags -e -R app lib vendor tasks"
 alias dstore-clean='find . -type f -name .DS_Store -print0 | xargs -0 rm'
 alias whotunes='lsof -r 2 -n -P -F n -c iTunes -a -i TCP@`hostname`:3689'
 
-alias e='emacsclient'
-
 alias sha1="openssl dgst -sha1"
 alias sha2="openssl dgst -sha256"
 alias b64="openssl enc -base64"
