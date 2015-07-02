@@ -215,8 +215,16 @@ function poud_build_changed () {
   tmux new -s $build "sudo poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
 }
 
+function poud_build_depends_on () {
+  local build=$1
+  local pkg=$2
+
+  poud_pi deps $pkg > /tmp/$build-$pkg
+  tmux new -s $build "sudo poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
+}
+
 function poud_build_port () {
-set -x
+
   local build=$1
   local port=$(_poud_from_dir_or_arg $2)
 
@@ -226,7 +234,7 @@ set -x
 
 function poud_test_port () {
   local build=$1
-  local port=$(_poud_from_dir_or_arg $port)
+  local port=$(_poud_from_dir_or_arg $2)
 
   sudo poudriere testport -j $build -o $port -I
   sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
