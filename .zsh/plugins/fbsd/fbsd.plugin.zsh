@@ -1,5 +1,5 @@
 _rdir=$HOME/repos/fbsd
-if [ -f $_rdir ]; then
+if [ -d $_rdir ]; then
   _zpool=$(awk -F= '/ZPOOL/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
   _zports=$(awk -F= '/ZPORTS/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
   _poudriere_dir=/usr/local/poudriere
@@ -7,8 +7,7 @@ if [ -f $_rdir ]; then
   _poudriere_ports=$_poudriere_dir/ports
 
   _arches="i386 amd64"
-  _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RLEASE 11.0-CURRENT"
-  _builds=$(echo $_build_tags |sed -e 's,-.*,,' -e 's,\.,,g')
+  _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
 
   alias cdpdir='cd $PORTSDIR'
   for d in `cd $_rdir ; /bin/ls -1d *`; do
@@ -19,7 +18,6 @@ else
 fi
 
 function _poud_transliterate_port () {
-set -x
   local port=$1
 
   echo $port |sed -e 's,[/ ],_,g'
@@ -80,8 +78,9 @@ function poud_jails_create () {
 
 function poud_jails_update () {
 
-  for build in $_builds; do
-    for arch in $_arches; do
+  for build_tag in ${=_build_tags}; do
+    build=$(echo $build_tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
       sudo poudriere jail -u -j $build$arch
     done
   done
