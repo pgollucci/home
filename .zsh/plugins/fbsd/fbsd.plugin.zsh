@@ -44,8 +44,8 @@ function poud_packages () {
   pkg bootstrap -y
   pkg install -y \
       automake bash-static dialog4ports emacs-nox11 git-subversion \
-      hub libtool portlint python34 ruby21-gems rsync sudo swaks \
-      tmux vim-lite zsh
+      hub libtool nginx portlint python34 ruby21-gems rsync sudo \
+      swaks tmux vim-lite zsh
 }
 
 function poud_zfs_init () {
@@ -149,6 +149,21 @@ function poud_mfi () {
   cd $PORTSDIR ; make fetchindex
 }
 
+function _poud_append_file () {
+  local out=$1
+  local modified=$2
+
+  if [ "$modifier" = "M" ]; then
+    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
+  elif [ "$modifier" = "P" ]; then
+    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
+  elif [ "$modifier" = "D" ]; then
+    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
+  else
+    echo $out | sed -e 's,/usr/ports/,,'
+  fi
+}
+
 alias ip="poud_pi"
 function poud_pi () {
   local field=$1
@@ -183,15 +198,16 @@ function poud_pi () {
     out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $index_file)
   fi
 
-  if [ "$modifier" = "M" ]; then
-      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
-  elif [ "$modifier" = "P" ]; then
-      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
-  elif [ "$modifier" = "D" ]; then
-      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
-  else
-    echo $out |sed -e 's,/usr/ports/,,'
-  fi
+  _poud_append_file $out
+}
+
+function poud_pkg_to_port {
+  local pkg=$1
+  local modifier=$2
+
+  out=$(awk -F\| "\$1 ~ /$pkg/ { print \$2 }" $PORTSDIR/INDEX-11 | sed -e "s,/usr/ports/,,")
+
+  _poud_append_file $out
 }
 
 function poud_go () {
