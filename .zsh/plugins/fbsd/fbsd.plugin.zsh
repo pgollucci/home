@@ -51,10 +51,14 @@ function poud_packages () {
 function poud_zfs_init () {
 
   sudo zpool create $_zpool /dev/xbd1
+
   sudo zfs set mountpoint=none $_zpool
-  sudo zfs create $_zpool/poudriere
+  sudo zfs create -p $_zpool/poudriere/data
   sudo zfs create $_zpool/ccache
+
   sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
+  sudo zfs set mountpoint=/usr/local/poudriere/data $_zpool/poudriere/data
+
 }
 
 function poud_jails_delete () {
