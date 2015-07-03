@@ -40,7 +40,7 @@ alias flushdns='sudo dscacheutil -flushcache'
 
 alias netstat='netstat -an -p tcp'
 alias listen='netstat -an -p tcp | grep LISTEN'
-alias listenu='netstat -an -p udp | grep LISTEN'
+alias listenu='netstat -an -p udp'
 alias established='netstat -an -p tcp | grep ESTABLISHED'
 
 alias tarx='tar -xvzof'
