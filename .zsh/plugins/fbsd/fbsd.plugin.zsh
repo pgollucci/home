@@ -44,17 +44,21 @@ function poud_packages () {
   pkg bootstrap -y
   pkg install -y \
       automake bash-static dialog4ports emacs-nox11 git-subversion \
-      hub libtool portlint python34 ruby21-gems rsync sudo swaks \
-      tmux vim-lite zsh
+      hub libtool nginx portlint python34 ruby21-gems rsync sudo \
+      swaks tmux vim-lite zsh
 }
 
 function poud_zfs_init () {
 
   sudo zpool create $_zpool /dev/xbd1
+
   sudo zfs set mountpoint=none $_zpool
-  sudo zfs create $_zpool/poudriere
+  sudo zfs create -p $_zpool/poudriere/data
   sudo zfs create $_zpool/ccache
+
   sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
+  sudo zfs set mountpoint=/usr/local/poudriere/data $_zpool/poudriere/data
+
 }
 
 function poud_jails_delete () {
@@ -145,6 +149,21 @@ function poud_mfi () {
   cd $PORTSDIR ; make fetchindex
 }
 
+function _poud_append_file () {
+  local out=$1
+  local modified=$2
+
+  if [ "$modifier" = "M" ]; then
+    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
+  elif [ "$modifier" = "P" ]; then
+    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
+  elif [ "$modifier" = "D" ]; then
+    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
+  else
+    echo $out | sed -e 's,/usr/ports/,,'
+  fi
+}
+
 alias ip="poud_pi"
 function poud_pi () {
   local field=$1
@@ -179,15 +198,16 @@ function poud_pi () {
     out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $index_file)
   fi
 
-  if [ "$modifier" = "M" ]; then
-      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
-  elif [ "$modifier" = "P" ]; then
-      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
-  elif [ "$modifier" = "D" ]; then
-      echo $out |sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
-  else
-    echo $out |sed -e 's,/usr/ports/,,'
-  fi
+  _poud_append_file $out
+}
+
+function poud_pkg_to_port {
+  local pkg=$1
+  local modifier=$2
+
+  out=$(awk -F\| "\$1 ~ /$pkg/ { print \$2 }" $PORTSDIR/INDEX-11 | sed -e "s,/usr/ports/,,")
+
+  _poud_append_file $out
 }
 
 function poud_go () {
@@ -215,8 +235,16 @@ function poud_build_changed () {
   tmux new -s $build "sudo poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
 }
 
+function poud_build_depends_on () {
+  local build=$1
+  local pkg=$2
+
+  poud_pi deps $pkg > /tmp/$build-$pkg
+  tmux new -s $build "sudo poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
+}
+
 function poud_build_port () {
-set -x
+
   local build=$1
   local port=$(_poud_from_dir_or_arg $2)
 
@@ -226,7 +254,7 @@ set -x
 
 function poud_test_port () {
   local build=$1
-  local port=$(_poud_from_dir_or_arg $port)
+  local port=$(_poud_from_dir_or_arg $2)
 
   sudo poudriere testport -j $build -o $port -I
   sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
