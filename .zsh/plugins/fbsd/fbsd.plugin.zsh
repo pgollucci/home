@@ -268,7 +268,7 @@ function poud_build_all () {
 
 function poud_builds_nuke () {
 
-  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*" \) |grep -v cache |xargs sudo rm -rf
+  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
   sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 
