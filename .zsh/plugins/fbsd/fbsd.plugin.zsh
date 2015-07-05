@@ -20,7 +20,7 @@ fi
 function _poud_transliterate_port () {
   local port=$1
 
-  echo $port |sed -e 's,[/ ],_,g'
+  echo $port | sed -e 's,[/ ],_,g'
 }
 
 function _poud_from_dir_or_arg () {
@@ -48,23 +48,11 @@ function poud_packages () {
       swaks tmux vim-lite zsh
 }
 
-function poud_zfs_init () {
-
-  sudo zpool create $_zpool /dev/xbd1
-
-  sudo zfs set mountpoint=none $_zpool
-  sudo zfs create -p $_zpool/poudriere/data
-  sudo zfs create $_zpool/ccache
-
-  sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
-  sudo zfs set mountpoint=/usr/local/poudriere/data $_zpool/poudriere/data
-
-}
-
 function poud_jails_delete () {
 
-  for build in $_builds; do
-    for arch in $_arches; do
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
       sudo poudriere jail -d -j $build$arch
     done
   done
@@ -72,9 +60,9 @@ function poud_jails_delete () {
 
 function poud_jails_create () {
 
-  for build in $_builds_tags; do
-    tag=$(echo $build | sed -e 's,-.*,,' -e 's,\.,,g')
-    for arch in $_arches; do
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
       sudo poudriere jail -c -j $build$arch -v $tag -a $arch
     done
   done
@@ -82,8 +70,8 @@ function poud_jails_create () {
 
 function poud_jails_update () {
 
-  for build_tag in ${=_build_tags}; do
-    build=$(echo $build_tag | sed -e 's,-.*,,' -e 's,\.,,g')
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
       sudo poudriere jail -u -j $build$arch
     done
@@ -113,10 +101,10 @@ function poud_ptree_init () {
   cd $PORTSDIR
   git svn init -T head $svn_proto://$git_svn_uri .
 
+  git config oh-my-zsh hide-dirty 1
+
     cat <<EOF
 EOF >> .git/config
-[oh-my-zsh]
-        hide-dirty = 1
 [remote "origin"]
         fetch = +refs/pull/*:refs/remotes/origin/pull/*
 EOF
@@ -150,18 +138,16 @@ function poud_mfi () {
 }
 
 function _poud_append_file () {
-  local out=$1
+  local dir=$1
   local modified=$2
 
-  if [ "$modifier" = "M" ]; then
-    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
-  elif [ "$modifier" = "P" ]; then
-    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
-  elif [ "$modifier" = "D" ]; then
-    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
-  else
-    echo $out | sed -e 's,/usr/ports/,,'
-  fi
+  case $modifier in
+    M) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,') ;;
+    P) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,') ;;
+    D) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,') ;;
+  esac
+
+  echo $out
 }
 
 alias ip="poud_pi"
@@ -224,6 +210,73 @@ function poud_uses () {
   (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
 }
 
+function poud_aws_request_spot_instances () {
+  local build=$1
+
+  local _ami_id=ami-395c9e52
+  local _ami_type=r3.8xlarge
+  local _ami_sg=sg-76ff1811
+  local _ami_subnet=subnet-614f3b38
+  local _ami_bid=2.00
+
+  json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$_ami_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$_ami_sg\"],\"DeviceIndex\":0,\"SubnetId\":\"$_ami_subnet\",\"AssociatePublicIpAddress\":true}]}"
+
+  sir=$(aws ec2 request-spot-instances --spot-price "$_ami_bid" --instance-count 1 --type "one-time" --launch-specification "$json" | awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}')
+
+  echo $sir
+}
+
+function poud_aws_spot_fulfilled () {
+  local sir=$1
+
+  echo -n "Waiting....."
+  code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+  while [ $code != "fulfilled" ]; do
+    echo "$code: `date`"
+    code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+    sleep 30
+  done
+
+  i=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings  '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":true}}]'
+
+  echo $i
+}
+
+function poud_aws_get_priv_ip () {
+  local i=$1
+
+  local ip=$(aws ec2 describe-instances --instance-ids $i | awk -F: '/PrivateIpAddress/ && /10/ { gsub(/[", ]/, "", $2); print $2}' | head -1)
+
+  echo $ip
+}
+
+function poud_aws_wait_for_ssh () {
+  local ip=$1
+
+  local avail=n
+  while [ "$avail" != "y" ]; do
+    ssh -o ConnectTimeOut=2 $ip  >/dev/null 2>&1
+    case $? in
+      0) avail=y ;;
+      *) avail=n ;;
+    esac
+    sleep 1
+  done
+}
+
+function poud_aws_terminate_instances () {
+  local i=$1
+
+  aws ec2 terminate-instances --instance-ids $i
+}
+
+function poud_aws_cancel_sport_instance_requests () {
+  local sir=$1
+
+  aws ec2 cancel-spot-instance-requests $sir
+}
+
 function poud_build_changed () {
   local build=$1
 
@@ -244,12 +297,18 @@ function poud_build_depends_on () {
 }
 
 function poud_build_port () {
-
   local build=$1
   local port=$(_poud_from_dir_or_arg $2)
+  local ip=$3
 
   tport=$(_poud_transliterate_port $port)
-  sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port
+  cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
+  if [ -n $ip ]; then
+    poud_wait_for_ssh $ip
+    ssh $ip "$cmd"
+  else
+    eval $cmd
+  fi
 }
 
 function poud_test_port () {
@@ -264,6 +323,45 @@ function poud_build_all () {
   local build=$1
 
   tmux new -s $build "sudo poudriere bulk -t -B all -j ${build} -a"
+}
+
+function poud_rbuild_port () {
+  local build=$1
+  local port=$(_poud_from_dir_or_arg $2)
+
+  local sir=$(poud_aws_request_spot_instances "$build-$port")
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_build_port $build $port $ip
+
+  poud_aws_terminate_instance $i
+  poud_aws_cancel_sport_instance_requests $sir
+}
+
+function poud_rbuild_all_build () {
+  local build=$1
+
+  local sir=$(poud_aws_request_spot_instances $build)
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_wait_for_ssh $ip
+  cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
+  ssh $ip "$cmd"
+
+  poud_aws_terminate_instance $i
+  poud_aws_cancel_sport_instance_requests $sir
+}
+
+function poud_rbuild_all () {
+
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      poud_rbuild_all_build "$build$arch"
+    done
+  done
 }
 
 function poud_builds_nuke () {
