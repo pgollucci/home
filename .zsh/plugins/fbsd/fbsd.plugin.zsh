@@ -4,7 +4,7 @@ if [ -d $_rdir ]; then
   _poudriere_data=$_poudriere_dir/data
   _poudriere_ports=$_poudriere_dir/ports
 
-  _poudriere=$_poudriere_dir/src/bin/poudriere
+  _poudriere=$_rdir/poudriere/src/bin/poudriere
 
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
@@ -256,7 +256,7 @@ function poud_aws_wait_for_ssh () {
 
   local avail=n
   while [ "$avail" != "y" ]; do
-    ssh -o ConnectTimeOut=2 $ip  >/dev/null 2>&1
+    ssh -o ConnectTimeOut=2 $ip 'echo' >/dev/null 2>&1
     case $? in
       0) avail=y ;;
       *) avail=n ;;
@@ -268,13 +268,13 @@ function poud_aws_wait_for_ssh () {
 function poud_aws_terminate_instances () {
   local i=$1
 
-  aws ec2 terminate-instances --instance-ids $i
+#  aws ec2 terminate-instances --instance-ids $i
 }
 
-function poud_aws_cancel_sport_instance_requests () {
+function poud_aws_cancel_spot_instance_requests () {
   local sir=$1
 
-  aws ec2 cancel-spot-instance-requests $sir
+#  aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $sir
 }
 
 function poud_build_changed () {
@@ -302,9 +302,9 @@ function poud_build_port () {
   local ip=$3
 
   tport=$(_poud_transliterate_port $port)
-  cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
+  local cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
   if [ -n $ip ]; then
-    poud_wait_for_ssh $ip
+    poud_aws_wait_for_ssh $ip
     ssh $ip "$cmd"
   else
     eval $cmd
@@ -335,8 +335,8 @@ function poud_rbuild_port () {
 
   poud_build_port $build $port $ip
 
-  poud_aws_terminate_instance $i
-  poud_aws_cancel_sport_instance_requests $sir
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
 }
 
 function poud_rbuild_all_build () {
@@ -346,12 +346,12 @@ function poud_rbuild_all_build () {
   local i=$(poud_aws_spot_fulfilled $sir)
   local ip=$(poud_aws_get_priv_ip $i)
 
-  poud_wait_for_ssh $ip
-  cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
+  poud_aws_wait_for_ssh $ip
+  local cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
   ssh $ip "$cmd"
 
-  poud_aws_terminate_instance $i
-  poud_aws_cancel_sport_instance_requests $sir
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
 }
 
 function poud_rbuild_all () {
