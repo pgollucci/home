@@ -139,12 +139,13 @@ function poud_mfi () {
 
 function _poud_append_file () {
   local dir=$1
-  local modified=$2
+  local modifier=$2
 
   case $modifier in
     M) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,') ;;
     P) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,') ;;
     D) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,') ;;
+    *) out=$(echo $dir | sed -e 's,/usr/ports/,,') ;;
   esac
 
   echo $out
@@ -152,6 +153,7 @@ function _poud_append_file () {
 
 alias ip="poud_pi"
 function poud_pi () {
+set -x
   local field=$1
   local regex=$2
   local modifier=$3
@@ -210,6 +212,22 @@ function poud_uses () {
   (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
 }
 
+function poud_aws_run_on_demand () {
+  local build=$1
+
+  local _ami_id=ami-395c9e52
+  local _ami_type=r3.2xlarge
+  local _ami_sg=sg-76ff1811
+  local _ami_subnet=subnet-614f3b38
+
+  local i=$(aws ec2 run-instances --image-id $_ami_id --count 1 --instance-type $_ami_type  --security-group-ids $_ami_sg --subnet-id $_ami_subnet | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+
+  local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
+  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json"
+
+  echo $i
+}
+
 function poud_aws_request_spot_instances () {
   local build=$1
 
@@ -229,7 +247,6 @@ function poud_aws_request_spot_instances () {
 function poud_aws_spot_fulfilled () {
   local sir=$1
 
-  echo -n "Waiting....."
   local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
   while [ $code != "fulfilled" ]; do
     code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
@@ -268,24 +285,33 @@ function poud_aws_wait_for_ssh () {
 function poud_aws_terminate_instances () {
   local i=$1
 
-#  aws ec2 terminate-instances --instance-ids $i
+  aws ec2 terminate-instances --instance-ids $i
 }
 
 function poud_aws_cancel_spot_instance_requests () {
   local sir=$1
 
-#  aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $sir
+  aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $sir
 }
 
 function poud_build_changed () {
+set -x
   local build=$1
 
-  mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
-  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | xargs)
+  mports=$(cd $PORTSDIR ; /usr/local/bin/git status | \grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
+  echo mports=[$mports]
+  return
+  nports=$(cd $PORTSDIR ; /usr/local/bin/git status | \grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | xargs)
 
   tports=$(_poud_transliterate_port "$mports $nports")
 
-  tmux new -s $build "sudo $_poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
+  local i=$(poud_aws_run_on_demand $build)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_build_port $build "$nports $mports" $ip
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
 }
 
 function poud_build_depends_on () {
@@ -317,12 +343,6 @@ function poud_test_port () {
 
   sudo $_poudriere testport -j $build -o $port -I
   sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
-}
-
-function poud_build_all () {
-  local build=$1
-
-  tmux new -s $build "sudo $_poudriere bulk -t -B all -j ${build} -a"
 }
 
 function poud_rbuild_port () {
