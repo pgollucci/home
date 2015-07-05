@@ -214,14 +214,14 @@ function poud_aws_request_spot_instances () {
   local build=$1
 
   local _ami_id=ami-395c9e52
-  local _ami_type=r3.8xlarge
+  local _ami_type=c4.8xlarge
   local _ami_sg=sg-76ff1811
   local _ami_subnet=subnet-614f3b38
   local _ami_bid=2.00
 
-  json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$_ami_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$_ami_sg\"],\"DeviceIndex\":0,\"SubnetId\":\"$_ami_subnet\",\"AssociatePublicIpAddress\":true}]}"
+  local json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$_ami_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$_ami_sg\"],\"DeviceIndex\":0,\"SubnetId\":\"$_ami_subnet\",\"AssociatePublicIpAddress\":true}]}"
 
-  sir=$(aws ec2 request-spot-instances --spot-price "$_ami_bid" --instance-count 1 --type "one-time" --launch-specification "$json" | awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}')
+  local sir=$(aws ec2 request-spot-instances --spot-price "$_ami_bid" --instance-count 1 --type "one-time" --launch-specification "$json" | awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}')
 
   echo $sir
 }
@@ -230,15 +230,15 @@ function poud_aws_spot_fulfilled () {
   local sir=$1
 
   echo -n "Waiting....."
-  code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+  local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
   while [ $code != "fulfilled" ]; do
-    echo "$code: `date`"
     code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
-    sleep 30
+    sleep 5
   done
 
-  i=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
-  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings  '[{"DeviceName":"/dev/sda1","Ebs":{"DeleteOnTermination":true}}]'
+  local i=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+  local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
+  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json"
 
   echo $i
 }
