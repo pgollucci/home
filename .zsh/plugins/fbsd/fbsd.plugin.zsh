@@ -1,10 +1,10 @@
 _rdir=$HOME/repos/fbsd
 if [ -d $_rdir ]; then
-  _zpool=$(awk -F= '/ZPOOL/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
-  _zports=$(awk -F= '/ZPORTS/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
   _poudriere_dir=/usr/local/poudriere
   _poudriere_data=$_poudriere_dir/data
   _poudriere_ports=$_poudriere_dir/ports
+
+  _poudriere=$_poudriere_dir/src/bin/poudriere
 
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
@@ -53,7 +53,7 @@ function poud_jails_delete () {
   for tag in ${=_build_tags}; do
     build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
-      sudo poudriere jail -d -j $build$arch
+      sudo $_poudriere jail -d -j $build$arch
     done
   done
 }
@@ -63,7 +63,7 @@ function poud_jails_create () {
   for tag in ${=_build_tags}; do
     build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
-      sudo poudriere jail -c -j $build$arch -v $tag -a $arch
+      sudo $_poudriere jail -c -j $build$arch -v $tag -a $arch
     done
   done
 }
@@ -73,7 +73,7 @@ function poud_jails_update () {
   for tag in ${=_build_tags}; do
     build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
-      sudo poudriere jail -u -j $build$arch
+      sudo $_poudriere jail -u -j $build$arch
     done
   done
 }
@@ -285,7 +285,7 @@ function poud_build_changed () {
 
   tports=$(_poud_transliterate_port "$mports $nports")
 
-  tmux new -s $build "sudo poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
+  tmux new -s $build "sudo $_poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
 }
 
 function poud_build_depends_on () {
@@ -293,7 +293,7 @@ function poud_build_depends_on () {
   local pkg=$2
 
   poud_pi deps $pkg > /tmp/$build-$pkg
-  tmux new -s $build "sudo poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
+  tmux new -s $build "sudo $_poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
 }
 
 function poud_build_port () {
@@ -302,7 +302,7 @@ function poud_build_port () {
   local ip=$3
 
   tport=$(_poud_transliterate_port $port)
-  cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
+  cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
   if [ -n $ip ]; then
     poud_wait_for_ssh $ip
     ssh $ip "$cmd"
@@ -315,14 +315,14 @@ function poud_test_port () {
   local build=$1
   local port=$(_poud_from_dir_or_arg $2)
 
-  sudo poudriere testport -j $build -o $port -I
+  sudo $_poudriere testport -j $build -o $port -I
   sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
 }
 
 function poud_build_all () {
   local build=$1
 
-  tmux new -s $build "sudo poudriere bulk -t -B all -j ${build} -a"
+  tmux new -s $build "sudo $_poudriere bulk -t -B all -j ${build} -a"
 }
 
 function poud_rbuild_port () {
@@ -366,7 +366,7 @@ function poud_rbuild_all () {
 
 function poud_builds_nuke () {
 
-  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
+  sudo find $_poudriere_data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
   sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 
