@@ -3,8 +3,10 @@ if [ -d $_rdir ]; then
   _poudriere_dir=/usr/local/poudriere
   _poudriere_data=$_poudriere_dir/data
   _poudriere_ports=$_poudriere_dir/ports
-
   _poudriere=$_rdir/poudriere/src/bin/poudriere
+
+  _zports=zfs
+
 
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
@@ -41,19 +43,17 @@ function poud_packages () {
   fi
 
   pkg delete -af -y
-  pkg bootstrap -y
+  env ASSUME_ALWAYS_YES=YES pkg bootstrap
   pkg install -y \
-      automake bash-static dialog4ports emacs-nox11 git-subversion \
+      automake awscli bash-static dialog4ports emacs-nox11 git-subversion \
       hub libtool nginx portlint python34 ruby21-gems rsync sudo \
       swaks tmux vim-lite zsh
 }
 
 function poud_zfs_init () {
- 
-  local z=zfs
+  local pool=$1
 
-  sudo zpool destroy $z
-  sudo zpool create $z /dev/xbd[1-6]
+  [ -z $pool ] && echo "must specify a poool" && return
 
   sudo zfs set mountpoint=none $z
   sudo zfs set atime=off $z
@@ -70,13 +70,6 @@ function poud_zfs_init () {
   sudo zfs create -p $z/usr/local/poudriere/data
 
   sudo zfs create $z/usr/local/poudriere/jails
-  for tag in ${=_build_tags}; do
-    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
-    for arch in ${=_arches}; do
-      sudo zfs create $z/usr/local/poudriere/jails/$build$arch
-    done
-  done
-
   sudo zfs create -p $z/usr/local/poudriere/ports/default
 
   sudo zfs set mountpoint=/usr/local/poudriere $z/usr/local/poudriere
@@ -126,7 +119,7 @@ function poud_ptree_init () {
   git_svn_uri=svn.freebsd.org/ports
   svn_proto=svn+ssh
 
-  zdir=$_zports/poudriere/ports/$_pdir
+  zdir=$_zports/usr/local/poudriere/ports/$_pdir
 
   sudo zfs destroy -fr $zdir
   sudo zfs create $zdir
@@ -139,23 +132,18 @@ function poud_ptree_init () {
   git svn init -T head $svn_proto://$git_svn_uri .
 
   git config oh-my-zsh hide-dirty 1
+  git config --add remote.origin.fetch '+refs/pull/*:refs/remotes/origin/pull/*'
 
-    cat <<EOF
-EOF >> .git/config
-[remote "origin"]
-        fetch = +refs/pull/*:refs/remotes/origin/pull/*
-EOF
+  git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
+  git svn fetch
 
-    git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
-    git svn fetch
+  git checkout trunk
+  git branch -D master
+  git checkout -b master trunk
 
-    git checkout trunk
-    git branch -D master
-    git checkout -b master trunk
-
-    git svn rebase
-    git remote add upstream git@github.com:freebsd/freebsd-ports.git
-    git branch --set-upstream-to=origin/master master
+  git svn rebase
+  git remote add upstream git@github.com:freebsd/freebsd-ports.git
+  git branch --set-upstream-to=origin/master master
 }
 
 function poud_ptree () {
@@ -190,7 +178,6 @@ function _poud_append_file () {
 
 alias ip="poud_pi"
 function poud_pi () {
-set -x
   local field=$1
   local regex=$2
   local modifier=$3
@@ -253,14 +240,15 @@ function poud_aws_run_on_demand () {
   local build=$1
 
   local _ami_id=ami-395c9e52
-  local _ami_type=r3.2xlarge
+  local _ami_type=m3.medium
   local _ami_sg=sg-76ff1811
   local _ami_subnet=subnet-614f3b38
 
   local i=$(aws ec2 run-instances --image-id $_ami_id --count 1 --instance-type $_ami_type  --security-group-ids $_ami_sg --subnet-id $_ami_subnet | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
 
+  sleep 3
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
-  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json"
+  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json" 2>/dev/null
 
   echo $i
 }
@@ -332,13 +320,10 @@ function poud_aws_cancel_spot_instance_requests () {
 }
 
 function poud_build_changed () {
-set -x
   local build=$1
 
-  mports=$(cd $PORTSDIR ; /usr/local/bin/git status | \grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
-  echo mports=[$mports]
-  return
-  nports=$(cd $PORTSDIR ; /usr/local/bin/git status | \grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | xargs)
+  mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
+  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
 
   tports=$(_poud_transliterate_port "$mports $nports")
 
