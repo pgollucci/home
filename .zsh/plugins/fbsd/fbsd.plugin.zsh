@@ -1,10 +1,12 @@
 _rdir=$HOME/repos/fbsd
 if [ -d $_rdir ]; then
-  _zpool=$(awk -F= '/ZPOOL/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
-  _zports=$(awk -F= '/ZPORTS/ {print $2}' $_rdir/poudriere/src/etc/poudriere.conf)
   _poudriere_dir=/usr/local/poudriere
   _poudriere_data=$_poudriere_dir/data
   _poudriere_ports=$_poudriere_dir/ports
+  _poudriere=$_rdir/poudriere/src/bin/poudriere
+
+  _zports=zfs
+
 
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
@@ -20,7 +22,7 @@ fi
 function _poud_transliterate_port () {
   local port=$1
 
-  echo $port |sed -e 's,[/ ],_,g'
+  echo $port | sed -e 's,[/ ],_,g'
 }
 
 function _poud_from_dir_or_arg () {
@@ -41,51 +43,67 @@ function poud_packages () {
   fi
 
   pkg delete -af -y
-  pkg bootstrap -y
+  env ASSUME_ALWAYS_YES=YES pkg bootstrap
   pkg install -y \
-      automake bash-static dialog4ports emacs-nox11 git-subversion \
+      automake awscli bash-static dialog4ports emacs-nox11 git-subversion \
       hub libtool nginx portlint python34 ruby21-gems rsync sudo \
       swaks tmux vim-lite zsh
 }
 
 function poud_zfs_init () {
+  local pool=$1
 
-  sudo zpool create $_zpool /dev/xbd1
+  [ -z $pool ] && echo "must specify a poool" && return
 
-  sudo zfs set mountpoint=none $_zpool
-  sudo zfs create -p $_zpool/poudriere/data
-  sudo zfs create $_zpool/ccache
+  sudo zfs set mountpoint=none $z
+  sudo zfs set atime=off $z
+  sudo zfs set sync=disabled $z
+  sudo zfs set checksum=fletcher4 $z
 
-  sudo zfs set mountpoint=$poudriere_dir/ccache $_zpool/ccache
-  sudo zfs set mountpoint=/usr/local/poudriere/data $_zpool/poudriere/data
+  sudo zfs create -o mountpoint=/ccache $z/ccache
+  sudo zfs create -o mountpoint=/distfiles $z/distfiles
+  sudo zfs create -p $z/usr/local/etc/nginx
 
+  sudo zfs create -p $z/usr/home/pgollucci/repos/fbsd
+  zfs set mountpoint=/usr/home/pgollucci/repos $z/usr/home/pgollucci/repos
+
+  sudo zfs create -p $z/usr/local/poudriere/data
+
+  sudo zfs create $z/usr/local/poudriere/jails
+  sudo zfs create -p $z/usr/local/poudriere/ports/default
+
+  sudo zfs set mountpoint=/usr/local/poudriere $z/usr/local/poudriere
+
+  sudo touch /etc/exports
+  sudo zfs sharenfs="-maproot=root -network 10.0.0.0 -mask 255.255.255.0" $z
 }
 
 function poud_jails_delete () {
 
-  for build in $_builds; do
-    for arch in $_arches; do
-      sudo poudriere jail -d -j $build$arch
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      sudo $_poudriere jail -d -j $build$arch
     done
   done
 }
 
 function poud_jails_create () {
 
-  for build in $_builds_tags; do
-    tag=$(echo $build | sed -e 's,-.*,,' -e 's,\.,,g')
-    for arch in $_arches; do
-      sudo poudriere jail -c -j $build$arch -v $tag -a $arch
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      sudo $_poudriere jail -c -j $build$arch -v $tag -a $arch
     done
   done
 }
 
 function poud_jails_update () {
 
-  for build_tag in ${=_build_tags}; do
-    build=$(echo $build_tag | sed -e 's,-.*,,' -e 's,\.,,g')
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
-      sudo poudriere jail -u -j $build$arch
+      sudo $_poudriere jail -u -j $build$arch
     done
   done
 }
@@ -101,7 +119,7 @@ function poud_ptree_init () {
   git_svn_uri=svn.freebsd.org/ports
   svn_proto=svn+ssh
 
-  zdir=$_zports/poudriere/ports/$_pdir
+  zdir=$_zports/usr/local/poudriere/ports/$_pdir
 
   sudo zfs destroy -fr $zdir
   sudo zfs create $zdir
@@ -113,24 +131,19 @@ function poud_ptree_init () {
   cd $PORTSDIR
   git svn init -T head $svn_proto://$git_svn_uri .
 
-    cat <<EOF
-EOF >> .git/config
-[oh-my-zsh]
-        hide-dirty = 1
-[remote "origin"]
-        fetch = +refs/pull/*:refs/remotes/origin/pull/*
-EOF
+  git config oh-my-zsh hide-dirty 1
+  git config --add remote.origin.fetch '+refs/pull/*:refs/remotes/origin/pull/*'
 
-    git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
-    git svn fetch
+  git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
+  git svn fetch
 
-    git checkout trunk
-    git branch -D master
-    git checkout -b master trunk
+  git checkout trunk
+  git branch -D master
+  git checkout -b master trunk
 
-    git svn rebase
-    git remote add upstream git@github.com:freebsd/freebsd-ports.git
-    git branch --set-upstream-to=origin/master master
+  git svn rebase
+  git remote add upstream git@github.com:freebsd/freebsd-ports.git
+  git branch --set-upstream-to=origin/master master
 }
 
 function poud_ptree () {
@@ -150,18 +163,17 @@ function poud_mfi () {
 }
 
 function _poud_append_file () {
-  local out=$1
-  local modified=$2
+  local dir=$1
+  local modifier=$2
 
-  if [ "$modifier" = "M" ]; then
-    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,'
-  elif [ "$modifier" = "P" ]; then
-    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,'
-  elif [ "$modifier" = "D" ]; then
-    echo $out | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,'
-  else
-    echo $out | sed -e 's,/usr/ports/,,'
-  fi
+  case $modifier in
+    M) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,') ;;
+    P) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,') ;;
+    D) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-descr,') ;;
+    *) out=$(echo $dir | sed -e 's,/usr/ports/,,') ;;
+  esac
+
+  echo $out
 }
 
 alias ip="poud_pi"
@@ -224,15 +236,104 @@ function poud_uses () {
   (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
 }
 
+function poud_aws_run_on_demand () {
+  local build=$1
+
+  local _ami_id=ami-395c9e52
+  local _ami_type=m3.medium
+  local _ami_sg=sg-76ff1811
+  local _ami_subnet=subnet-614f3b38
+
+  local i=$(aws ec2 run-instances --image-id $_ami_id --count 1 --instance-type $_ami_type  --security-group-ids $_ami_sg --subnet-id $_ami_subnet | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+
+  sleep 3
+  local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
+  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json" 2>/dev/null
+
+  echo $i
+}
+
+function poud_aws_request_spot_instances () {
+  local build=$1
+
+  local _ami_id=ami-395c9e52
+  local _ami_type=c4.8xlarge
+  local _ami_sg=sg-76ff1811
+  local _ami_subnet=subnet-614f3b38
+  local _ami_bid=2.00
+
+  local json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$_ami_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$_ami_sg\"],\"DeviceIndex\":0,\"SubnetId\":\"$_ami_subnet\",\"AssociatePublicIpAddress\":true}]}"
+
+  local sir=$(aws ec2 request-spot-instances --spot-price "$_ami_bid" --instance-count 1 --type "one-time" --launch-specification "$json" | awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}')
+
+  echo $sir
+}
+
+function poud_aws_spot_fulfilled () {
+  local sir=$1
+
+  local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+  while [ $code != "fulfilled" ]; do
+    code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+    sleep 5
+  done
+
+  local i=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+  local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
+  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json"
+
+  echo $i
+}
+
+function poud_aws_get_priv_ip () {
+  local i=$1
+
+  local ip=$(aws ec2 describe-instances --instance-ids $i | awk -F: '/PrivateIpAddress/ && /10/ { gsub(/[", ]/, "", $2); print $2}' | head -1)
+
+  echo $ip
+}
+
+function poud_aws_wait_for_ssh () {
+  local ip=$1
+
+  local avail=n
+  while [ "$avail" != "y" ]; do
+    ssh -o ConnectTimeOut=2 $ip 'echo' >/dev/null 2>&1
+    case $? in
+      0) avail=y ;;
+      *) avail=n ;;
+    esac
+    sleep 1
+  done
+}
+
+function poud_aws_terminate_instances () {
+  local i=$1
+
+  aws ec2 terminate-instances --instance-ids $i
+}
+
+function poud_aws_cancel_spot_instance_requests () {
+  local sir=$1
+
+  aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $sir
+}
+
 function poud_build_changed () {
   local build=$1
 
-  mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | xargs)
-  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | xargs)
+  mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
+  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
 
   tports=$(_poud_transliterate_port "$mports $nports")
 
-  tmux new -s $build "sudo poudriere bulk -t -B $tports-$(date "+%Y%m%d_%H%M") -j ${build} -C $nports $mports"
+  local i=$(poud_aws_run_on_demand $build)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_build_port $build "$nports $mports" $ip
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
 }
 
 function poud_build_depends_on () {
@@ -240,35 +341,74 @@ function poud_build_depends_on () {
   local pkg=$2
 
   poud_pi deps $pkg > /tmp/$build-$pkg
-  tmux new -s $build "sudo poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
+  tmux new -s $build "sudo $_poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
 }
 
 function poud_build_port () {
-
   local build=$1
   local port=$(_poud_from_dir_or_arg $2)
+  local ip=$3
 
   tport=$(_poud_transliterate_port $port)
-  sudo poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port
+  local cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
+  if [ -n $ip ]; then
+    poud_aws_wait_for_ssh $ip
+    ssh $ip "$cmd"
+  else
+    eval $cmd
+  fi
 }
 
 function poud_test_port () {
   local build=$1
   local port=$(_poud_from_dir_or_arg $2)
 
-  sudo poudriere testport -j $build -o $port -I
+  sudo $_poudriere testport -j $build -o $port -I
   sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
 }
 
-function poud_build_all () {
+function poud_rbuild_port () {
+  local build=$1
+  local port=$(_poud_from_dir_or_arg $2)
+
+  local sir=$(poud_aws_request_spot_instances "$build-$port")
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_build_port $build $port $ip
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
+}
+
+function poud_rbuild_all_build () {
   local build=$1
 
-  tmux new -s $build "sudo poudriere bulk -t -B all -j ${build} -a"
+  local sir=$(poud_aws_request_spot_instances $build)
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_aws_wait_for_ssh $ip
+  local cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
+  ssh $ip "$cmd"
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
+}
+
+function poud_rbuild_all () {
+
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      poud_rbuild_all_build "$build$arch"
+    done
+  done
 }
 
 function poud_builds_nuke () {
 
-  sudo find /usr/local/poudriere/data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
+  sudo find $_poudriere_data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
   sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
 

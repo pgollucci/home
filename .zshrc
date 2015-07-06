@@ -70,6 +70,7 @@ fpath=(~/.zsh/completion $fpath)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
+[ -f /usr/local/bin/aws_zsh_completer.sh ] && source /usr/local/bin/aws_zsh_completer.sh
 
 # added by travis gem
 [ -f /Users/pgollucci/.travis/travis.sh ] && source /Users/pgollucci/.travis/travis.sh
