@@ -48,6 +48,43 @@ function poud_packages () {
       swaks tmux vim-lite zsh
 }
 
+function poud_zfs_init () {
+ 
+  local z=zfs
+
+  sudo zpool destroy $z
+  sudo zpool create $z /dev/xbd[1-6]
+
+  sudo zfs set mountpoint=none $z
+  sudo zfs set atime=off $z
+  sudo zfs set sync=disabled $z
+  sudo zfs set checksum=fletcher4 $z
+
+  sudo zfs create -o mountpoint=/ccache $z/ccache
+  sudo zfs create -o mountpoint=/distfiles $z/distfiles
+  sudo zfs create -p $z/usr/local/etc/nginx
+
+  sudo zfs create -p $z/usr/home/pgollucci/repos/fbsd
+  zfs set mountpoint=/usr/home/pgollucci/repos $z/usr/home/pgollucci/repos
+
+  sudo zfs create -p $z/usr/local/poudriere/data
+
+  sudo zfs create $z/usr/local/poudriere/jails
+  for tag in ${=_build_tags}; do
+    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      sudo zfs create $z/usr/local/poudriere/jails/$build$arch
+    done
+  done
+
+  sudo zfs create -p $z/usr/local/poudriere/ports/default
+
+  sudo zfs set mountpoint=/usr/local/poudriere $z/usr/local/poudriere
+
+  sudo touch /etc/exports
+  sudo zfs sharenfs="-maproot=root -network 10.0.0.0 -mask 255.255.255.0" $z
+}
+
 function poud_jails_delete () {
 
   for tag in ${=_build_tags}; do
