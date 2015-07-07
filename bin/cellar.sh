@@ -34,8 +34,8 @@ done
 
 ## binary distribution apps
 brew install brew-cask
-for pkg in alfred aquamacs gitx google-chrome google-drive google-hangouts \
-	hipchat iterm2 java skype skitch vagrant virtualbox \ 
+for pkg in alfred gitx google-chrome google-drive google-hangouts \
+	hipchat iterm2 java r skype skitch vagrant virtualbox \ 
 	xquartz wireshark wkhtmltopdf; do
   brew cask install $pkg
 done
