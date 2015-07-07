@@ -417,7 +417,12 @@ function poud_build () {
   echo "Building....."
   local dt=$(date "+%Y%m%d_%H%M")
   local tports=$(_poud_transliterate_port_str "$ports")
-  local B="${tports}-${dt}"
+  local B
+  if [ x"$tports" != x"" ]; then
+      B=$dt
+  else
+      B="${tports}-${dt}"
+  fi
   local what
   local cmd
 
