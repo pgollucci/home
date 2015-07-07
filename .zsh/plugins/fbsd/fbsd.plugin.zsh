@@ -254,7 +254,9 @@ function poud_pi () {
     out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $index_file)
   fi
 
-  _poud_append_file $out
+  if [ x"$out" != x"" ]; then
+    _poud_append_file $out $modifier
+  fi
 }
 
 function poud_pkg_to_port {
@@ -263,7 +265,9 @@ function poud_pkg_to_port {
 
   local out=$(awk -F\| "\$1 ~ /$pkg/ { print \$2 }" $PORTSDIR/INDEX-11 | sed -e "s,/usr/ports/,,")
 
-  _poud_append_file $out
+  if [ x"$out" != x"" ]; then
+    _poud_append_file $out $modifier
+  fi
 }
 
 function poud_go () {
@@ -277,7 +281,7 @@ function poud_uses () {
   local str=$1
   local pattern=${2:-USE}
 
-  (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
+  (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern)
 }
 
 function poud_help () {
@@ -294,8 +298,8 @@ function poud_help () {
 ##/ poud_build()
 ##/ usage:
 ##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] [-S subnet-XXXXXXXX] [-T type] \
-##/               [-b build] [-c|-d regex/glob|-p port] [-k][-w where]
-##/    poud_build -t -p port
+##/               [-b build] [-c|-d regex|-p port] [-k] [-r regex] [-w where]
+##/    poud_build -t -p port [-b build]
 ##/    poud_build -h
 ##/ aws opts:
 ##/ ----------
@@ -310,6 +314,7 @@ function poud_help () {
 ##/   -a: build all ports
 ##/   -b: what build to use
 ##/   -c: build any port(s) with changes in $PORTSDIR
+##/   -r: build ports with port_name =~ /optarg/
 ##/   -d: build all that depends on regex/glob
 ##/   -h: help mesg
 ##/   -k: keep instance/request running when done
@@ -333,12 +338,13 @@ function poud_build () {
   local f_h=0
   local f_k=0
   local port=""
+  local dir=""
   local f_t=0
   local where=spot
 
   ## parse options
   echo "Parsing Options....."
-  while getopts A:B:G:S:T:ab:cd:hkp:tw: o; do
+  while getopts A:B:G:S:T:ab:cd:hkp:r:tw: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
       B) aws_spot_bid=$OPTARG          ;;
@@ -353,6 +359,7 @@ function poud_build () {
       h) f_h=1                         ;;
       k) f_k=1                         ;;
       p) port=$OPTARG                  ;;
+      r) dir=$OPTARG                   ;;
       t) f_t=1                         ;;
       w) where=$OPTARG                 ;;
     esac
@@ -360,13 +367,13 @@ function poud_build () {
   shift $(($OPTIND-1))
 
   if [ $f_h -eq 1 ]; then
-      poud_help "poud_build"
-      return
+    poud_help "poud_build"
+    return
   fi
 
   ## validate args
   if [ $f_t -eq 1 ]; then
-      where=local
+    where=local
   fi
 
   ## what to build
@@ -379,7 +386,9 @@ function poud_build () {
     ports="$(poud_new_or_modified_ports)"
   elif [ x"$depends_on" != x"" ]; then
     ports="$(poud_pi deps $depends_on)"
-  elif [ -n $port ]; then
+  elif [ x"$dir" != x"" ]; then
+    ports="$(poud_pi dir $dir)"
+  elif [ x"$port" != x"" ]; then
     ports=$port
   else
     echo "Failed."
@@ -416,10 +425,10 @@ function poud_build () {
   ## do it
   echo "Building....."
   local dt=$(date "+%Y%m%d_%H%M")
-  local tports=$(_poud_transliterate_port_str "$ports")
+  local tports="$(_poud_transliterate_port_str \"$ports\")"
   local B
   if [ x"$tports" != x"" ]; then
-      B=$dt
+      B="all-$dt"
   else
       B="${tports}-${dt}"
   fi
@@ -429,6 +438,7 @@ function poud_build () {
   if [ $f_t -eq 1 ]; then
       sudo $_poudriere testport -j $build -o $port -I
       sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
+      sudo poudriere -k -j $build
   else
     if [ $f_a -eq 1 ]; then
       what="-a"
@@ -436,7 +446,8 @@ function poud_build () {
       what="-f $ports_file"
     fi
     cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
-    scp $ports_file $ip:$ports_file
+    scp -q $ports_file $ip:$ports_file
+    echo "ssh $ip $cmd"
     ssh $ip "$cmd"
   fi
 
@@ -454,8 +465,8 @@ function poud_build () {
 
 function poud_new_or_modified_ports () {
 
-  local mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
-  local nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
+  local mports="$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)"
+  local nports="$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)"
 
   echo "$mports $nports"
 }
