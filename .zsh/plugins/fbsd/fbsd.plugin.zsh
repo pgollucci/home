@@ -9,6 +9,12 @@ if [ -d $_rdir ]; then
   _zbackup=zfsbackup
   _snap_keep_cnt=1
 
+  _ami_id=ami-ff71bd94
+  _ami_type=c4.8xlarge
+  _ami_sg=sg-76ff1811
+  _ami_subnet=subnet-614f3b38
+  _ami_bid=2.00
+
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
 
@@ -281,11 +287,6 @@ function poud_uses () {
 function poud_aws_run_on_demand () {
   local build=$1
 
-  local _ami_id=ami-395c9e52
-  local _ami_type=m3.medium
-  local _ami_sg=sg-76ff1811
-  local _ami_subnet=subnet-614f3b38
-
   local i=$(aws ec2 run-instances --image-id $_ami_id --count 1 --instance-type $_ami_type  --security-group-ids $_ami_sg --subnet-id $_ami_subnet | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
 
   sleep 3
@@ -297,12 +298,6 @@ function poud_aws_run_on_demand () {
 
 function poud_aws_request_spot_instances () {
   local build=$1
-
-  local _ami_id=ami-395c9e52
-  local _ami_type=c4.8xlarge
-  local _ami_sg=sg-76ff1811
-  local _ami_subnet=subnet-614f3b38
-  local _ami_bid=2.00
 
   local json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$_ami_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$_ami_sg\"],\"DeviceIndex\":0,\"SubnetId\":\"$_ami_subnet\",\"AssociatePublicIpAddress\":true}]}"
 
