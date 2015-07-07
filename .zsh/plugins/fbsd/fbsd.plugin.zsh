@@ -280,9 +280,22 @@ function poud_uses () {
   (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
 }
 
+function poud_help () {
+  local func=$1
+
+  local me=$HOME/.zsh/plugins/fbsd/fbsd.plugin.zsh
+  local s=$(grep -n "^##/ $func()" $me | awk -F: '{ print $1 }')
+  local e=$(grep -n "^function $func ()" $me | awk -F: '{ print $1 }')
+  local d=$(($e-$s))
+
+  head -$e $me | tail -$d | sed -e 's,^##/ ,,'
+}
+
+##/ poud_build()
 ##/ usage:
 ##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] [-S subnet-XXXXXXXX] [-T type] \
-##/               [-b build] [-c|-d regex/glob|-p port] [-w where] [-t] [-k]
+##/               [-b build] [-c|-d regex/glob|-p port] [-k][-w where]
+##/    poud_build -t -p port
 ##/    poud_build -h
 ##/ aws opts:
 ##/ ----------
@@ -303,14 +316,7 @@ function poud_uses () {
 ##/   -p: build port
 ##/   -t: testport instead of bulk
 ##/   -w: locally, or spin up a spot or on-demand aws instance
-
-function poud_build_help () {
-
-  grep "^##/" $HOME/.zsh/plugins/fbsd/fbsd.plugin.zsh | sed -e 's,^##/ ,,'
-}
-
 function poud_build () {
-set -x
 
   ## defaults
   echo "Setting Defaults....."
@@ -354,7 +360,7 @@ set -x
   shift $(($OPTIND-1))
 
   if [ $f_h -eq 1 ]; then
-      poud_build_help
+      poud_help "poud_build"
       return
   fi
 
@@ -377,7 +383,7 @@ set -x
     ports=$port
   else
     echo "Failed."
-    poud_build_help
+    poud_help "poud_build"
     return
   fi
   if [ x"$ports" != x"" ]; then
