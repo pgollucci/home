@@ -119,7 +119,7 @@ function poud_zfs_backup_prune () {
 function poud_jails_delete () {
 
   for tag in ${=_build_tags}; do
-    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
       sudo $_poudriere jail -d -j $build$arch
     done
@@ -129,7 +129,7 @@ function poud_jails_delete () {
 function poud_jails_create () {
 
   for tag in ${=_build_tags}; do
-    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
       sudo $_poudriere jail -c -j $build$arch -v $tag -a $arch
     done
@@ -139,7 +139,7 @@ function poud_jails_create () {
 function poud_jails_update () {
 
   for tag in ${=_build_tags}; do
-    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
       sudo $_poudriere jail -u -j $build$arch
     done
@@ -153,11 +153,11 @@ function poud_ptree_init () {
       return
   fi
 
-  git_repo=git@github.com:$USER/freebsd-ports.git
-  git_svn_uri=svn.freebsd.org/ports
-  svn_proto=svn+ssh
+  local git_repo=git@github.com:$USER/freebsd-ports.git
+  local git_svn_uri=svn.freebsd.org/ports
+  local svn_proto=svn+ssh
 
-  zdir=$_zpool/usr/local/poudriere/ports/$_pdir
+  local zdir=$_zpool/usr/local/poudriere/ports/$_pdir
 
   sudo zfs destroy -fr $zdir
   sudo zfs create $zdir
@@ -187,6 +187,8 @@ function poud_ptree_init () {
 function poud_ptree () {
   local tree=$1
 
+  local _pdir
+
   [ -n "$tree" ] && \
       PORTSDIR=$_poudriere_ports/$tree && export PORTSDIR && \
       _pdir=$tree && export _pdir
@@ -204,6 +206,7 @@ function _poud_append_file () {
   local dir=$1
   local modifier=$2
 
+  local out
   case $modifier in
     M) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/Makefile,') ;;
     P) out=$(echo $dir | sed -e 's,/usr/ports/,,' -e 's,$,/pkg-plist,') ;;
@@ -238,12 +241,13 @@ function poud_pi () {
     fetch)       pos=13;;
   esac
 
-  regex=$(echo $regex | sed -e 's,/,\\/,g')
+  local regex=$(echo $regex | sed -e 's,/,\\/,g')
 
-  index_file=$PORTSDIR/INDEX-11
+  local index_file=$PORTSDIR/INDEX-11
 
+  local out
   if [ $field = "deps" ]; then
-      out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $index_file)
+    out=$(awk -F'|' "\$8 ~ /$regex/ || \$9 ~ /$regex/ || \$11 ~ /$regex/ || \$12 ~ /$regex/ || \$13 ~ /$regex/ { print \$2 }" $index_file)
   else
     out=$(awk -F'|' "\$$pos ~ /$regex/ { print \$2 }" $index_file)
   fi
@@ -255,7 +259,7 @@ function poud_pkg_to_port {
   local pkg=$1
   local modifier=$2
 
-  out=$(awk -F\| "\$1 ~ /$pkg/ { print \$2 }" $PORTSDIR/INDEX-11 | sed -e "s,/usr/ports/,,")
+  local out=$(awk -F\| "\$1 ~ /$pkg/ { print \$2 }" $PORTSDIR/INDEX-11 | sed -e "s,/usr/ports/,,")
 
   _poud_append_file $out
 }
@@ -263,7 +267,7 @@ function poud_pkg_to_port {
 function poud_go () {
   local port=$1
 
-  dir=$(poud_pi dir $port | head -1)
+  local dir=$(poud_pi dir $port | head -1)
   cd $PORTSDIR/$dir
 }
 
@@ -437,7 +441,7 @@ function poud_rbuild_all_build () {
 function poud_rbuild_all () {
 
   for tag in ${=_build_tags}; do
-    build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
     for arch in ${=_arches}; do
       poud_rbuild_all_build "$build$arch"
     done
@@ -564,8 +568,8 @@ function _bz_is_update () {
   local d=$(_bz_pr_dir $pr)
   local port=$(cat $d/port)
 
-  p1=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | head -1 | awk '{print $2}')
-  p2=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | tail -1 | awk '{print $2}')
+  local p1=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | head -1 | awk '{print $2}')
+  local p2=$(cd $PORTSDIR/$port ; git diff | grep PORTVERSION | tail -1 | awk '{print $2}')
 
   if [ $p1 != $p2 ]; then
     echo "$p1 -> $p2" > $d/update
