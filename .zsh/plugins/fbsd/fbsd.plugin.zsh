@@ -7,6 +7,7 @@ if [ -d $_rdir ]; then
 
   _zpool=zfs
   _zbackup=zfsbackup
+  _snap_keep_cnt=1
 
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
@@ -103,13 +104,13 @@ function poud_zfs_backup () {
 
 function poud_zfs_backup_prune () {
 
-  local pools="$(zfs list -t snapshot | grep $_zpool | awk -F@ '{ print $1 }')"
+  local pools="$(zfs list -t snapshot | grep $_zpool | awk -F@ '{ print $1 }' | sort -u)"
   for pool in ${=pools}; do
     local snap_cnt=$(zfs list -t snapshot | grep $pool | wc -l |sed -e 's, ,,g')
-    if [ $snap_cnt -gt 7 ]; then
-      local snaps="$(zfs list -t snapshot | grep $pool | head -6 | awk '{ print $1 }')"
+    if [ $snap_cnt -gt $_snap_keep_cnt ]; then
+      local snaps="$(zfs list -t snapshot | grep $pool | head -$(($snap_cnt-1)) | awk '{ print $1 }')"
       for snap in ${=snaps}; do
-        echo zfs destroy $snap
+        sudo zfs destroy $snap
       done
     fi
   done
