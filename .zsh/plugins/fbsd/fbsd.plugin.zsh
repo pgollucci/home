@@ -714,8 +714,16 @@ function bzclose () {
 }
 
 function bztop () {
+  local field=$1
+  local limit=${2:-10}
 
- $_bz --encoding=utf8 search -s New --product "Ports & Packages" | awk '{print $3}' | sort | uniq -c | sort -nr -k 1,1 | head $1
+  local pos=-1
+  case $field in
+    asignee) pos=2 ;;
+    reporter) pos=3 ;;
+  esac
+
+  $_bz --encoding=utf8 search -s New --product "Ports & Packages" | awk "{ print \$$pos }" | sort | uniq -c | sort -nr -k 1,1 | head -$limit
 }
 
 function bzlist () {
