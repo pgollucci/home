@@ -26,10 +26,10 @@ else
   return
 fi
 
-function _poud_transliterate_port () {
-  local port=$1
+function _poud_transliterate_port_str () {
+  local str=$1
 
-  echo $port | sed -e 's,[/ ],_,g'
+  echo $str | sed -e 's,[/ ],_,g'
 }
 
 function _poud_from_dir_or_arg () {
@@ -284,6 +284,304 @@ function poud_uses () {
   (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern |grep $str)
 }
 
+##/ usage:
+##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] [-S subnet-XXXXXXXX] [-T type] \
+##/               [-b build] [-c|-d regex/glob|-p [port]] [-w where] [-t] [-k]
+##/    poud_build -h
+##/ aws opts:
+##/ ----------
+##/   -A: ami_id
+##/   -B: bid amount "XX.YY"
+##/   -G: security Group
+##/   -S: subnet_id
+##/   -T: instance type
+##/
+##/ other opts
+##/ -----------
+##/   -a: build all ports
+##/   -b: what build to use
+##/   -c: build any port(s) with changes in $PORTSDIR
+##/   -d: build all that depends on regex/glob
+##/   -h: help mesg
+##/   -k: keep instance/request running when done
+##/   -p: build port
+##/   -t: testport instead of bulk
+##/   -w: locally, or spin up a spot or on-demand aws instance
+
+function poud_build_help () {
+
+  grep "^##/" $HOME/.zsh/plugins/fbsd/fbsd.plugin.zsh | sed -e 's,^##/ ,,' ; return ;;
+}
+
+function poud_build () {
+
+  ## defaults
+  local aws_ami_id=ami-ff71bd94
+  local aws_spot_bid=2.00
+  local aws_security_group_id=sg-76ff1811
+  local aws_subnet_id=subnet-614f3b38
+  local aws_instance_type=c4.8xlarge
+
+  local f_a=0
+  local build=110amd64
+  local f_c=0
+  local depends_on=""
+  local f_k=0
+  local port=""
+  local f_t=0
+  local where=spot
+
+  ## parse options
+  while getopts A:B:G:S:T:b:cd:hkp:tw: o; do
+    case $o in
+      A) aws_ami_id=$OPTARG            ;;
+      B) aws_spot_bid=$OPTARG          ;;
+      G) aws_security_group_id=$OPTARG ;;
+      S) aws_subnet_id=$OPTARG         ;;
+      T) aws_instance_type=$OPTARG     ;;
+
+      a) f_a=1                         ;;
+      b) build=$OPTARG                 ;;
+      c) f_c=1                         ;;
+      d) depends_on=$OPTARG            ;;
+      h) f_h=1                         ;;
+      k) f_k=1                         ;;
+      p) port=$(_poud_from_dir_or_arg $OPTARG) ;;
+      t) f_t=1                         ;;
+      w) where=$OPTARG                 ;;
+    esac
+  done
+  shift $(($OPTIND-1))
+
+  if [ $f_h -eq 1 ]; then
+      poud_build_help
+      return
+  fi
+
+  ## validate args
+  if [ $f_t -eq 1 ]; then
+      where=local
+  fi
+
+  ## spin up
+  local sir
+  local iid
+  local ip
+  case $where in
+    spot)
+      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
+      iid=$(poud_aws_spot_fulfilled $sir)
+      ip=$(poud_aws_get_priv_ip $iid)
+      poud_aws_wait_for_ssh $ip
+      ;;
+    ondemand)
+      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
+      ip=$(poud_aws_get_priv_ip $iid)
+      poud_aws_wait_for_ssh $ip
+      ;;
+  esac
+
+  ## what to build
+  local ports
+  if [ $f_a -eq 1 ]; then
+    ports=""
+  elif [ $f_c -eq 1]; then
+    ports="$(poud_new_or_modified_ports)"
+  elif [ -n $depends_on ]; then
+    ports="$(poud_pi deps $depends_on)"
+  elif [ -n $port ]; then
+    ports=$port
+  else
+    echo "Failed."
+    poud_build_help
+    return
+  fi
+  if [ -n $ports ]; then
+    echo "$ports" > /tmp/$build.$$
+  fi
+
+  ## do it
+  local dt=$(date "+%Y%m%d_%H%M")
+  local B="${tport}-${dt}"
+  local tports=$(_poud_transliterate_port_str "$ports")
+  local what
+  local cmd
+
+  if [ $f_t -eq 1 ]; then
+      sudo $_poudriere testport -j $build -o $port -I
+      sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
+  else
+    if [ $f_a -eq 1 ]; then
+      what="-a"
+    else
+      what="-f /tmp/build.$$"
+    fi
+    cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
+    ssh $ip "$cmd"
+  fi
+
+  ## spin down
+  case $where in
+    spot) poud_aws_cancel_spot_instance_requests $sir ;;
+  esac
+
+  if [ $f_k -eq 0 ]; then
+      case $where in
+        spot|ondemand) poud_aws_terminate_instances $iid ;;
+      esac
+  fi
+}
+
+function poud_new_or_modified_ports () {
+
+  local mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
+  local nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
+
+  echo "$mports $nports"
+}
+
+function poud_build_changed () {
+  local build=$1
+
+  local mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
+  local nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
+
+  local tports=$(_poud_transliterate_port "$mports $nports")
+
+  local sir=$(poud_aws_request_spot_instances "$build-$port")
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_build_port $build "$nports $mports" $ip
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
+}
+
+function poud_build_depends_on () {
+  local build=$1
+  local pkg=$2
+
+  poud_pi deps $pkg > /tmp/$build-$pkg
+  tmux new -s $build "sudo $_poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
+}
+
+function poud_build_port () {
+  local build=$1
+  local port=$(_poud_from_dir_or_arg $2)
+  local ip=$3
+
+  local tport=$(_poud_transliterate_port $port)
+  local cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
+  poud_aws_wait_for_ssh $ip
+  ssh $ip "$cmd"
+}
+
+function poud_test_port () {
+  local build=$1
+  local port=$(_poud_from_dir_or_arg $2)
+
+  sudo $_poudriere testport -j $build -o $port -I
+  sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
+}
+
+function poud_rbuild_port () {
+  local build=$1
+  local port=$(_poud_from_dir_or_arg $2)
+
+  local sir=$(poud_aws_request_spot_instances "$build-$port")
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_build_port $build $port $ip
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
+}
+
+function poud_rbuild_all_build () {
+  local build=$1
+
+  local sir=$(poud_aws_request_spot_instances $build)
+  local i=$(poud_aws_spot_fulfilled $sir)
+  local ip=$(poud_aws_get_priv_ip $i)
+
+  poud_aws_wait_for_ssh $ip
+  local cmd="sudo $_poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
+  ssh $ip "$cmd"
+
+  poud_aws_terminate_instances $i
+  poud_aws_cancel_spot_instance_requests $sir
+}
+
+function poud_rbuild_all () {
+
+  for tag in ${=_build_tags}; do
+    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      poud_rbuild_all_build "$build$arch"
+    done
+  done
+}
+
+function poud_builds_nuke () {
+
+  sudo find $_poudriere_data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
+  sudo rm -rf $_poudriere_data/logs/bulk/.data.json
+}
+
+
+
+
+
+function poud_diff () {
+
+  git diff `git svn dcommit -n | grep '^diff-tree'| cut -f 2,3 -d" "`
+}
+
+function poud_ci () {
+  local pr=$1
+
+  local d=$(_bz_pr_dir $pr)
+
+  local cif=$d/msg
+
+  local title="$(cat $d/title)"
+  local port=$(cat $d/port)
+  local reporter=$(cat $d/reporter)
+  local maintainer=$(cat $d/maintainer)
+  local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
+  local days=$(_bz_time_from_pr $pr)
+  local update="$(cat $d/update)"
+
+  local submitted_by=""
+  local approved_by=""
+  if [ $is_maintainer -eq 1 ]; then
+    submitted_by="$reporter (maintainer)"
+  else
+    submitted_by="$reporter"
+    if [ -n $days ]; then
+      approved_by="maintainer timeout ($maintainer ; $days days)"
+    else
+      approved_by="$maintainer (maintainer)"
+    fi
+  fi
+
+  cat <<EOF > $cif
+$title
+
+-
+
+PR:                  $pr
+Submitted by:        $submitted_by
+Approved by:         $approved_by
+EOF
+
+  ( cd $PORTSDIR/$port ; git add -A .)
+  ( cd $PORTSDIR/$port ; git commit -F $cif)
+}
+
+# ----------------------------------------------------------------------------
 function poud_aws_run_on_demand () {
   local build=$1
 
@@ -354,146 +652,6 @@ function poud_aws_cancel_spot_instance_requests () {
   local sir=$1
 
   aws ec2 cancel-spot-instance-requests --spot-instance-request-ids $sir
-}
-
-function poud_build_changed () {
-  local build=$1
-
-  local mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
-  local nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
-
-  local tports=$(_poud_transliterate_port "$mports $nports")
-
-  local i=$(poud_aws_run_on_demand $build)
-  local ip=$(poud_aws_get_priv_ip $i)
-
-  poud_build_port $build "$nports $mports" $ip
-
-  poud_aws_terminate_instances $i
-  poud_aws_cancel_spot_instance_requests $sir
-}
-
-function poud_build_depends_on () {
-  local build=$1
-  local pkg=$2
-
-  poud_pi deps $pkg > /tmp/$build-$pkg
-  tmux new -s $build "sudo $_poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
-}
-
-function poud_build_port () {
-  local build=$1
-  local port=$(_poud_from_dir_or_arg $2)
-  local ip=$3
-
-  local tport=$(_poud_transliterate_port $port)
-  local cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
-  if [ -n $ip ]; then
-    poud_aws_wait_for_ssh $ip
-    ssh $ip "$cmd"
-  else
-    eval $cmd
-  fi
-}
-
-function poud_test_port () {
-  local build=$1
-  local port=$(_poud_from_dir_or_arg $2)
-
-  sudo $_poudriere testport -j $build -o $port -I
-  sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
-}
-
-function poud_rbuild_port () {
-  local build=$1
-  local port=$(_poud_from_dir_or_arg $2)
-
-  local sir=$(poud_aws_request_spot_instances "$build-$port")
-  local i=$(poud_aws_spot_fulfilled $sir)
-  local ip=$(poud_aws_get_priv_ip $i)
-
-  poud_build_port $build $port $ip
-
-  poud_aws_terminate_instances $i
-  poud_aws_cancel_spot_instance_requests $sir
-}
-
-function poud_rbuild_all_build () {
-  local build=$1
-
-  local sir=$(poud_aws_request_spot_instances $build)
-  local i=$(poud_aws_spot_fulfilled $sir)
-  local ip=$(poud_aws_get_priv_ip $i)
-
-  poud_aws_wait_for_ssh $ip
-  local cmd="sudo $_rdir/poudriere/src/bin/poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
-  ssh $ip "$cmd"
-
-  poud_aws_terminate_instances $i
-  poud_aws_cancel_spot_instance_requests $sir
-}
-
-function poud_rbuild_all () {
-
-  for tag in ${=_build_tags}; do
-    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
-    for arch in ${=_arches}; do
-      poud_rbuild_all_build "$build$arch"
-    done
-  done
-}
-
-function poud_builds_nuke () {
-
-  sudo find $_poudriere_data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
-  sudo rm -rf $_poudriere_data/logs/bulk/.data.json
-}
-
-function poud_diff () {
-
-  git diff `git svn dcommit -n | grep '^diff-tree'| cut -f 2,3 -d" "`
-}
-
-function poud_ci () {
-  local pr=$1
-
-  local d=$(_bz_pr_dir $pr)
-
-  local cif=$d/msg
-
-  local title="$(cat $d/title)"
-  local port=$(cat $d/port)
-  local reporter=$(cat $d/reporter)
-  local maintainer=$(cat $d/maintainer)
-  local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
-  local days=$(_bz_time_from_pr $pr)
-  local update="$(cat $d/update)"
-
-  local submitted_by=""
-  local approved_by=""
-  if [ $is_maintainer -eq 1 ]; then
-    submitted_by="$reporter (maintainer)"
-  else
-    submitted_by="$reporter"
-    if [ -n $days ]; then
-      approved_by="maintainer timeout ($maintainer ; $days days)"
-    else
-      approved_by="$maintainer (maintainer)"
-    fi
-  fi
-
-  cat <<EOF > $cif
-$title
-
--
-
-PR:                  $pr
-Submitted by:        $submitted_by
-Approved by:         $approved_by
-EOF
-
-  ( cd $PORTSDIR/$port ; git add -A .)
-  ( cd $PORTSDIR/$port ; git commit -F $cif)
 }
 
 # ----------------------------------------------------------------------------
