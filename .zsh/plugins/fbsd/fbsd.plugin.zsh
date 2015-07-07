@@ -9,12 +9,6 @@ if [ -d $_rdir ]; then
   _zbackup=zfsbackup
   _snap_keep_cnt=1
 
-  _ami_id=ami-ff71bd94
-  _ami_type=c4.8xlarge
-  _ami_sg=sg-76ff1811
-  _ami_subnet=subnet-614f3b38
-  _ami_bid=2.00
-
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
 
@@ -286,7 +280,7 @@ function poud_uses () {
 
 ##/ usage:
 ##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] [-S subnet-XXXXXXXX] [-T type] \
-##/               [-b build] [-c|-d regex/glob|-p [port]] [-w where] [-t] [-k]
+##/               [-b build] [-c|-d regex/glob|-p port] [-w where] [-t] [-k]
 ##/    poud_build -h
 ##/ aws opts:
 ##/ ----------
@@ -310,11 +304,11 @@ function poud_uses () {
 
 function poud_build_help () {
 
-  grep "^##/" $HOME/.zsh/plugins/fbsd/fbsd.plugin.zsh | sed -e 's,^##/ ,,' ; return ;;
+  grep "^##/" $HOME/.zsh/plugins/fbsd/fbsd.plugin.zsh | sed -e 's,^##/ ,,'
 }
 
 function poud_build () {
-
+set -x
 
   ## defaults
   echo "Setting Defaults....."
@@ -328,6 +322,7 @@ function poud_build () {
   local build=110amd64
   local f_c=0
   local depends_on=""
+  local f_h=0
   local f_k=0
   local port=""
   local f_t=0
@@ -335,7 +330,7 @@ function poud_build () {
 
   ## parse options
   echo "Parsing Options....."
-  while getopts A:B:G:S:T:b:cd:hkp:tw: o; do
+  while getopts A:B:G:S:T:ab:cd:hkp:tw: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
       B) aws_spot_bid=$OPTARG          ;;
@@ -349,7 +344,7 @@ function poud_build () {
       d) depends_on=$OPTARG            ;;
       h) f_h=1                         ;;
       k) f_k=1                         ;;
-      p) port=$(_poud_from_dir_or_arg $OPTARG) ;;
+      p) port=$OPTARG                  ;;
       t) f_t=1                         ;;
       w) where=$OPTARG                 ;;
     esac
@@ -393,9 +388,9 @@ function poud_build () {
   local ports
   if [ $f_a -eq 1 ]; then
     ports=""
-  elif [ $f_c -eq 1]; then
+  elif [ $f_c -eq 1 ]; then
     ports="$(poud_new_or_modified_ports)"
-  elif [ -n $depends_on ]; then
+  elif [ x"$depends_on" != x"" ]; then
     ports="$(poud_pi deps $depends_on)"
   elif [ -n $port ]; then
     ports=$port
@@ -504,9 +499,20 @@ EOF
 
 # ----------------------------------------------------------------------------
 function poud_aws_run_on_demand () {
-  local build=$1
+  local aws_ami_id=$1
+  local aws_instance_type=$2
+  local aws_security_group_id=$3
+  local aws_subnet_id=$4
+  local build=$5
 
-  local i=$(aws ec2 run-instances --image-id $_ami_id --count 1 --instance-type $_ami_type  --security-group-ids $_ami_sg --subnet-id $_ami_subnet | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+  local i=$(aws ec2 run-instances \
+                --image-id $aws_ami_id \
+                --count 1 \
+                --instance-type $aws_instance_type \
+                --security-group-ids $aws_security_group_id \
+                --subnet-id $aws_subnet_id | \
+                 awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}'
+        )
 
   sleep 3
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
@@ -516,11 +522,22 @@ function poud_aws_run_on_demand () {
 }
 
 function poud_aws_request_spot_instances () {
-  local build=$1
+  local aws_ami_id=$1
+  local aws_spot_bid=$2
+  local aws_instance_type=$3
+  local aws_security_group_id=$4
+  local aws_subnet_id=$5
+  local build=$6
 
-  local json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$_ami_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$_ami_sg\"],\"DeviceIndex\":0,\"SubnetId\":\"$_ami_subnet\",\"AssociatePublicIpAddress\":true}]}"
+  local json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$aws_instance_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
 
-  local sir=$(aws ec2 request-spot-instances --spot-price "$_ami_bid" --instance-count 1 --type "one-time" --launch-specification "$json" | awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}')
+  local sir=$(aws ec2 request-spot-instances \
+                  --spot-price "$aws_spot_bid" \
+                  --instance-count 1 \
+                  --type "one-time" \
+                  --launch-specification "$json" | \
+                   awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}'
+        )
 
   echo $sir
 }
@@ -534,11 +551,11 @@ function poud_aws_spot_fulfilled () {
     sleep 5
   done
 
-  local i=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
+  local iid=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
-  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json"
+  aws ec2 modify-instance-attribute --instance-id $iid --block-device-mappings "$json"
 
-  echo $i
+  echo $iid
 }
 
 function poud_aws_get_priv_ip () {
@@ -564,9 +581,9 @@ function poud_aws_wait_for_ssh () {
 }
 
 function poud_aws_terminate_instances () {
-  local i=$1
+  local iid=$1
 
-  aws ec2 terminate-instances --instance-ids $i
+  aws ec2 terminate-instances --instance-ids $iid
 }
 
 function poud_aws_cancel_spot_instance_requests () {
