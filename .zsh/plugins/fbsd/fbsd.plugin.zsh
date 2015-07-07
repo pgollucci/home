@@ -144,6 +144,8 @@ function poud_jails_update () {
       sudo $_poudriere jail -u -j $build$arch
     done
   done
+
+  # XXX: can't update -CURRENT, -d,-c
 }
 
 function poud_ptree_init () {
@@ -361,31 +363,10 @@ set -x
       where=local
   fi
 
-  ## spin up
-  echo "Spinning Up....."
-  local sir
-  local iid
-  local ip
-  case $where in
-    spot)
-      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
-      echo "Waiting for fulfillment....."
-      iid=$(poud_aws_spot_fulfilled $sir)
-      ip=$(poud_aws_get_priv_ip $iid)
-      echo "Waiting for ssh....."
-      poud_aws_wait_for_ssh $ip
-      ;;
-    ondemand)
-      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
-      ip=$(poud_aws_get_priv_ip $iid)
-      echo "Waiting for ssh....."
-      poud_aws_wait_for_ssh $ip
-      ;;
-  esac
-
   ## what to build
   echo "What to Build....."
   local ports
+  local ports_file=/tmp/$build.$$
   if [ $f_a -eq 1 ]; then
     ports=""
   elif [ $f_c -eq 1 ]; then
@@ -399,15 +380,38 @@ set -x
     poud_build_help
     return
   fi
-  if [ -n $ports ]; then
-    echo "$ports" > /tmp/$build.$$
+  if [ x"$ports" != x"" ]; then
+    echo "$ports" > $ports_file
   fi
+
+  ## spin up
+  echo "Spinning Up....."
+  local sir
+  local iid
+  local ip
+  case $where in
+    spot)
+      echo "Waiting for fulfillment....."
+      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
+      iid=$(poud_aws_spot_fulfilled $sir)
+      ip=$(poud_aws_get_priv_ip $iid)
+      echo "Waiting for ssh....."
+      poud_aws_wait_for_ssh $ip
+      ;;
+    ondemand)
+      echo "Waiting for instance....."
+      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
+      ip=$(poud_aws_get_priv_ip $iid)
+      echo "Waiting for ssh....."
+      poud_aws_wait_for_ssh $ip
+      ;;
+  esac
 
   ## do it
   echo "Building....."
   local dt=$(date "+%Y%m%d_%H%M")
   local tports=$(_poud_transliterate_port_str "$ports")
-  local B="${tport}-${dt}"
+  local B="${tports}-${dt}"
   local what
   local cmd
 
@@ -418,15 +422,16 @@ set -x
     if [ $f_a -eq 1 ]; then
       what="-a"
     else
-      what="-f /tmp/build.$$"
+      what="-f $ports_file"
     fi
     cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
+    scp $ports_file $ip:$ports_file
     ssh $ip "$cmd"
   fi
 
   ## spin down
-  echo "Spinning down....."
   if [ $f_k -eq 0 ]; then
+    echo "Spinning down....."
     case $where in
       spot) poud_aws_cancel_spot_instance_requests $sir ;;
     esac
@@ -576,7 +581,7 @@ function poud_aws_wait_for_ssh () {
       0) avail=y ;;
       *) avail=n ;;
     esac
-    sleep 1
+    sleep 5
   done
 }
 
