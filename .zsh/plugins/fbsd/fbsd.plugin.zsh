@@ -303,7 +303,7 @@ function poud_help () {
 ##/   -B: bid amount "XX.YY"
 ##/   -G: security Group
 ##/   -S: subnet_id
-##/   -T: instance type
+##/   -T: instance_type|cheapest 32cpu+
 ##/
 ##/ other opts
 ##/ -----------
@@ -545,7 +545,27 @@ function poud_aws_request_spot_instances () {
   local aws_subnet_id=$5
   local build=$6
 
-  local json="{\"ImageId\":\"$_ami_id\",\"InstanceType\":\"$aws_instance_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
+  if [ $aws_instance_type = "cheapest" ]; then
+    local ctype
+    local cprice=100
+    for type in r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge; do
+      local p=$(aws ec2 describe-spot-price-history \
+                    --max-items 1 \
+                    --availability-zone us-east-1c \
+                    --instance-types $type | \
+                    awk -F: '/SpotPrice"/ { print $2 }' | \
+                    sed -e 's/[", ]//g'
+            )
+      # XXX: Floating point math
+      rc=$(echo $p $cprice | awk '{ printf "%d", ($1 < $2) }')
+      if [ $rc -eq 1 ]; then
+          cprice=$p
+          aws_instance_type=$type
+      fi
+    done
+  fi
+
+  local json="{\"ImageId\":\"$aws_ami_id\",\"InstanceType\":\"$aws_instance_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
 
   local sir=$(aws ec2 request-spot-instances \
                   --spot-price "$aws_spot_bid" \
