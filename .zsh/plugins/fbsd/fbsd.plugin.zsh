@@ -315,7 +315,9 @@ function poud_build_help () {
 
 function poud_build () {
 
+
   ## defaults
+  echo "Setting Defaults....."
   local aws_ami_id=ami-ff71bd94
   local aws_spot_bid=2.00
   local aws_security_group_id=sg-76ff1811
@@ -332,6 +334,7 @@ function poud_build () {
   local where=spot
 
   ## parse options
+  echo "Parsing Options....."
   while getopts A:B:G:S:T:b:cd:hkp:tw: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
@@ -364,24 +367,29 @@ function poud_build () {
   fi
 
   ## spin up
+  echo "Spinning Up....."
   local sir
   local iid
   local ip
   case $where in
     spot)
       sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
+      echo "Waiting for fulfillment....."
       iid=$(poud_aws_spot_fulfilled $sir)
       ip=$(poud_aws_get_priv_ip $iid)
+      echo "Waiting for ssh....."
       poud_aws_wait_for_ssh $ip
       ;;
     ondemand)
       iid=$(poud_aws_run_on_demand $aws_ami_id $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
       ip=$(poud_aws_get_priv_ip $iid)
+      echo "Waiting for ssh....."
       poud_aws_wait_for_ssh $ip
       ;;
   esac
 
   ## what to build
+  echo "What to Build....."
   local ports
   if [ $f_a -eq 1 ]; then
     ports=""
@@ -401,9 +409,10 @@ function poud_build () {
   fi
 
   ## do it
+  echo "Building....."
   local dt=$(date "+%Y%m%d_%H%M")
-  local B="${tport}-${dt}"
   local tports=$(_poud_transliterate_port_str "$ports")
+  local B="${tport}-${dt}"
   local what
   local cmd
 
@@ -421,6 +430,7 @@ function poud_build () {
   fi
 
   ## spin down
+  echo "Spinning down....."
   case $where in
     spot) poud_aws_cancel_spot_instance_requests $sir ;;
   esac
@@ -440,99 +450,11 @@ function poud_new_or_modified_ports () {
   echo "$mports $nports"
 }
 
-function poud_build_changed () {
-  local build=$1
-
-  local mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
-  local nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
-
-  local tports=$(_poud_transliterate_port "$mports $nports")
-
-  local sir=$(poud_aws_request_spot_instances "$build-$port")
-  local i=$(poud_aws_spot_fulfilled $sir)
-  local ip=$(poud_aws_get_priv_ip $i)
-
-  poud_build_port $build "$nports $mports" $ip
-
-  poud_aws_terminate_instances $i
-  poud_aws_cancel_spot_instance_requests $sir
-}
-
-function poud_build_depends_on () {
-  local build=$1
-  local pkg=$2
-
-  poud_pi deps $pkg > /tmp/$build-$pkg
-  tmux new -s $build "sudo $_poudriere bulk -t -B $pkg-$(date "+%Y%m%d_%H%M") -j ${build} -C -f /tmp/$build-$pkg"
-}
-
-function poud_build_port () {
-  local build=$1
-  local port=$(_poud_from_dir_or_arg $2)
-  local ip=$3
-
-  local tport=$(_poud_transliterate_port $port)
-  local cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
-  poud_aws_wait_for_ssh $ip
-  ssh $ip "$cmd"
-}
-
-function poud_test_port () {
-  local build=$1
-  local port=$(_poud_from_dir_or_arg $2)
-
-  sudo $_poudriere testport -j $build -o $port -I
-  sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
-}
-
-function poud_rbuild_port () {
-  local build=$1
-  local port=$(_poud_from_dir_or_arg $2)
-
-  local sir=$(poud_aws_request_spot_instances "$build-$port")
-  local i=$(poud_aws_spot_fulfilled $sir)
-  local ip=$(poud_aws_get_priv_ip $i)
-
-  poud_build_port $build $port $ip
-
-  poud_aws_terminate_instances $i
-  poud_aws_cancel_spot_instance_requests $sir
-}
-
-function poud_rbuild_all_build () {
-  local build=$1
-
-  local sir=$(poud_aws_request_spot_instances $build)
-  local i=$(poud_aws_spot_fulfilled $sir)
-  local ip=$(poud_aws_get_priv_ip $i)
-
-  poud_aws_wait_for_ssh $ip
-  local cmd="sudo $_poudriere bulk -t -B $(date "+%Y%m%d_%H%M") -j ${build} -a"
-  ssh $ip "$cmd"
-
-  poud_aws_terminate_instances $i
-  poud_aws_cancel_spot_instance_requests $sir
-}
-
-function poud_rbuild_all () {
-
-  for tag in ${=_build_tags}; do
-    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
-    for arch in ${=_arches}; do
-      poud_rbuild_all_build "$build$arch"
-    done
-  done
-}
-
 function poud_builds_nuke () {
 
   sudo find $_poudriere_data -type d -a \( -name "*i386*" -o -name "*amd64*"  -o -name latest-per-pkg \) | xargs sudo rm -rf
   sudo rm -rf $_poudriere_data/logs/bulk/.data.json
 }
-
-
-
-
 
 function poud_diff () {
 
