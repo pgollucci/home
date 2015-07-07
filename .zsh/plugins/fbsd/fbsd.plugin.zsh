@@ -554,13 +554,8 @@ function _bz_is_maintainer () {
   local reporter=$1
   local maintainer=$2
 
-  if [ $reporter = $maintainer ]; then
-    is_maintainer=1
-  else
-    is_maintainer=0
-  fi
-
-  echo $is_maintainer
+  [ $reporter != $maintainer ]
+  echo $?
 }
 
 function _bz_is_update () {
