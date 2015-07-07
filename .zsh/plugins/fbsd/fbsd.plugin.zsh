@@ -5,8 +5,8 @@ if [ -d $_rdir ]; then
   _poudriere_ports=$_poudriere_dir/ports
   _poudriere=$_rdir/poudriere/src/bin/poudriere
 
-  _zports=zfs
-
+  _zpool=zfs
+  _zbackup=zfsbackup
 
   _arches="i386 amd64"
   _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
@@ -51,31 +51,68 @@ function poud_packages () {
 }
 
 function poud_zfs_init () {
-  local pool=$1
+  local z=$1
 
-  [ -z $pool ] && echo "must specify a poool" && return
+  [ -z $z ] && echo "must specify a pool" && return
+
+  local base
+  case $z in
+    $_zbackup) base=/b ;;
+    $_zpool)   base=   ;;
+    *)         echo "pool must be $_zbackup|$_zpool" && return ;;
+  esac
 
   sudo zfs set mountpoint=none $z
   sudo zfs set atime=off $z
   sudo zfs set sync=disabled $z
   sudo zfs set checksum=fletcher4 $z
 
-  sudo zfs create -o mountpoint=/ccache $z/ccache
-  sudo zfs create -o mountpoint=/distfiles $z/distfiles
-  sudo zfs create -p $z/usr/local/etc/nginx
-
-  sudo zfs create -p $z/usr/home/pgollucci/repos/fbsd
-  zfs set mountpoint=/usr/home/pgollucci/repos $z/usr/home/pgollucci/repos
-
-  sudo zfs create -p $z/usr/local/poudriere/data
-
-  sudo zfs create $z/usr/local/poudriere/jails
-  sudo zfs create -p $z/usr/local/poudriere/ports/default
-
-  sudo zfs set mountpoint=/usr/local/poudriere $z/usr/local/poudriere
+  sudo zfs create -p -o mountpoint=$base/usr/local/etc/nginx $z/usr/local/etc/nginx
+  sudo zfs create -p -o mountpoint=$base/usr/home/$USERi/repos $z/usr/home/$USER/repos
+  sudo zfs create -p -o mountpoint=$base/usr/local/poudriere $z/usr/local/poudriere
 
   sudo touch /etc/exports
   sudo zfs sharenfs="-maproot=root -network 10.0.0.0 -mask 255.255.255.0" $z
+}
+
+function poud_zfs_snapshot () {
+
+  local containers="$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
+  local dt=$(date "+%Y%m%d_%H%M")
+
+  for container in ${=containers}; do
+    sudo zfs snapshot $container@$dt
+  done
+
+  echo $dt
+}
+
+function poud_zfs_backup () {
+
+  local dt=$(poud_zfs_snapshot)
+
+  local containers="$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
+  for container in ${=containers}; do
+    local prev_dt=$(zfs list -t snapshot | grep $container | awk '{ print $1 }' | awk -F@ '{ print $2 }' | tail -2 | head -1)
+    local backup=$(echo $container | sed -e "s,$_zpool,$_zbackup,")
+    sudo zfs send -pi $container@$prev_dt $container@$dt | sudo zfs receive $backup
+  done
+
+  poud_zfs_backup_prune
+}
+
+function poud_zfs_backup_prune () {
+
+  local pools="$(zfs list -t snapshot | grep $_zpool | awk -F@ '{ print $1 }')"
+  for pool in ${=pools}; do
+    local snap_cnt=$(zfs list -t snapshot | grep $pool | wc -l |sed -e 's, ,,g')
+    if [ $snap_cnt -gt 7 ]; then
+      local snaps="$(zfs list -t snapshot | grep $pool | head -6 | awk '{ print $1 }')"
+      for snap in ${=snaps}; do
+        echo zfs destroy $snap
+      done
+    fi
+  done
 }
 
 function poud_jails_delete () {
@@ -119,7 +156,7 @@ function poud_ptree_init () {
   git_svn_uri=svn.freebsd.org/ports
   svn_proto=svn+ssh
 
-  zdir=$_zports/usr/local/poudriere/ports/$_pdir
+  zdir=$_zpool/usr/local/poudriere/ports/$_pdir
 
   sudo zfs destroy -fr $zdir
   sudo zfs create $zdir
