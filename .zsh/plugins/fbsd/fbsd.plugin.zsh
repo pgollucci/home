@@ -69,7 +69,7 @@ function poud_zfs_init () {
   sudo zfs set checksum=fletcher4 $z
 
   sudo zfs create -p -o mountpoint=$base/usr/local/etc/nginx $z/usr/local/etc/nginx
-  sudo zfs create -p -o mountpoint=$base/usr/home/$USERi/repos $z/usr/home/$USER/repos
+  sudo zfs create -p -o mountpoint=$base/usr/home/$USER/repos $z/usr/home/$USER/repos
   sudo zfs create -p -o mountpoint=$base/usr/local/poudriere $z/usr/local/poudriere
 
   sudo touch /etc/exports
@@ -360,10 +360,10 @@ function poud_aws_cancel_spot_instance_requests () {
 function poud_build_changed () {
   local build=$1
 
-  mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
-  nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
+  local mports=$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)
+  local nports=$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)
 
-  tports=$(_poud_transliterate_port "$mports $nports")
+  local tports=$(_poud_transliterate_port "$mports $nports")
 
   local i=$(poud_aws_run_on_demand $build)
   local ip=$(poud_aws_get_priv_ip $i)
@@ -387,7 +387,7 @@ function poud_build_port () {
   local port=$(_poud_from_dir_or_arg $2)
   local ip=$3
 
-  tport=$(_poud_transliterate_port $port)
+  local tport=$(_poud_transliterate_port $port)
   local cmd="sudo $_poudriere bulk -t -B ${tport}-$(date "+%Y%m%d_%H%M") -j ${build} -C $port"
   if [ -n $ip ]; then
     poud_aws_wait_for_ssh $ip
@@ -516,7 +516,6 @@ function _bz_pr_dir () {
 }
 
 function _bz_get_attachment () {
-set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
@@ -527,11 +526,7 @@ set -x
     local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
     fetch -q -o $d/patch "https://bz-attachments.freebsd.org/attachment.cgi?id=$id"
     local s_cnt=$(head -1 $d/patch | grep -c "# This is a shell archive.")
-    if [ $s_cnt -eq 1 ]; then
-        echo "1" > $d/shar
-    fi
-  else
-    echo "0" > $d/shar
+    echo $s_cnt > $d/shar
   fi
 }
 
@@ -546,7 +541,6 @@ function _bz_is_timeout () {
 }
 
 function _bz_timeout_from_pr () {
-  set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
@@ -662,7 +656,6 @@ function bztimeout () {
 }
 
 function bzpatch () {
-set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
