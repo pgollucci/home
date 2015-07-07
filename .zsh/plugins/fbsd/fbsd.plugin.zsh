@@ -431,14 +431,13 @@ function poud_build () {
 
   ## spin down
   echo "Spinning down....."
-  case $where in
-    spot) poud_aws_cancel_spot_instance_requests $sir ;;
-  esac
-
   if [ $f_k -eq 0 ]; then
-      case $where in
-        spot|ondemand) poud_aws_terminate_instances $iid ;;
-      esac
+    case $where in
+      spot) poud_aws_cancel_spot_instance_requests $sir ;;
+    esac
+    case $where in
+      spot|ondemand) poud_aws_terminate_instances $iid ;;
+    esac
   fi
 }
 
