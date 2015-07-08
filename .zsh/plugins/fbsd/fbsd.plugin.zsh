@@ -47,8 +47,8 @@ function poud_packages () {
   env ASSUME_ALWAYS_YES=YES pkg bootstrap
   pkg install -y \
       automake awscli bash-static dialog4ports emacs-nox11 git-subversion \
-      hub libtool nginx portlint python34 ruby21-gems rsync sudo \
-      swaks tmux vim-lite zsh
+      hub libtool nginx php5-arcanist portlint python34 ruby21-gems rsync \
+      sudo swaks tmux vim-lite zsh
 }
 
 function poud_zfs_init () {
