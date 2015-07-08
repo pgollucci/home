@@ -385,9 +385,9 @@ function poud_build () {
   elif [ $f_c -eq 1 ]; then
     ports="$(poud_new_or_modified_ports)"
   elif [ x"$depends_on" != x"" ]; then
-    ports="$(poud_pi deps $depends_on)"
+    ports="$(poud_pi deps $depends_on | xargs)"
   elif [ x"$dir" != x"" ]; then
-    ports="$(poud_pi dir $dir)"
+    ports="$(poud_pi dir $dir | xargs)"
   elif [ x"$port" != x"" ]; then
     ports=$port
   else
@@ -427,7 +427,7 @@ function poud_build () {
   local dt=$(date "+%Y%m%d_%H%M")
   local tports="$(_poud_transliterate_port_str \"$ports\")"
   local B
-  if [ x"$tports" != x"" ]; then
+  if [ x"$tports" = x"" ]; then
       B="all-$dt"
   else
       B="${tports}-${dt}"
@@ -436,16 +436,15 @@ function poud_build () {
   local cmd
 
   if [ $f_t -eq 1 ]; then
-      sudo $_poudriere testport -j $build -o $port -I
+      sudo $_poudriere testport -K -j $build -o $port -I -s
       sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
-      sudo poudriere -k -j $build
   else
     if [ $f_a -eq 1 ]; then
       what="-a"
     else
       what="-f $ports_file"
     fi
-    cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
+    cmd="sudo $_poudriere bulk -t -j $build -B $B -s -C $what"
     scp -q $ports_file $ip:$ports_file
     echo "ssh $ip $cmd"
     ssh $ip "$cmd"
@@ -812,9 +811,16 @@ function _bzpatch_patch () {
 
   local d=$(_bz_pr_dir $pr)
   local port=$(cat $d/port)
-  local l=$(grep ^Index: $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
+  local l=$(egrep "^Index:|^diff " $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
+  local p
 
-  ( cd $PORTSDIR/$port ; patch -p$l < $d/patch )
+  if grep -q ^diff $d/patch; then
+    p="-p$(($l/2))"
+  else
+    p="-p$l"
+  fi
+
+  ( cd $PORTSDIR/$port ; patch $p < $d/patch )
   find $PORTSDIR/$port -type f -a \( -name "*.rej" -o -name "*.orig" \) -print -exec rm -f "{}" \;
   ( cd $PORTSDIR/$port ; find . -type f -empty | xargs git rm -rf)
   _bz_is_update $pr
