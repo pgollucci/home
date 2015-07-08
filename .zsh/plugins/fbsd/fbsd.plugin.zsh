@@ -557,6 +557,7 @@ function poud_aws_request_spot_instances () {
   local build=$6
 
   if [ $aws_instance_type = "cheapest" ]; then
+    echo >&2 "Looking for Cheapest option....."
     local ctype
     local cprice=100
     local czone
@@ -578,16 +579,16 @@ function poud_aws_request_spot_instances () {
         fi
       done
     done
+
+    case $czone in
+      1a) aws_subnet_id=subnet-875032ac ;;
+      1b) aws_subnet_id=subnet-5baf882c ;;
+      1c) aws_subnet_id=subnet-614f3b38 ;;
+      1e) aws_subnet_id=subnet-02dedc38 ;;
+    esac
+
+    echo >&2 "Found $aws_instance_type @ \$$cprice in $czone"
   fi
-
-  case czone in
-    1a) aws_subnet_id=subnet-875032ac ;;
-    1b) aws_subnet_id=subnet-5baf882c ;;
-    1c) aws_subnet_id=subnet-5baf882c ;;
-    1e) aws_subnet_id=subnet-02dedc38 ;;
-  esac
-
-  echo >&2 "Found: $aws_instance_type @ \$$cprice in $czone"
 
   local json="{\"ImageId\":\"$aws_ami_id\",\"InstanceType\":\"$aws_instance_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
 
