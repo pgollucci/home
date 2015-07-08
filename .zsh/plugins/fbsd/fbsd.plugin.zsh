@@ -436,7 +436,7 @@ function poud_build () {
   local cmd
 
   if [ $f_t -eq 1 ]; then
-      sudo $_poudriere testport -K -j $build -o $port -I -s
+      sudo $_poudriere testport -K -j $build -o $port -i -s
       sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
   else
     if [ $f_a -eq 1 ]; then
