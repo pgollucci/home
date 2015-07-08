@@ -892,5 +892,5 @@ function bztop () {
 function bzlist () {
   local str="$1"
 
-  $_bz --encoding=utf8 search --product "Ports & Packages" "$*"
+  $_bz --encoding=utf8 search --product "Ports & Packages" -s New -s Open -s Inprogress "$*"
 }
