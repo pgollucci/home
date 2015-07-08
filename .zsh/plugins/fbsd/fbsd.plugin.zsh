@@ -559,22 +559,35 @@ function poud_aws_request_spot_instances () {
   if [ $aws_instance_type = "cheapest" ]; then
     local ctype
     local cprice=100
-    for type in r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge; do
-      local p=$(aws ec2 describe-spot-price-history \
-                    --max-items 1 \
-                    --availability-zone us-east-1c \
-                    --instance-types $type | \
-                    awk -F: '/SpotPrice"/ { print $2 }' | \
-                    sed -e 's/[", ]//g'
-            )
-      # XXX: Floating point math
-      rc=$(echo $p $cprice | awk '{ printf "%d", ($1 < $2) }')
-      if [ $rc -eq 1 ]; then
-          cprice=$p
-          aws_instance_type=$type
-      fi
+    local czone
+    for zone in 1a 1b 1c 1e; do
+      for type in r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge; do
+        local p=$(aws ec2 describe-spot-price-history \
+                      --max-items 1 \
+                      --availability-zone us-east-$zone \
+                      --instance-types $type | \
+                       awk -F: '/SpotPrice"/ { print $2 }' | \
+                       sed -e 's/[", ]//g'
+              )
+        # XXX: Floating point math
+        rc=$(echo $p $cprice | awk '{ printf "%d", ($1 < $2) }')
+        if [ $rc -eq 1 ]; then
+            czone=$zone
+            cprice=$p
+            aws_instance_type=$type
+        fi
+      done
     done
   fi
+
+  case czone in
+    1a) aws_subnet_id=subnet-875032ac ;;
+    1b) aws_subnet_id=subnet-5baf882c ;;
+    1c) aws_subnet_id=subnet-5baf882c ;;
+    1e) aws_subnet_id=subnet-02dedc38 ;;
+  esac
+
+  echo >&2 "Found: $aws_instance_type @ \$$cprice in $czone"
 
   local json="{\"ImageId\":\"$aws_ami_id\",\"InstanceType\":\"$aws_instance_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
 
