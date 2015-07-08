@@ -20,10 +20,10 @@ else
   return
 fi
 
-function _poud_transliterate_port_str () {
+function _poud_checksum_port_str () {
   local str=$1
 
-  echo $str | sed -e 's,[/ ],_,g'
+  echo $str | md5
 }
 
 function _poud_from_dir_or_arg () {
@@ -425,7 +425,7 @@ function poud_build () {
   ## do it
   echo "Building....."
   local dt=$(date "+%Y%m%d_%H%M")
-  local tports="$(_poud_transliterate_port_str \"$ports\")"
+  local tports="$(_poud_checksum_port_str \"$ports\")"
   local B
   if [ x"$tports" = x"" ]; then
       B="all-$dt"
