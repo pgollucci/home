@@ -325,7 +325,7 @@ function poud_build () {
 
   ## defaults
   echo "Setting Defaults....."
-  local aws_ami_id=ami-ff71bd94
+  local aws_ami_id=ami-7930fe12
   local aws_spot_bid=2.00
   local aws_security_group_id=sg-76ff1811
   local aws_subnet_id=subnet-614f3b38
