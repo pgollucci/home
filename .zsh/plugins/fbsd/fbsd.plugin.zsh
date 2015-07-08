@@ -444,7 +444,7 @@ function poud_build () {
     else
       what="-f $ports_file"
     fi
-    cmd="sudo $_poudriere bulk -t -j $build -B $B -s -C $what"
+    cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
     scp -q $ports_file $ip:$ports_file
     echo "ssh $ip $cmd"
     ssh $ip "$cmd"
