@@ -385,9 +385,9 @@ function poud_build () {
   elif [ $f_c -eq 1 ]; then
     ports="$(poud_new_or_modified_ports)"
   elif [ x"$depends_on" != x"" ]; then
-    ports="$(poud_pi deps $depends_on | xargs)"
+    ports="$(poud_pi deps $depends_on)"
   elif [ x"$dir" != x"" ]; then
-    ports="$(poud_pi dir $dir | xargs)"
+    ports="$(poud_pi dir $dir)"
   elif [ x"$port" != x"" ]; then
     ports=$port
   else
@@ -425,7 +425,7 @@ function poud_build () {
   ## do it
   echo "Building....."
   local dt=$(date "+%Y%m%d_%H%M")
-  local tports="$(_poud_checksum_port_str \"$ports\")"
+  local tports="$(_poud_checksum_port_str \"$(echo $ports |xargs)\")"
   local B
   if [ x"$tports" = x"" ]; then
       B="all-$dt"
@@ -464,8 +464,8 @@ function poud_build () {
 
 function poud_new_or_modified_ports () {
 
-  local mports="$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/ | xargs)"
-  local nports="$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/ | xargs)"
+  local mports="$(cd $PORTSDIR ; git status | grep : | awk -F: '/\// { print $2 }' | cut -d / -f 1,2 | sed -e 's, ,,g' | sort -u | grep -v Mk/)"
+  local nports="$(cd $PORTSDIR ; git status | grep "/$" | sed -e 's, ,,g' -e 's,/$,,' -e 's,^ *,,' -e 's, *$,,' | grep -v Mk/)"
 
   echo "$mports $nports"
 }
