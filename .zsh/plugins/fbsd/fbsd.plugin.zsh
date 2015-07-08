@@ -537,6 +537,7 @@ function poud_aws_run_on_demand () {
                 --instance-type $aws_instance_type \
                 --security-group-ids $aws_security_group_id \
                 --subnet-id $aws_subnet_id | \
+                --associate-public-ip-address \
                  awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}'
         )
 
