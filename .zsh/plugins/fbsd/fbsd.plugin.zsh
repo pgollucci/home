@@ -321,6 +321,7 @@ function _poud_help () {
 ##/
 ##/ other opts
 ##/ -----------
+##/   -P ports_tree
 ##/   -a: build all ports
 ##/   -b: what build to use
 ##/   -c: build any port(s) with changes in $PORTSDIR
@@ -348,6 +349,7 @@ function poud_build () {
   local dir=""
   local f_t=0
   local where=spot
+  local ports_tree=default
 
   ## parse options
   while getopts A:B:G:S:T:ab:cd:hkp:r:tw: o; do
@@ -356,6 +358,7 @@ function poud_build () {
       B) aws_spot_bid=$OPTARG          ;;
       G) aws_security_group_id=$OPTARG ;;
 
+      P) ports_tree=$OPTARG            ;;
       a) f_a=1                         ;;
       b) build=$OPTARG                 ;;
       c) f_c=1                         ;;
@@ -389,7 +392,7 @@ function poud_build () {
   _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where
 
   ## do it
-  _poud_build_exec $f_t $f_a $build $port $where $ports_file $ip
+  _poud_build_exec $f_t $f_a $build $port $where $ports_file $ip $ports_tree
 
   ## spin down
   _poud_build_spin_down $f_k $where $sir $iid
@@ -420,13 +423,14 @@ function _poud_build_exec () {
   local where=$5
   local ports_file=$6
   local ip=$7
+  local ports_tree=$8
 
   local dt=$(date "+%Y%m%d_%H%M")
   local B=$dt
 
   if [ $f_t -eq 1 ]; then
-    sudo $_poudriere testport -j $build -o $port -i -s
-    sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
+    sudo $_poudriere testport -j $build -o $port -p $ports_tree -i -s
+    sudo jexec ${build}-$ports_tree-n env -i TERM=$TERM /usr/bin/login -fp root
   else
     local what
     if [ $f_a -eq 1 ]; then
@@ -435,13 +439,16 @@ function _poud_build_exec () {
       what="-f $ports_file"
     fi
 
-    local cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
+    local cmd1="sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
+    local cmd2="sudo $_poudriere bulk -t -j $build -B $B -C $what -p $ports_tree"
     case $where in
       local) eval "$cmd" ;;
       spot|ondemand)
         scp -q $ports_file $ip:$ports_file
-        echo "ssh $ip $cmd"
-        ssh $ip "$cmd"
+        echo "ssh $ip $cmd1"
+        echo "ssh $ip $cmd2"
+        ssh $ip "$cmd1"
+        ssh $ip "$cmd2"
     esac
   fi
 }
