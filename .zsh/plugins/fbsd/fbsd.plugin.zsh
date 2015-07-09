@@ -310,8 +310,8 @@ function _poud_help () {
 ##/ poud_build()
 ##/ usage:
 ##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] \
-##/               [-b build] [-c|-d regex|-p port] [-k] [-r regex] [-w where]
-##/    poud_build -t -p port [-b build]
+##/               [-P ports_tree] [-b build] [-c|-d regex|-p port] [-k] [-r regex] [-w where]
+##/    poud_build -t -p port [-b build] [-P ports_tree]
 ##/    poud_build -h
 ##/ aws opts:
 ##/ ----------
@@ -352,7 +352,7 @@ function poud_build () {
   local ports_tree=default
 
   ## parse options
-  while getopts A:B:G:S:T:ab:cd:hkp:r:tw: o; do
+  while getopts A:B:G:P:S:T:ab:cd:hkp:r:tw: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
       B) aws_spot_bid=$OPTARG          ;;
