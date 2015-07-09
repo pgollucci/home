@@ -20,6 +20,14 @@ else
   return
 fi
 
+function _poud_msg () {
+  local msg=$1
+
+  local ts=$(date "+%Y%m%d_%H%M%S")
+
+  echo -e >&2 "[$ts]: $msg"
+}
+
 function _poud_checksum_port_str () {
   local str=$1
 
@@ -39,7 +47,7 @@ function _poud_from_dir_or_arg () {
 function poud_packages () {
 
   if [ `id -u` != 0 ]; then
-    echo "need to be root"
+    _poud_msg "need to be root"
     return
   fi
 
@@ -54,18 +62,17 @@ function poud_packages () {
 function poud_zfs_init () {
   local z=$1
 
-  [ -z $z ] && echo "must specify a pool" && return
+  [ -z $z ] && _poud_msg "must specify a pool" && return
 
   local base
   case $z in
     $_zbackup) base=/b ;;
     $_zpool)   base=   ;;
-    *)         echo "pool must be $_zbackup|$_zpool" && return ;;
+    *)         _poud_msg "pool must be $_zbackup|$_zpool" && return ;;
   esac
 
   sudo zfs set mountpoint=none $z
   sudo zfs set atime=off $z
-  sudo zfs set sync=disabled $z
   sudo zfs set checksum=fletcher4 $z
 
   sudo zfs create -p -o mountpoint=$base/usr/local/etc/nginx $z/usr/local/etc/nginx
@@ -151,7 +158,7 @@ function poud_jails_update () {
 function poud_ptree_init () {
 
   if [ -z $PORTSDIR -o -z $_pdir ]; then
-      echo "must call `pdir foo` 1st"
+      _poud_msg "must call `pdir foo` 1st"
       return
   fi
 
@@ -284,7 +291,7 @@ function poud_uses () {
   (cd $PORTSDIR ; poud_pi deps $str M | xargs grep $pattern)
 }
 
-function poud_help () {
+function _poud_help () {
   local func=$1
 
   local me=$HOME/.zsh/plugins/fbsd/fbsd.plugin.zsh
@@ -297,7 +304,7 @@ function poud_help () {
 
 ##/ poud_build()
 ##/ usage:
-##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] [-S subnet-XXXXXXXX] [-T type] \
+##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] \
 ##/               [-b build] [-c|-d regex|-p port] [-k] [-r regex] [-w where]
 ##/    poud_build -t -p port [-b build]
 ##/    poud_build -h
@@ -306,8 +313,6 @@ function poud_help () {
 ##/   -A: ami_id
 ##/   -B: bid amount "XX.YY"
 ##/   -G: security Group
-##/   -S: subnet_id
-##/   -T: instance_type|cheapest 32cpu+
 ##/
 ##/ other opts
 ##/ -----------
@@ -320,16 +325,13 @@ function poud_help () {
 ##/   -k: keep instance/request running when done
 ##/   -p: build port
 ##/   -t: testport instead of bulk
-##/   -w: locally, or spin up a spot or on-demand aws instance
+##/   -w: local|ondemand|spot
 function poud_build () {
 
   ## defaults
-  echo "Setting Defaults....."
   local aws_ami_id=ami-7930fe12
   local aws_spot_bid=2.00
   local aws_security_group_id=sg-76ff1811
-  local aws_subnet_id=subnet-614f3b38
-  local aws_instance_type=c4.8xlarge
 
   local f_a=0
   local build=110amd64
@@ -343,14 +345,11 @@ function poud_build () {
   local where=spot
 
   ## parse options
-  echo "Parsing Options....."
   while getopts A:B:G:S:T:ab:cd:hkp:r:tw: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
       B) aws_spot_bid=$OPTARG          ;;
       G) aws_security_group_id=$OPTARG ;;
-      S) aws_subnet_id=$OPTARG         ;;
-      T) aws_instance_type=$OPTARG     ;;
 
       a) f_a=1                         ;;
       b) build=$OPTARG                 ;;
@@ -367,19 +366,115 @@ function poud_build () {
   shift $(($OPTIND-1))
 
   if [ $f_h -eq 1 ]; then
-    poud_help "poud_build"
+    _poud_help "poud_build"
     return
   fi
 
   ## validate args
-  if [ $f_t -eq 1 ]; then
-    where=local
-  fi
+  [ $f_t -eq 1 ] && where=local
 
   ## what to build
-  echo "What to Build....."
+  local ports_file="/tmp/fbsd-poudriere-$build-$(date "+%Y%m%d_%H%M")"
+  _poud_build_what $f_a $f_c "$depends_on" "$dir" $port $ports_file
+
+  ## spin up
+  local sir
+  local iid
+  local ip
+  _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where
+
+  ## do it
+  _poud_build_exec $f_t $f_a $build $port $where $ports_file $ip
+return
+  ## spin down
+  _poud_build_spin_down $f_k $where $sir $iid
+}
+
+function _poud_build_spin_down () {
+  local f_k=$1
+  local where=$2
+  local sir=$3
+  local iid=$4
+
+  if [ $f_k -eq 0 ]; then
+    _poud_msg "Spinning down....."
+    case $where in
+      spot) poud_aws_cancel_spot_instance_requests $sir ;;
+    esac
+    case $where in
+      spot|ondemand) poud_aws_terminate_instances $iid ;;
+    esac
+  fi
+}
+
+function _poud_build_exec () {
+  local f_t=$1
+  local f_a=$2
+  local build=$3
+  local port=$4
+  local where=$5
+  local ports_file=$6
+  local ip=$7
+
+  local dt=$(date "+%Y%m%d_%H%M")
+  local B=$dt
+
+  if [ $f_t -eq 1 ]; then
+    sudo $_poudriere testport -j $build -o $port -i -s
+    sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
+  else
+    local what
+    if [ $f_a -eq 1 ]; then
+      what="-a"
+    else
+      what="-f $ports_file"
+    fi
+
+    local cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
+    case $where in
+      local) eval "$cmd" ;;
+      spot|ondemand)
+        scp -q $ports_file $ip:$ports_file
+        echo "ssh $ip $cmd"
+        ssh $ip "$cmd"
+    esac
+  fi
+}
+
+##/ _poud_build_spin_up()
+##/ side effects:
+##/   sir
+##/   iid
+##/   ip
+function _poud_build_spin_up () {
+  local aws_ami_id=$1
+  local aws_instance_type=$2
+  local aws_security_group_id=$3
+  local where=$4
+
+  case $where in
+    spot)
+      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_security_group_id)
+      iid=$(poud_aws_spot_fulfilled $sir)
+      ip=$(poud_aws_get_priv_ip $iid)
+      poud_aws_wait_for_ssh $ip
+      ;;
+    ondemand)
+      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_security_group_id)
+      ip=$(poud_aws_get_priv_ip $iid)
+      poud_aws_wait_for_ssh $ip
+      ;;
+  esac
+}
+
+function _poud_build_what () {
+  local f_a=$1
+  local f_c=$2
+  local depends_on=$depends_on
+  local dir=$dir
+  local port=$port
+
   local ports
-  local ports_file=/tmp/$build.$$
   if [ $f_a -eq 1 ]; then
     ports=""
   elif [ $f_c -eq 1 ]; then
@@ -391,74 +486,11 @@ function poud_build () {
   elif [ x"$port" != x"" ]; then
     ports=$port
   else
-    echo "Failed."
-    poud_help "poud_build"
+    _poud_help "poud_build"
     return
   fi
   if [ x"$ports" != x"" ]; then
     echo "$ports" > $ports_file
-  fi
-
-  ## spin up
-  echo "Spinning Up....."
-  local sir
-  local iid
-  local ip
-  case $where in
-    spot)
-      echo "Waiting for fulfillment....."
-      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
-      iid=$(poud_aws_spot_fulfilled $sir)
-      ip=$(poud_aws_get_priv_ip $iid)
-      echo "Waiting for ssh....."
-      poud_aws_wait_for_ssh $ip
-      ;;
-    ondemand)
-      echo "Waiting for instance....."
-      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_instance_type $aws_security_group_id $aws_subnet_id $build $port)
-      ip=$(poud_aws_get_priv_ip $iid)
-      echo "Waiting for ssh....."
-      poud_aws_wait_for_ssh $ip
-      ;;
-  esac
-
-  ## do it
-  echo "Building....."
-  local dt=$(date "+%Y%m%d_%H%M")
-  local tports="$(_poud_checksum_port_str \"$(echo $ports |xargs)\")"
-  local B
-  if [ x"$tports" = x"" ]; then
-      B="all-$dt"
-  else
-      B="${tports}-${dt}"
-  fi
-  local what
-  local cmd
-
-  if [ $f_t -eq 1 ]; then
-      sudo $_poudriere testport -j $build -o $port -i -s
-      sudo jexec ${build}-default-n env -i TERM=$TERM /usr/bin/login -fp root
-  else
-    if [ $f_a -eq 1 ]; then
-      what="-a"
-    else
-      what="-f $ports_file"
-    fi
-    cmd="sudo $_poudriere bulk -t -j $build -B $B -C $what"
-    scp -q $ports_file $ip:$ports_file
-    echo "ssh $ip $cmd"
-    ssh $ip "$cmd"
-  fi
-
-  ## spin down
-  if [ $f_k -eq 0 ]; then
-    echo "Spinning down....."
-    case $where in
-      spot) poud_aws_cancel_spot_instance_requests $sir ;;
-    esac
-    case $where in
-      spot|ondemand) poud_aws_terminate_instances $iid ;;
-    esac
   fi
 }
 
@@ -526,72 +558,105 @@ EOF
 # ----------------------------------------------------------------------------
 function poud_aws_run_on_demand () {
   local aws_ami_id=$1
-  local aws_instance_type=$2
-  local aws_security_group_id=$3
-  local aws_subnet_id=$4
-  local build=$5
+  local aws_security_group_id=$2
 
+  _poud_msg "Making OnDemand Request....."
   local i=$(aws ec2 run-instances \
                 --image-id $aws_ami_id \
                 --count 1 \
-                --instance-type $aws_instance_type \
+                --instance-type "c3.4xlarge" \
                 --security-group-ids $aws_security_group_id \
-                --subnet-id $aws_subnet_id \
+                --subnet-id "subnet-614f3b38" \
                 --associate-public-ip-address | \
                  awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}'
         )
 
   sleep 3
+
+  _poud_msg "Setting root EBS to terminate on delete....."
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
   aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json" 2>/dev/null
 
   echo $i
 }
 
+##/ _poud_aws_find_cheapest
+##  side_effects:
+##/   aws_cheapest_zone
+##/   aws_cheapest_type
+function _poud_aws_find_cheapest () {
+
+  _poud_msg  "Looking for cheapest option....."
+
+  local azs="1a 1b 1e 1c" # XXX: order matters based on where my nfs box is
+  local types="r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge" # XXX: order matters for code
+
+  local rolling_cheapest_price=""
+  local rolling_cheapest_zone=""
+  local rolling_cheapest_type=""
+
+  for type in ${=types}; do
+    local cheapest_zone=""
+    local cheapest_price=""
+
+    for az in ${=azs}; do
+      local price=$(aws ec2 describe-spot-price-history \
+                        --max-items 1 \
+                        --availability-zone us-east-$az \
+                        --instance-types $type | \
+                         awk -F: '/SpotPrice"/ { print $2 }' | \
+                         sed -e 's/[", ]//g'
+            )
+      # XXX: Floating point math
+#      _poud_msg "$type -> $az = $price"
+      local rc=$(echo $price $cheapest_price | awk '{ printf "%d", ($1 <= $2) }')
+      if [ $rc -eq 1 -o "$cheapest_price" = "" ]; then
+         cheapest_zone=$az
+         cheapest_price=$price
+       fi
+    done
+#    _poud_msg "Cheapest:($type) in $cheapest_zone @ \$$cheapest_price\n"
+
+    local rc=$(echo $cheapest_price $rolling_cheapest_price | awk '{ printf "%d", ($1 <= $2) }')
+    if [ $rc -eq 1 -o "$rolling_cheapest_price" = "" ]; then
+      rolling_cheapest_zone=$cheapest_zone
+      rolling_cheapest_price=$cheapest_price
+      rolling_cheapest_type=$type
+    fi
+  done
+
+  _poud_msg "Found:($rolling_cheapest_type) in $rolling_cheapest_zone @ \$$rolling_cheapest_price\n"
+
+  aws_cheapest_zone=$rolling_cheapest_zone
+  aws_cheapest_type=$rolling_cheapest_type
+}
+
+function _poud_aws_zone_to_subnet () {
+  local zone=$1
+
+  case $zone in
+    1a) subnet_id=subnet-875032ac ;;
+    1b) subnet_id=subnet-5baf882c ;;
+    1c) subnet_id=subnet-614f3b38 ;;
+    1e) subnet_id=subnet-02dedc38 ;;
+  esac
+
+  echo $subnet_id
+}
+
 function poud_aws_request_spot_instances () {
   local aws_ami_id=$1
   local aws_spot_bid=$2
-  local aws_instance_type=$3
-  local aws_security_group_id=$4
-  local aws_subnet_id=$5
-  local build=$6
+  local aws_security_group_id=$3
 
-  if [ $aws_instance_type = "cheapest" ]; then
-    echo >&2 "Looking for Cheapest option....."
-    local ctype
-    local cprice=100
-    local czone
-    for zone in 1a 1b 1c 1e; do
-      for type in r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge; do
-        local p=$(aws ec2 describe-spot-price-history \
-                      --max-items 1 \
-                      --availability-zone us-east-$zone \
-                      --instance-types $type | \
-                       awk -F: '/SpotPrice"/ { print $2 }' | \
-                       sed -e 's/[", ]//g'
-              )
-        # XXX: Floating point math
-        rc=$(echo $p $cprice | awk '{ printf "%d", ($1 < $2) }')
-        if [ $rc -eq 1 ]; then
-            czone=$zone
-            cprice=$p
-            aws_instance_type=$type
-        fi
-      done
-    done
+  local aws_cheapest_zone
+  local aws_cheapest_type
+  _poud_aws_find_cheapest
 
-    case $czone in
-      1a) aws_subnet_id=subnet-875032ac ;;
-      1b) aws_subnet_id=subnet-5baf882c ;;
-      1c) aws_subnet_id=subnet-614f3b38 ;;
-      1e) aws_subnet_id=subnet-02dedc38 ;;
-    esac
+  local aws_subnet_id=$(_poud_aws_zone_to_subnet $aws_cheapest_zone)
 
-    echo >&2 "Found $aws_instance_type @ \$$cprice in $czone"
-  fi
-
-  local json="{\"ImageId\":\"$aws_ami_id\",\"InstanceType\":\"$aws_instance_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
-
+  _poud_msg "Requesting Spot Instance....."
+  local json="{\"ImageId\":\"$aws_ami_id\",\"InstanceType\":\"$aws_cheapest_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
   local sir=$(aws ec2 request-spot-instances \
                   --spot-price "$aws_spot_bid" \
                   --instance-count 1 \
@@ -605,6 +670,8 @@ function poud_aws_request_spot_instances () {
 
 function poud_aws_spot_fulfilled () {
   local sir=$1
+
+  _poud_msg "Waiting for fulfillment....."
 
   local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
   while [ $code != "fulfilled" ]; do
@@ -623,6 +690,7 @@ function poud_aws_get_priv_ip () {
   local i=$1
 
   local ip=$(aws ec2 describe-instances --instance-ids $i | awk -F: '/PrivateIpAddress/ && /10/ { gsub(/[", ]/, "", $2); print $2}' | head -1)
+  _poud_msg "Instance has private ip: $ip"
 
   echo $ip
 }
@@ -630,6 +698,7 @@ function poud_aws_get_priv_ip () {
 function poud_aws_wait_for_ssh () {
   local ip=$1
 
+  _poud_msg "Waiting for ssh....."
   local avail=n
   while [ "$avail" != "y" ]; do
     ssh -o ConnectTimeOut=2 $ip 'echo' >/dev/null 2>&1
