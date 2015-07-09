@@ -77,7 +77,7 @@ function poud_zfs_init () {
 
   sudo zfs create -p -o mountpoint=$base/usr/local/etc/nginx $z/usr/local/etc/nginx
   sudo zfs create -p -o mountpoint=$base/usr/home/$USER/repos $z/usr/home/$USER/repos
-  sudo zfs create -p -o mountpoint=$base/usr/local/poudriere $z/usr/local/poudriere
+  sudo zfs create -p -o mountpoint=$base$_poudriere_dir $z$_poudriere_dir
 
   sudo touch /etc/exports
   sudo zfs sharenfs="-maproot=root -network 10.0.0.0 -mask 255.255.255.0" $z
