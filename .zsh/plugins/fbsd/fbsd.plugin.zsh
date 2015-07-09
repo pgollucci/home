@@ -157,25 +157,21 @@ function poud_jails_update () {
 
 function poud_ptree_init () {
 
-  if [ -z $PORTSDIR -o -z $_pdir ]; then
-      _poud_msg "must call `pdir foo` 1st"
-      return
-  fi
-
   local git_repo=git@github.com:$USER/freebsd-ports.git
   local git_svn_uri=svn.freebsd.org/ports
   local svn_proto=svn+ssh
 
-  local zdir=$_zpool/usr/local/poudriere/ports/$_pdir
+  local zdir=$_zpool/usr/local/poudriere/ports/clean
+  local fsdir=${zdir##$_zpool}
 
   sudo zfs destroy -fr $zdir
-  sudo zfs create $zdir
-  sudo zfs set mountpoint=$PORTSDIR $zdir
+  sudo zfs create -p $zdir
+  sudo zfs set mountpoint=$fsdir $zdir
 
-  sudo chown $USER:$USER $PORTSDIR
-  git clone $git_repo $PORTSDIR
+  sudo chown $USER:$USER $fsdir
+  git clone $git_repo $fsdir
 
-  cd $PORTSDIR
+  cd $fsdir
   git svn init -T head $svn_proto://$git_svn_uri .
 
   git config oh-my-zsh hide-dirty 1
@@ -205,6 +201,15 @@ function poud_ptree () {
   echo $PORTSDIR
 }
 poud_ptree default
+
+function poud_ptree_make () {
+  local tree=$1
+  local from=${2:-clean}
+
+  sudo zfs snapshot $_zpool$_poudriere_ports/clean@now
+  sudo $_poudriere ports -c -F -p $tree
+  sudo zfs clone    $_zpool$_poudriere_ports/clean@now $_zpool$_poudriere_ports/$tree
+}
 
 function poud_mfi () {
 
