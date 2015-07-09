@@ -385,7 +385,7 @@ function poud_build () {
 
   ## do it
   _poud_build_exec $f_t $f_a $build $port $where $ports_file $ip
-return
+
   ## spin down
   _poud_build_spin_down $f_k $where $sir $iid
 }
