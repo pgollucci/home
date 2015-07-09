@@ -334,7 +334,7 @@ function _poud_help () {
 function poud_build () {
 
   ## defaults
-  local aws_ami_id=ami-7930fe12
+  local aws_ami_id=ami-d15891ba
   local aws_spot_bid=2.00
   local aws_security_group_id=sg-76ff1811
 
