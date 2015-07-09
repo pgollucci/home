@@ -439,7 +439,7 @@ function _poud_build_exec () {
       what="-f $ports_file"
     fi
 
-    local cmd1="sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
+    local cmd1="sudo mkdir -p $_poudriere_ports/$ports_tree ; sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
     local cmd2="sudo $_poudriere bulk -t -j $build -B $B -C $what -p $ports_tree"
     case $where in
       local) eval "$cmd" ;;
@@ -585,7 +585,7 @@ function poud_aws_run_on_demand () {
 
   sleep 3
 
-  _poud_msg "Setting root EBS to terminate on delete....."
+  _poud_msg "Setting root EBS to delete on terminate....."
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
   aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json" 2>/dev/null
 
