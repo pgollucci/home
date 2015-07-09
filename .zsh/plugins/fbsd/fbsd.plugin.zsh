@@ -573,7 +573,7 @@ function poud_aws_run_on_demand () {
   local aws_security_group_id=$2
 
   _poud_msg "Making OnDemand Request....."
-  local i=$(aws ec2 run-instances \
+  local iid=$(aws ec2 run-instances \
                 --image-id $aws_ami_id \
                 --count 1 \
                 --instance-type "c3.4xlarge" \
@@ -587,9 +587,9 @@ function poud_aws_run_on_demand () {
 
   _poud_msg "Setting root EBS to delete on terminate....."
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
-  aws ec2 modify-instance-attribute --instance-id $i --block-device-mappings "$json" 2>/dev/null
+  aws ec2 modify-instance-attribute --instance-id $iid --block-device-mappings "$json" 2>/dev/null
 
-  echo $i
+  echo $iid
 }
 
 ##/ _poud_aws_find_cheapest
