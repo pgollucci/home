@@ -192,15 +192,12 @@ function poud_ptree_init () {
 function poud_ptree () {
   local tree=$1
 
-  local _pdir
-
   [ -n "$tree" ] && \
       PORTSDIR=$_poudriere_ports/$tree && export PORTSDIR && \
-      _pdir=$tree && export _pdir
+      PDIR=$tree && export PDIR=$tree
 
   echo $PORTSDIR
 }
-poud_ptree default
 
 function poud_ptree_make () {
   local tree=$1
@@ -349,7 +346,7 @@ function poud_build () {
   local dir=""
   local f_t=0
   local where=spot
-  local ports_tree=default
+  local ports_tree=$PDIR
 
   ## parse options
   while getopts A:B:G:P:S:T:ab:cd:hkp:r:tw: o; do
@@ -392,19 +389,20 @@ function poud_build () {
   _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where
 
   ## do it
-  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file $ip $ports_tree
+  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree
 
   ## spin down
-  _poud_build_spin_down $f_k $where $sir $iid
+  _poud_build_spin_down $f_k $f_t $where $sir $iid
 }
 
 function _poud_build_spin_down () {
   local f_k=$1
-  local where=$2
-  local sir=$3
-  local iid=$4
+  local f_t=$2
+  local where=$3
+  local sir=$4
+  local iid=$5
 
-  if [ $f_k -eq 0 ]; then
+  if [ $f_k -eq 0 -a $f_t -eq 0 ]; then
     _poud_msg "Spinning down....."
     case $where in
       spot) poud_aws_cancel_spot_instance_requests $sir ;;
@@ -444,7 +442,9 @@ function _poud_build_exec () {
     case $where in
       local) eval "$cmd" ;;
       spot|ondemand)
-        scp -q $ports_file $ip:$ports_file
+        if [ $f_a -eq 0 ]; then
+          scp -q $ports_file $ip:$ports_file
+        fi
         echo "ssh $ip $cmd1"
         echo "ssh $ip $cmd2"
         ssh $ip "$cmd1"
