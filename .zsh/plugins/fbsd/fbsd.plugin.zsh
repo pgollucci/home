@@ -391,19 +391,29 @@ function poud_build () {
 
   ## what to build
   local ports_file="/tmp/fbsd-poudriere-$build-$(date "+%Y%m%d_%H%M")"
-  _poud_build_what $f_a $f_c "$depends_on" "$dir" $port $ports_file
+  _poud_build_what $f_a $f_c "$depends_on" "$dir" $port $ports_file $build
 
   ## spin up
   local sir
   local iid
   local ip
-  _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where
+  _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where $build
 
   ## do it
   _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree
 
   ## spin down
-  _poud_build_spin_down $f_k $f_t $where $sir $iid
+  _poud_build_spin_down $f_k $f_t $where $sir $iid $build
+}
+
+function poud_build_all () {
+
+  for tag in ${=_build_tags}; do
+    local build=$(echo $tag | sed -e 's,-.*,,' -e 's,\.,,g')
+    for arch in ${=_arches}; do
+      poud_build -b $build$arch $* &
+    done
+  done
 }
 
 function _poud_build_spin_down () {
@@ -412,9 +422,10 @@ function _poud_build_spin_down () {
   local where=$3
   local sir=$4
   local iid=$5
+  local build=$6
 
   if [ $f_k -eq 0 -a $f_t -eq 0 ]; then
-    _poud_msg "Spinning down....."
+    _poud_msg "$build: Spinning down....."
     case $where in
       spot) poud_aws_cancel_spot_instance_requests $sir ;;
     esac
@@ -474,18 +485,19 @@ function _poud_build_spin_up () {
   local aws_instance_type=$2
   local aws_security_group_id=$3
   local where=$4
+  local buiild=$5
 
   case $where in
     spot)
-      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_security_group_id)
-      iid=$(poud_aws_spot_fulfilled $sir)
-      ip=$(poud_aws_get_priv_ip $iid)
-      poud_aws_wait_for_ssh $ip
+      sir=$(poud_aws_request_spot_instances $aws_ami_id $aws_spot_bid $aws_security_group_id $build)
+      iid=$(poud_aws_spot_fulfilled $sir $build)
+      ip=$(poud_aws_get_priv_ip $iid $build)
+      poud_aws_wait_for_ssh $ip $build
       ;;
     ondemand)
-      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_security_group_id)
-      ip=$(poud_aws_get_priv_ip $iid)
-      poud_aws_wait_for_ssh $ip
+      iid=$(poud_aws_run_on_demand $aws_ami_id $aws_security_group_id $build)
+      ip=$(poud_aws_get_priv_ip $iid $build)
+      poud_aws_wait_for_ssh $ip $build
       ;;
   esac
 }
@@ -493,11 +505,13 @@ function _poud_build_spin_up () {
 function _poud_build_what () {
   local f_a=$1
   local f_c=$2
-  local depends_on=$depends_on
-  local dir=$dir
-  local port=$port
+  local depends_on=$3
+  local dir=$4
+  local port=$5
+  local ports_file=$6
+  local build=$7
 
-  _poud_msg "What to build....."
+  _poud_msg "$build: What to build....."
   local ports
   if [ $f_a -eq 1 ]; then
     ports=""
@@ -583,8 +597,9 @@ EOF
 function poud_aws_run_on_demand () {
   local aws_ami_id=$1
   local aws_security_group_id=$2
+  local build=$3
 
-  _poud_msg "Making OnDemand Request....."
+  _poud_msg "$build: Making OnDemand Request....."
   local iid=$(aws ec2 run-instances \
                 --image-id $aws_ami_id \
                 --count 1 \
@@ -597,7 +612,7 @@ function poud_aws_run_on_demand () {
 
   sleep 3
 
-  _poud_msg "Setting root EBS to delete on terminate....."
+  _poud_msg "$build: Setting root EBS to delete on terminate....."
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
   aws ec2 modify-instance-attribute --instance-id $iid --block-device-mappings "$json" 2>/dev/null
 
@@ -609,11 +624,12 @@ function poud_aws_run_on_demand () {
 ##/   aws_cheapest_zone
 ##/   aws_cheapest_type
 function _poud_aws_find_cheapest () {
+  local build=$1
 
-  _poud_msg  "Looking for cheapest option....."
+  _poud_msg  "$build: Looking for cheapest option....."
 
   local azs="1a 1b 1e 1c" # XXX: order matters based on where my nfs box is
-  local types="r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge" # XXX: order matters for code
+  local types="r3.8xlarge c3.8xlarge c4.8xlarge m4.10xlarge i2.8xlarge d2.8xlarge" # XXX: order matters for code in case of ties
 
   local rolling_cheapest_price=""
   local rolling_cheapest_zone=""
@@ -632,14 +648,14 @@ function _poud_aws_find_cheapest () {
                          sed -e 's/[", ]//g'
             )
       # XXX: Floating point math
-#      _poud_msg "$type -> $az = $price"
+#      _poud_msg "$build: $type -> $az = $price"
       local rc=$(echo $price $cheapest_price | awk '{ printf "%d", ($1 <= $2) }')
       if [ $rc -eq 1 -o "$cheapest_price" = "" ]; then
          cheapest_zone=$az
          cheapest_price=$price
        fi
     done
-#    _poud_msg "Cheapest:($type) in $cheapest_zone @ \$$cheapest_price\n"
+#    _poud_msg "$build: Cheapest:($type) in $cheapest_zone @ \$$cheapest_price\n"
 
     local rc=$(echo $cheapest_price $rolling_cheapest_price | awk '{ printf "%d", ($1 <= $2) }')
     if [ $rc -eq 1 -o "$rolling_cheapest_price" = "" ]; then
@@ -649,7 +665,7 @@ function _poud_aws_find_cheapest () {
     fi
   done
 
-  _poud_msg "Found:($rolling_cheapest_type) in $rolling_cheapest_zone @ \$$rolling_cheapest_price\n"
+  _poud_msg "$build: Found:($rolling_cheapest_type) in $rolling_cheapest_zone @ \$$rolling_cheapest_price\n"
 
   aws_cheapest_zone=$rolling_cheapest_zone
   aws_cheapest_type=$rolling_cheapest_type
@@ -672,14 +688,15 @@ function poud_aws_request_spot_instances () {
   local aws_ami_id=$1
   local aws_spot_bid=$2
   local aws_security_group_id=$3
+  local build=$4
 
   local aws_cheapest_zone
   local aws_cheapest_type
-  _poud_aws_find_cheapest
+  _poud_aws_find_cheapest $build
 
   local aws_subnet_id=$(_poud_aws_zone_to_subnet $aws_cheapest_zone)
 
-  _poud_msg "Requesting Spot Instance....."
+  _poud_msg "$build: Requesting Spot Instance....."
   local json="{\"ImageId\":\"$aws_ami_id\",\"InstanceType\":\"$aws_cheapest_type\",\"NetworkInterfaces\":[{\"Groups\":[\"$aws_security_group_id\"],\"DeviceIndex\":0,\"SubnetId\":\"$aws_subnet_id\",\"AssociatePublicIpAddress\":true}]}"
   local sir=$(aws ec2 request-spot-instances \
                   --spot-price "$aws_spot_bid" \
@@ -694,8 +711,9 @@ function poud_aws_request_spot_instances () {
 
 function poud_aws_spot_fulfilled () {
   local sir=$1
+  local build=$2
 
-  _poud_msg "Waiting for fulfillment....."
+  _poud_msg "$build: Waiting for fulfillment....."
 
   local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
   while [ $code != "fulfilled" ]; do
@@ -711,18 +729,20 @@ function poud_aws_spot_fulfilled () {
 }
 
 function poud_aws_get_priv_ip () {
-  local i=$1
+  local iid=$1
+  local build=$2
 
-  local ip=$(aws ec2 describe-instances --instance-ids $i | awk -F: '/PrivateIpAddress/ && /10/ { gsub(/[", ]/, "", $2); print $2}' | head -1)
-  _poud_msg "Instance has private ip: $ip"
+  local ip=$(aws ec2 describe-instances --instance-ids $iid | awk -F: '/PrivateIpAddress/ && /10/ { gsub(/[", ]/, "", $2); print $2}' | head -1)
+  _poud_msg "$build: Instance has private ip: $ip"
 
   echo $ip
 }
 
 function poud_aws_wait_for_ssh () {
   local ip=$1
+  local build=$2
 
-  _poud_msg "Waiting for ssh....."
+  _poud_msg "$build: Waiting for ssh....."
   local avail=n
   while [ "$avail" != "y" ]; do
     ssh -o ConnectTimeOut=2 $ip 'echo' >/dev/null 2>&1
