@@ -348,7 +348,7 @@ function poud_build () {
   local aws_security_group_id=sg-76ff1811
 
   local f_a=0
-  local build=110amd64
+  local build=$BUILD
   local f_c=0
   local depends_on=""
   local f_h=0
