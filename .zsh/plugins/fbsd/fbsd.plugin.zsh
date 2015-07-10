@@ -192,11 +192,22 @@ function poud_ptree_init () {
 function poud_ptree () {
   local tree=$1
 
-  [ -n "$tree" ] && \
-      PORTSDIR=$_poudriere_ports/$tree && export PORTSDIR && \
-      PDIR=$tree && export PDIR=$tree
+  if [ -n "$tree" ]; then
+    PORTSDIR=$_poudriere_ports/$tree && export PORTSDIR
+    PDIR=$tree && export PDIR=$tree
+  fi
 
   echo $PORTSDIR
+}
+
+function poud_b () {
+  local build=$1
+
+  if [ -n "$build" ]; then
+    BUILD=$build && export BUILD
+  fi
+
+  echo $BUILD
 }
 
 function poud_ptree_make () {
