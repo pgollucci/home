@@ -23,7 +23,7 @@ fi
 function _poud_msg () {
   local msg=$1
 
-  local ts=$(date "+%Y%m%d_%H%M%S")
+  local ts=$(date "+%Y/%m/%d_%H:%M:%S")
 
   echo -e >&2 "[$ts]: $msg"
 }
@@ -392,7 +392,7 @@ function poud_build () {
   _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where
 
   ## do it
-  _poud_build_exec $f_t $f_a $build $port $where $ports_file $ip $ports_tree
+  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file $ip $ports_tree
 
   ## spin down
   _poud_build_spin_down $f_k $where $sir $iid
@@ -486,6 +486,7 @@ function _poud_build_what () {
   local dir=$dir
   local port=$port
 
+  _poud_msg "What to build....."
   local ports
   if [ $f_a -eq 1 ]; then
     ports=""
