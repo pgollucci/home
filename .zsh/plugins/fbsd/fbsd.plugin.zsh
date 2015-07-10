@@ -391,19 +391,19 @@ function poud_build () {
 
   ## what to build
   local ports_file="/tmp/fbsd-poudriere-$build-$(date "+%Y%m%d_%H%M")"
-  _poud_build_what $f_a $f_c "$depends_on" "$dir" $port $ports_file $build
+  _poud_build_what $f_a $f_c "$depends_on" "$dir" "$port" $ports_file "$build-$ports_tree"
 
   ## spin up
   local sir
   local iid
   local ip
-  _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where $build
+  _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where "$build-$ports_tree"
 
   ## do it
   _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree
 
   ## spin down
-  _poud_build_spin_down $f_k $f_t $where $sir $iid $build
+  _poud_build_spin_down $f_k $f_t $where "$sir" $iid "$build-$ports_tree"
 }
 
 function poud_build_all () {
@@ -612,6 +612,9 @@ function poud_aws_run_on_demand () {
 
   sleep 3
 
+  _poud_msg "$build: Tagging Instance"
+  aws ec2 create-tags --resource $iid --tags "Key=Name,Value=ond.pbuilder.$build"
+
   _poud_msg "$build: Setting root EBS to delete on terminate....."
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
   aws ec2 modify-instance-attribute --instance-id $iid --block-device-mappings "$json" 2>/dev/null
@@ -706,6 +709,9 @@ function poud_aws_request_spot_instances () {
                    awk -F: '/SpotInstanceRequestId/ { gsub(/[", ]/, "", $2); print $2}'
         )
 
+  _poud_msg "$build: Tagging Spot Request"
+  aws ec2 create-tags --resources $sir --tags "Key=Name,Value=sir.pbuilder.$build"
+
   echo $sir
 }
 
@@ -715,15 +721,23 @@ function poud_aws_spot_fulfilled () {
 
   _poud_msg "$build: Waiting for fulfillment....."
 
-  local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
-  while [ $code != "fulfilled" ]; do
-    code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+  local prev_code=
+  local code=
+  while [ x"$code" != x"fulfilled" ]; do
+    local code=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/Code/ { gsub(/[", ]/, "", $2); print $2}')
+    if [ x"$prev_code" != x"$code" ]; then
+      prev_code=$code
+      _poud_msg "$build: -> $code"
+    fi
     sleep 5
   done
 
   local iid=$(aws ec2 describe-spot-instance-requests --spot-instance-request-ids $sir | awk -F: '/InstanceId/ { gsub(/[", ]/, "", $2); print $2}')
   local json="[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"DeleteOnTermination\":true}}]"
   aws ec2 modify-instance-attribute --instance-id $iid --block-device-mappings "$json"
+
+  _poud_msg "$build: Tagging Spot Instance"
+  aws ec2 create-tags --resources $iid --tags "Key=Name,Value=sir.pbuilder.$build"
 
   echo $iid
 }
