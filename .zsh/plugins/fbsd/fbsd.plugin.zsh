@@ -85,8 +85,8 @@ function poud_zfs_init () {
 
 function poud_zfs_snapshot () {
 
-  local containers="$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
-  local dt=$(date "+%Y%m%d_%H%M")
+  local containers="$(_poud_zfs_containers)"
+    local dt=$(date "+%Y%m%d_%H%M")
 
   for container in ${=containers}; do
     sudo zfs snapshot $container@$dt
@@ -95,11 +95,16 @@ function poud_zfs_snapshot () {
   echo $dt
 }
 
+function _poud_zfs_containers () {
+
+  echo "$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
+}
+
 function poud_zfs_backup () {
 
   local dt=$(poud_zfs_snapshot)
 
-  local containers="$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
+  local containers="$(_poud_zfs_containers)"
   for container in ${=containers}; do
     local prev_dt=$(zfs list -t snapshot | grep $container | awk '{ print $1 }' | awk -F@ '{ print $2 }' | tail -2 | head -1)
     local backup=$(echo $container | sed -e "s,$_zpool,$_zbackup,")
@@ -214,9 +219,9 @@ function poud_ptree_make () {
   local tree=$1
   local from=${2:-clean}
 
-  sudo zfs snapshot $_zpool$_poudriere_ports/clean@now
+  sudo zfs snapshot $_zpool$_poudriere_ports/$from@now
   sudo $_poudriere ports -c -F -p $tree
-  sudo zfs clone    $_zpool$_poudriere_ports/clean@now $_zpool$_poudriere_ports/$tree
+  sudo zfs clone    $_zpool$_poudriere_ports/$from@now $_zpool$_poudriere_ports/$tree
 }
 
 function poud_mfi () {
@@ -318,8 +323,9 @@ function _poud_help () {
 ##/ poud_build()
 ##/ usage:
 ##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] \
-##/               [-P ports_tree] [-b build] [-c|-d regex|-p port] [-k] [-r regex] [-w where]
-##/    poud_build -t -p port [-b build] [-P ports_tree]
+##/               [-P ports_tree] [-b build] [-c|-d regex|-p port] [-k] \
+##/               [-r regex] [-w where] [-z set]
+##/    poud_build -t -p port [-b build] [-P ports_tree] [-z set]
 ##/    poud_build -h
 ##/ aws opts:
 ##/ ----------
@@ -340,8 +346,9 @@ function _poud_help () {
 ##/   -p: build port
 ##/   -t: testport instead of bulk
 ##/   -w: local|ondemand|spot
+##/   -z: set
 function poud_build () {
-
+set -x
   ## defaults
   local aws_ami_id=ami-d15891ba
   local aws_spot_bid=2.00
@@ -358,9 +365,10 @@ function poud_build () {
   local f_t=0
   local where=spot
   local ports_tree=$PDIR
+  local optset=default
 
   ## parse options
-  while getopts A:B:G:P:S:T:ab:cd:hkp:r:tw: o; do
+  while getopts A:B:G:P:S:T:ab:cd:hkp:r:tw:z: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
       B) aws_spot_bid=$OPTARG          ;;
@@ -377,6 +385,7 @@ function poud_build () {
       r) dir=$OPTARG                   ;;
       t) f_t=1                         ;;
       w) where=$OPTARG                 ;;
+      z) optset=$OPTARG                ;;
     esac
   done
   shift $(($OPTIND-1))
@@ -400,7 +409,7 @@ function poud_build () {
   _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where "$build-$ports_tree"
 
   ## do it
-  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree
+  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree $optset
 
   ## spin down
   _poud_build_spin_down $f_k $f_t $where "$sir" $iid "$build-$ports_tree"
@@ -444,13 +453,15 @@ function _poud_build_exec () {
   local ports_file=$6
   local ip=$7
   local ports_tree=$8
+  local optset=$9
 
   local dt=$(date "+%Y%m%d_%H%M")
   local B=$dt
+  local z="-z $optset"
 
   if [ $f_t -eq 1 ]; then
-    sudo $_poudriere testport -j $build -o $port -p $ports_tree -i -s
-    sudo jexec ${build}-$ports_tree-n env -i TERM=$TERM /usr/bin/login -fp root
+    sudo $_poudriere testport -j $build -o $port -p $ports_tree -i -s $z
+    sudo jexec ${build}-$ports_tree-n-$z env -i TERM=$TERM /usr/bin/login -fp root
   else
     local what
     if [ $f_a -eq 1 ]; then
@@ -459,11 +470,11 @@ function _poud_build_exec () {
       what="-f $ports_file"
     fi
 
-    local cmd1="sudo mkdir -p $_poudriere_ports/$ports_tree ; sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
-    local cmd2="sudo $_poudriere bulk -t -j $build -B $B -C $what -p $ports_tree"
+    local cmd2="sudo $_poudriere bulk -t -j $build -B $B -C $what -p $ports_tree $z"
     case $where in
-      local) eval "$cmd" ;;
+      local) eval "$cmd2" ;;
       spot|ondemand)
+        local cmd1="sudo mkdir -p $_poudriere_ports/$ports_tree ; sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
         if [ $f_a -eq 0 ]; then
           scp -q $ports_file $ip:$ports_file
         fi
@@ -806,7 +817,7 @@ function _bz_get_attachment () {
 
   local a_cnt=$(grep Attachments $d/info | cut -d: -f2 | sed -e 's, ,,g')
   if [ $a_cnt -gt 0 ]; then
-    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
+    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch|shell|update' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
     fetch -q -o $d/patch "https://bz-attachments.freebsd.org/attachment.cgi?id=$id"
     local s_cnt=$(head -1 $d/patch | grep -c "# This is a shell archive.")
     echo $s_cnt > $d/shar
@@ -936,6 +947,8 @@ function bztimeout () {
 function bzpatch () {
   local pr=$1
 
+  [ -z $PORTSDIR ] && _poud_msg "must call poud_ptree foo 1st" && return
+
   local d=$(_bz_pr_dir $pr)
   local is_shar=$(cat $d/shar)
 
@@ -953,7 +966,7 @@ function _bzpatch_patch () {
 
   local d=$(_bz_pr_dir $pr)
   local port=$(cat $d/port)
-  local l=$(egrep "^Index:|^diff " $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
+  local l=$(egrep "^Index:|^diff |^--- " $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
   local p
 
   if grep -q ^diff $d/patch; then
@@ -977,9 +990,10 @@ function _bzpatch_shar () {
   local l=$(grep /Makefile $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
   if [ $l -eq 1 ]; then
     local category=$(awk '/^XCATEGORIES=/ { print $2 }' $d/patch)
-    mkdir -p $d/tmp
-    (cd $d/tmp ; sh $d/patch)
-    mv $d/tmp/* $PORTSDIR/$category
+    mkdir -p $d/extract
+    (cd $d/extract ; sh $d/patch)
+    mkdir -p $PORTSDIR/$category/$port/
+    cp -R $d/extract/* $PORTSDIR/$category/$port
   else
     sed -i'' -e 's,/usr/ports/,,' $d/patch
     (cd $PORTSDIR ; sh $d/patch)
