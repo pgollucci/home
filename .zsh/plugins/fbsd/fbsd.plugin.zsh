@@ -176,22 +176,24 @@ function poud_ptree_init () {
   sudo chown $USER:$USER $fsdir
   git clone $git_repo $fsdir
 
-  cd $fsdir
-  git svn init -T head $svn_proto://$git_svn_uri .
+  (
+    cd $fsdir
+    git svn init -T head $svn_proto://$git_svn_uri .
 
-  git config oh-my-zsh hide-dirty 1
-  git config --add remote.origin.fetch '+refs/pull/*:refs/remotes/origin/pull/*'
+    git config oh-my-zsh hide-dirty 1
+    git config --add remote.origin.fetch '+refs/pull/*:refs/remotes/origin/pull/*'
 
-  git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
-  git svn fetch
+    git update-ref refs/remotes/origin/trunk `git show-ref origin/svn_head | cut -d" " -f1`
+    git svn fetch
 
-  git checkout trunk
-  git branch -D master
-  git checkout -b master trunk
+    git checkout trunk
+    git branch -D master
+    git checkout -b master trunk
 
-  git svn rebase
-  git remote add upstream git@github.com:freebsd/freebsd-ports.git
-  git branch --set-upstream-to=origin/master master
+    git svn rebase
+    git remote add upstream git@github.com:freebsd/freebsd-ports.git
+    git branch --set-upstream-to=origin/master master
+  )
 }
 
 function poud_ptree () {
@@ -219,10 +221,18 @@ function poud_ptree_make () {
   local tree=$1
   local from=${2:-clean}
 
-  sudo zfs snapshot $_zpool$_poudriere_ports/default@now
+  sudo zfs snapshot $_zpool$_poudriere_ports/$from@now
   sudo $_poudriere ports -c -F -p $tree
-  sudo zfs clone    $_zpool$_poudriere_ports/default@now $_zpool$_poudriere_ports/$tree
+  sudo zfs clone    $_zpool$_poudriere_ports/$from@now $_zpool$_poudriere_ports/$tree
 }
+
+function poud_ptrees () {
+
+  for tree in default perl apache ruby python mysql prs; do
+    poud_ptree_make $tree
+  done
+}
+
 
 function poud_mfi () {
 
@@ -323,8 +333,9 @@ function _poud_help () {
 ##/ poud_build()
 ##/ usage:
 ##/    poud_build [-A ami_id] [-B bid] [-G sg-XXXXXXXX] \
-##/               [-P ports_tree] [-b build] [-c|-d regex|-p port] [-k] [-r regex] [-w where]
-##/    poud_build -t -p port [-b build] [-P ports_tree]
+##/               [-P ports_tree] [-b build] [-c|-d regex|-p port] [-k] \
+##/               [-r regex] [-w where] [-z set]
+##/    poud_build -t -p port [-b build] [-P ports_tree] [-z set]
 ##/    poud_build -h
 ##/ aws opts:
 ##/ ----------
@@ -345,8 +356,9 @@ function _poud_help () {
 ##/   -p: build port
 ##/   -t: testport instead of bulk
 ##/   -w: local|ondemand|spot
+##/   -z: set
 function poud_build () {
-
+set -x
   ## defaults
   local aws_ami_id=ami-d15891ba
   local aws_spot_bid=2.00
@@ -363,9 +375,10 @@ function poud_build () {
   local f_t=0
   local where=spot
   local ports_tree=$PDIR
+  local optset=default
 
   ## parse options
-  while getopts A:B:G:P:S:T:ab:cd:hkp:r:tw: o; do
+  while getopts A:B:G:P:S:T:ab:cd:hkp:r:tw:z: o; do
     case $o in
       A) aws_ami_id=$OPTARG            ;;
       B) aws_spot_bid=$OPTARG          ;;
@@ -382,6 +395,7 @@ function poud_build () {
       r) dir=$OPTARG                   ;;
       t) f_t=1                         ;;
       w) where=$OPTARG                 ;;
+      z) optset=$OPTARG                ;;
     esac
   done
   shift $(($OPTIND-1))
@@ -405,7 +419,7 @@ function poud_build () {
   _poud_build_spin_up $aws_ami_id $aws_spot_bid $aws_security_group_id $where "$build-$ports_tree"
 
   ## do it
-  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree
+  _poud_build_exec $f_t $f_a $build "$port" $where $ports_file "$ip" $ports_tree $optset
 
   ## spin down
   _poud_build_spin_down $f_k $f_t $where "$sir" $iid "$build-$ports_tree"
@@ -449,13 +463,13 @@ function _poud_build_exec () {
   local ports_file=$6
   local ip=$7
   local ports_tree=$8
+  local optset=$9
 
   local dt=$(date "+%Y%m%d_%H%M")
   local B=$dt
 
   if [ $f_t -eq 1 ]; then
-    sudo $_poudriere testport -j $build -o $port -p $ports_tree -i -s
-    sudo jexec ${build}-$ports_tree-n env -i TERM=$TERM /usr/bin/login -fp root
+    sudo $_poudriere testport -j $build -o $port -p $ports_tree -i -s -z $optset
   else
     local what
     if [ $f_a -eq 1 ]; then
@@ -464,11 +478,11 @@ function _poud_build_exec () {
       what="-f $ports_file"
     fi
 
-    local cmd1="sudo mkdir -p $_poudriere_ports/$ports_tree ; sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
-    local cmd2="sudo $_poudriere bulk -t -j $build -B $B -C $what -p $ports_tree"
+    local cmd2="sudo $_poudriere bulk -t -j $build -B $B -C $what -p $ports_tree -z $optset"
     case $where in
-      local) eval "$cmd" ;;
+      local) eval "$cmd2" ;;
       spot|ondemand)
+        local cmd1="sudo mkdir -p $_poudriere_ports/$ports_tree ; sudo mount -t nfs -o rw,intr,noatime,async fs:$_poudriere_ports/$ports_tree $_poudriere_ports/$ports_tree"
         if [ $f_a -eq 0 ]; then
           scp -q $ports_file $ip:$ports_file
         fi
@@ -569,7 +583,7 @@ function poud_ci () {
   local reporter=$(cat $d/reporter)
   local maintainer=$(cat $d/maintainer)
   local is_maintainer=$(_bz_is_maintainer $reporter $maintainer)
-  local days=$(_bz_time_from_pr $pr)
+  local days=$(_bz_timeout_from_pr $pr)
   local update="$(cat $d/update)"
 
   local submitted_by=""
@@ -578,11 +592,15 @@ function poud_ci () {
     submitted_by="$reporter (maintainer)"
   else
     submitted_by="$reporter"
-    if [ -n $days ]; then
+    if [ x"$days" != x"" -a $maintainer != "ports@FreeBSD.org" ]; then
       approved_by="maintainer timeout ($maintainer ; $days days)"
     else
       approved_by="$maintainer (maintainer)"
     fi
+  fi
+
+  if [ x"$update" != x"" ]; then
+    title="$port: $update"
   fi
 
   cat <<EOF > $cif
@@ -1030,5 +1048,59 @@ function bztop () {
 function bzlist () {
   local str="$1"
 
-  $_bz --encoding=utf8 search --product "Ports & Packages" -s New -s Open -s Inprogress "$*"
+  $_bz --encoding=utf8 search --product "Ports & Packages" -s New -s Open -s "In Progress" "$*"
+}
+
+# ----------------------------------------------------------------------------
+function poud_ps_try () {
+  local maintainer=$1
+
+  curl -s http://portscout.freebsd.org/$maintainer@freebsd.org.html | while read row; do
+    if ! $(echo $row | grep -q resultsrow); then
+      continue
+    fi
+    local port=$(echo $row | sed -e 's,.*/www.freshports.org/,,' -e 's,/".*,,')
+    local new=$(echo $row | sed -e 's,</a></td><td>2015.*$,,' -e 's,.*>,,')
+    if [ x"$new" = x"" ]; then
+      continue
+    fi
+
+    echo "$port -> $new"
+    (
+      cd $PORTSDIR/$port
+      perl -pi -e "s/^PORTVERSION=.*/PORTVERSION=\t$new/" Makefile
+      sed -i '' -e '/PORTREVISION/d' Makefile
+      make makesum
+    )
+  done
+}
+
+function poud_rg_license () {
+
+  ip dir rubygem- | while read port; do
+    local ver=$(awk -F\= '/^PORTVERSION=/ { print $2 }' < $PORTSDIR/$port/Makefile | perl -p -e 's,[\t\s]*,,g')
+    local gem=$(echo $port | sed -e 's,rubygem-,,' -e 's,.*/,,' -e 's,[0-9]*$,,')
+    local license="$(curl -s https://rubygems.org/gems/$gem/versions/$ver | \
+                         grep -A3 License | \
+                         grep "<p>" | \
+                         sed -e 's,<p>,,' -e 's,</p>,,' -e 's,[\. \-\,]*,,g' | \
+                         sed
+                              -e 's,LGPL30,LGPL3,' \
+                              -e 's,ISC,ISCL,'  \
+                              -e 's,APACHE.*2.,APACHE20,' \
+                              -e 's,^BSD$,BSD3,' \
+                              -e 's,LGPLV21ORLATER,LGPL21 LGPL3,'| \
+                         tr 'a-z' 'A-Z')"
+
+    echo "$port@$ver -> $license"
+
+    if [ x"$license" != x"N/A" -a x"$license" != x"" ]; then
+        local l_cnt=$(grep -c LICENSE $PORTSDIR/$port/Makefile)
+        if [ $l_cnt -gt 0 ]; then
+          perl -pi -e "s/^LICENSE=.*/LICENSE=\t$license/" $PORTSDIR/$port/Makefile
+        else
+          perl -pi -e "s/^(COMMENT=.*)/\1\nLICENSE=.*/LICENSE=\t$license/" $PORTSDIR/$port/Makefile
+        fi
+    fi
+  done
 }
