@@ -85,8 +85,8 @@ function poud_zfs_init () {
 
 function poud_zfs_snapshot () {
 
-  local containers="$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
-  local dt=$(date "+%Y%m%d_%H%M")
+  local containers="$(_poud_zfs_containers)"
+    local dt=$(date "+%Y%m%d_%H%M")
 
   for container in ${=containers}; do
     sudo zfs snapshot $container@$dt
@@ -95,11 +95,16 @@ function poud_zfs_snapshot () {
   echo $dt
 }
 
+function _poud_zfs_containers () {
+
+  echo "$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
+}
+
 function poud_zfs_backup () {
 
   local dt=$(poud_zfs_snapshot)
 
-  local containers="$(zfs list | grep $_zpool/ | awk '!/none/ { print $1 }')"
+  local containers="$(_poud_zfs_containers)"
   for container in ${=containers}; do
     local prev_dt=$(zfs list -t snapshot | grep $container | awk '{ print $1 }' | awk -F@ '{ print $2 }' | tail -2 | head -1)
     local backup=$(echo $container | sed -e "s,$_zpool,$_zbackup,")
@@ -214,9 +219,9 @@ function poud_ptree_make () {
   local tree=$1
   local from=${2:-clean}
 
-  sudo zfs snapshot $_zpool$_poudriere_ports/clean@now
+  sudo zfs snapshot $_zpool$_poudriere_ports/default@now
   sudo $_poudriere ports -c -F -p $tree
-  sudo zfs clone    $_zpool$_poudriere_ports/clean@now $_zpool$_poudriere_ports/$tree
+  sudo zfs clone    $_zpool$_poudriere_ports/default@now $_zpool$_poudriere_ports/$tree
 }
 
 function poud_mfi () {
@@ -503,6 +508,7 @@ function _poud_build_spin_up () {
 }
 
 function _poud_build_what () {
+set -x
   local f_a=$1
   local f_c=$2
   local depends_on=$3
@@ -806,7 +812,7 @@ function _bz_get_attachment () {
 
   local a_cnt=$(grep Attachments $d/info | cut -d: -f2 | sed -e 's, ,,g')
   if [ $a_cnt -gt 0 ]; then
-    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
+    local id=$(grep "\[Attachment\]" $d/info | egrep -i 'shar|diff|patch|shell|update' | awk '{ print $2 }' | sed -e 's,\[,,' -e 's,\],,' | sort -n | tail -1 )
     fetch -q -o $d/patch "https://bz-attachments.freebsd.org/attachment.cgi?id=$id"
     local s_cnt=$(head -1 $d/patch | grep -c "# This is a shell archive.")
     echo $s_cnt > $d/shar
@@ -866,6 +872,7 @@ function _bz_get_maintainer () {
 }
 
 function _bzget () {
+set -x
   local pr=$1
 
   local d=$(_bz_pr_dir $pr)
@@ -934,7 +941,10 @@ function bztimeout () {
 }
 
 function bzpatch () {
+set -x
   local pr=$1
+
+  [ -z $PORTSDIR ] && _poud_msg "must call poud_ptree foo 1st" && return
 
   local d=$(_bz_pr_dir $pr)
   local is_shar=$(cat $d/shar)
@@ -953,7 +963,7 @@ function _bzpatch_patch () {
 
   local d=$(_bz_pr_dir $pr)
   local port=$(cat $d/port)
-  local l=$(egrep "^Index:|^diff " $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
+  local l=$(egrep "^Index:|^diff |^--- " $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
   local p
 
   if grep -q ^diff $d/patch; then
@@ -977,9 +987,10 @@ function _bzpatch_shar () {
   local l=$(grep /Makefile $d/patch | head -1 | awk '{ print gsub(/\//,"") }')
   if [ $l -eq 1 ]; then
     local category=$(awk '/^XCATEGORIES=/ { print $2 }' $d/patch)
-    mkdir -p $d/tmp
-    (cd $d/tmp ; sh $d/patch)
-    mv $d/tmp/* $PORTSDIR/$category
+    mkdir -p $d/extract
+    (cd $d/extract ; sh $d/patch)
+    mkdir -p $PORTSDIR/$category/$port/
+    cp -R $d/extract/* $PORTSDIR/$category/$port
   else
     sed -i'' -e 's,/usr/ports/,,' $d/patch
     (cd $PORTSDIR ; sh $d/patch)
