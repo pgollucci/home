@@ -1,24 +1,20 @@
-_rdir=$HOME/repos/fbsd
-if [ -d $_rdir ]; then
-  _poudriere_dir=/usr/local/poudriere
-  _poudriere_data=$_poudriere_dir/data
-  _poudriere_ports=$_poudriere_dir/ports
-  _poudriere=$_rdir/poudriere/src/bin/poudriere
+_rdir=/repos/freebsd
+_poudriere_dir=/usr/local/poudriere
+_poudriere_data=$_poudriere_dir/data
+_poudriere_ports=$_poudriere_dir/ports
+_poudriere=$_rdir/poudriere/src/bin/poudriere
 
-  _zpool=zfs
-  _zbackup=zfsbackup
-  _snap_keep_cnt=1
+_zpool=zfs
+_zbackup=zfsbackup
+_snap_keep_cnt=1
 
-  _arches="i386 amd64"
-  _build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
+_arches="i386 amd64"
+_build_tags="8.4-RELEASE 9.3-RELEASE 10.1-RELEASE 11.0-CURRENT"
 
-  alias cdpdir='cd $PORTSDIR'
-  for d in `cd $_rdir ; /bin/ls -1d *`; do
-    alias cd$d="cd $_rdir/$d"
-  done
-else
-  return
-fi
+alias cdpdir='cd $PORTSDIR'
+# for d in `cd $_rdir ; /bin/ls -1d *`; do
+#   alias cd$d="cd $_rdir/$d"
+# done
 
 function _poud_msg () {
   local msg=$1
@@ -76,11 +72,34 @@ function poud_zfs_init () {
   sudo zfs set checksum=fletcher4 $z
 
   sudo zfs create -p -o mountpoint=$base/usr/local/etc/nginx $z/usr/local/etc/nginx
-  sudo zfs create -p -o mountpoint=$base/usr/home/$USER/repos $z/usr/home/$USER/repos
+  sudo zfs create -p -o mountpoint=$base/repos $z/repos
+  sudo zfs create -p -o mountpoint=$base/conf $z/conf
   sudo zfs create -p -o mountpoint=$base$_poudriere_dir $z$_poudriere_dir
 
   sudo touch /etc/exports
   sudo zfs sharenfs="-maproot=root -network 10.0.0.0 -mask 255.255.255.0" $z
+}
+
+function poud_repos_init () {
+
+  sudo mkdir -p /repos/freebsd/{poudriere,pkg,pybugz} /repos/pgollucci
+  sudo chown -R $USER:$USER /repos/{freebsd,pgollucci}
+
+  (
+    cd /repos/freebsd
+    git clone git@github.com:freebsd/poudriere.git
+    git clone git@github.com:freebsd/pkg.git
+  )
+  (
+    cd /repos/pgollucci
+    git clone git@github.com:pgollucci/pybugz.git
+  )
+  (
+    cd /repos/freebsd/poudriere
+    ./autogen
+    ./configure
+    make
+  )
 }
 
 function poud_zfs_snapshot () {
@@ -232,7 +251,6 @@ function poud_ptrees () {
     poud_ptree_make $tree
   done
 }
-
 
 function poud_mfi () {
 
