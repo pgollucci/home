@@ -52,7 +52,8 @@ PATH=
 path_if $HOME/bin
 path_if $HOME/Applications/Emacs.app/Contents/MacOS/bin
 path_if $HOME/repos/aws/ec2-api-tools/bin
-path_if $HOME/repos/fbsd/poudriere/src/bin
+path_if /repos/pgollucci/poudriere-plugins/bin
+path_if /repos/freebsd/poudriere/src/bin
 path_if /usr/local/opt/go/libexec/bin
 path_if /usr/local/packer/bin
 path_if /opt/X11/bin
