@@ -33,7 +33,7 @@ ZSH_CUSTOM=$HOME/.zsh
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
 	bundler git github rbenv
-        emacs fbsd
+        emacs
 	p6rwscd p6rwsalias
 	p6alias
 	ec2
@@ -51,8 +51,8 @@ PATH=
 
 path_if $HOME/bin
 path_if $HOME/Applications/Emacs.app/Contents/MacOS/bin
-path_if $HOME/repos/aws/ec2-api-tools/bin
 path_if /repos/pgollucci/poudriere-plugins/bin
+path_if /repos/pgollucci/freebsd-bugzilla-cli/bin
 path_if /repos/freebsd/poudriere/src/bin
 path_if /usr/local/opt/go/libexec/bin
 path_if /usr/local/packer/bin
