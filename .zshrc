@@ -32,8 +32,8 @@ ZSH_CUSTOM=$HOME/.zsh
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
-	bundler git github rbenv
-        emacs boot2docker
+	bundler git github rbenv boot2docker docker
+        emacs 
 	p6rwscd p6rwsalias
 	p6alias
 	ec2
