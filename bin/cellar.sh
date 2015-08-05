@@ -1,6 +1,6 @@
 #!/bin/sh -x
 
-rm -rf /usr/local
+sudo rm -rf /usr/local
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
@@ -23,7 +23,7 @@ for pkg in mysql postgresql innotop; do
 done
 
 ## aws, docker, packer ansible
-for pkg in pyenv packer ansible; do
+for pkg in pyenv packer ansible boot2docker; do
   brew install $pkg
 done
 
@@ -35,7 +35,7 @@ done
 ## binary distribution apps
 brew install brew-cask
 for pkg in alfred gitx google-chrome google-drive google-hangouts \
-	hipchat iterm2 java r skype skitch vagrant virtualbox \ 
+	hipchat iterm2 java r skype skitch vagrant virtualbox \
 	xquartz wireshark wkhtmltopdf; do
   brew cask install $pkg
 done
