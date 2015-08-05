@@ -61,8 +61,10 @@ hosts_load() {
 
   # p6
   web_fg=$dblue; web_bg=$white
-  irc_fg=$white; irc_bg=$black;
-  poudriere_fg=$black; poudriere_bg=$lsalmon3  
+  irc_fg=$white; irc_bg=$black
+  pkg_fg=$black; pkg_bg=$lsalmon3
+  nfs_fg=$white; nfs_bg=$dblue
+  fs_fg=$white;  fs_bg=$dblue
 }
 
 normalize() {
