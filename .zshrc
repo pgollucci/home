@@ -33,7 +33,7 @@ ZSH_CUSTOM=$HOME/.zsh
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
 	bundler git github rbenv
-        emacs
+        emacs boot2docker
 	p6rwscd p6rwsalias
 	p6alias
 	ec2
