@@ -23,7 +23,7 @@ for pkg in mysql postgresql innotop; do
 done
 
 ## aws, docker, packer ansible
-for pkg in pyenv pyenv-virtualenv packer ansible boot2docker; do
+for pkg in awscli pyenv pyenv-virtualenv packer ansible boot2docker; do
   brew install $pkg
 done
 
