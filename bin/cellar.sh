@@ -41,3 +41,5 @@ for pkg in alfred gitx google-chrome google-drive google-hangouts \
 done
 
 brew prune
+
+ln -s $HOME/bin/rdesktop /usr/local/bin/rdesktop
