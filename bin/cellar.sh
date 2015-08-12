@@ -1,6 +1,6 @@
 #!/bin/sh -x
 
-sudo rm -rf /usr/local
+sudo rm -rf /usr/local /Library/Caches/Homebrew /opt/homebrew-cask
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
@@ -34,9 +34,9 @@ done
 
 ## binary distribution apps
 brew install brew-cask
-for pkg in alfred gitx google-chrome google-drive google-hangouts \
+for pkg in alfred dash evernote firefox gitx google-chrome google-drive google-hangouts \
 	hipchat iterm2 java r skype skitch vagrant virtualbox \
-	xquartz wireshark wkhtmltopdf; do
+	utorrent xquartz wireshark wkhtmltopdf; do
   brew cask install $pkg
 done
 
