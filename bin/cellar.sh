@@ -36,7 +36,7 @@ done
 brew install brew-cask
 for pkg in alfred dash evernote firefox gitx google-chrome google-drive google-hangouts \
 	hipchat iterm2 java r skype skitch vagrant virtualbox \
-	utorrent xquartz wireshark wkhtmltopdf; do
+	utorrent vlc xquartz wireshark wkhtmltopdf; do
   brew cask install $pkg
 done
 
