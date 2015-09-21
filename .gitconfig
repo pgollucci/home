@@ -26,6 +26,7 @@
 	email = pgollucci@p6m7g8.com
 [core]
 	pager = cat
+	excludesfile = /home/pgollucci/.gitignore_global
 
 [remote "origin"]
   fetch = +refs/pull/*/head:refs/remotes/origin/pr/*

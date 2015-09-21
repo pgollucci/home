@@ -71,8 +71,6 @@ function xclean {
             -name "svn-commit.*" -o \
             -name "*.orig" -o \
             -name "*-i" -o \
-            -name "*-E" -o \
-            -name "*-e" -o \
             -name "*.tmp" -o \
 	    -name "=~+*" \
         \) \
