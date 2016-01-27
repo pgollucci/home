@@ -51,6 +51,7 @@
 .pow
 .private
 .psql_history
+.pyenv
 .rbenv
 .ruby-install
 .recentf
