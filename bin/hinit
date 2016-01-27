@@ -31,11 +31,6 @@ echo "Cloning Repos"
 git clone -q git@github.com:pgollucci/home.git          $THOME
 git clone -q git@github.com:pgollucci/dotfiles.git      $THOME/.dotfiles
 git clone -q git@github.com:robbyrussell/oh-my-zsh.git  $THOME/.oh-my-zsh
-git clone -q git@github.com:postmodern/ruby-install.git $THOME/.ruby-install
-git clone -q git@github.com:sstephenson/rbenv.git       $THOME/.rbenv
-mkdir -p $THOME/.rbenv/plugins
-git clone -q git@github.com:sstephenson/ruby-build.git  $THOME/.rbenv/plugins/ruby-build
-
 ( cd $THOME/.dotfiles/ ; git submodule -q update -q --init --recursive )
 
 echo "Transfering"
