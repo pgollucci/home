@@ -1,0 +1,14 @@
+%w[multi_line auto_indent color_result shell_commands].each do |plugin|
+  begin; require "ripl/#{plugin}"; rescue LoadError; end
+end
+
+require 'ripl'
+
+module Ripl
+  module RedError
+    def format_error(error)
+      "\e[31m#{super}\e[m"
+    end
+  end
+end
+Ripl::Shell.include Ripl::RedError
