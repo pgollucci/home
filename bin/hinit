@@ -38,12 +38,12 @@ mkdir -p $THOME/.repos/langs/rbenv/plugins
 git clone -q git@github.com:sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
 
 # perl
-git clone git@github.com/tokuhirom/plenv.git            $THOME/.repos/langs/.plenv
+git clone git@github.com:tokuhirom/plenv.git            $THOME/.repos/langs/.plenv
 mkdir -p $THOME/.repos/langs/plenv/plugins
-git clone git@github.com/tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
+git clone git@github.com:tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
 
 # python
-git clone git@github.com/yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
+git clone git@github.com:yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
 
 echo "Transfering"
 rsync -atz --delete $THOME/ $HOME/

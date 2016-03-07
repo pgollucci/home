@@ -2,7 +2,7 @@
 [core]
     editor = /usr/bin/vim
     excludesfile = /Users/npaolucci/.gitignore_global
-    pager=less -x4
+    pager=cat
 
 #}}}
 # user {{{
@@ -63,7 +63,6 @@
     gr = grep -Ii
     # }}}
     # tweak defaults {{{
-    diff = diff --word-diff
     branch = branch -ra
     grep = grep -Ii
     bra = branch -ra
