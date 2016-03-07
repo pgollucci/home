@@ -7,6 +7,7 @@
 - rsync
 - git
 
+## Install
 ```shell
 # hinit [-p] [-h] [USER=pgollucci]
 curl -o - -s https://raw.githubusercontent.com/pgollucci/home/master/bin/hinit | sh
