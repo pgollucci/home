@@ -10,8 +10,8 @@
 ;; elpa managed
 ;; ------------------
 (setq package-archives '(("gnu"       . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa"     . "http://melpa.milkbox.net/packages/")))
+			 ("marmalade" . "http://marmalade-repo.org/packages/")
+			 ("melpa"     . "http://melpa.milkbox.net/packages/")))
 (package-initialize)
 (when (not package-archive-contents) (package-refresh-contents))
 
@@ -24,6 +24,7 @@
 
 (package 'ruby-guard)
 (package 'js3-mode)
+(package 'yaml-mode)
 
 ;; mine
 ;; ------------------
@@ -38,7 +39,7 @@
 ;; languages
 ;; ------------------
 (personal 'js3-mode)
+(personal 'yaml-mode)
 
 ;; submodule managed
 ;; ------------------
-
