@@ -34,7 +34,9 @@ prompt_load() { # args: prompts_dir prompt_dir
     
     local prompt_lines
     . $prompt_dir/prompt.zsh
-    
+
+    setopt PROMPT_SUBST
+
     PROMPT=
     local pl
     for pl in $(echo $prompt_lines); do
@@ -57,7 +59,6 @@ local_load() { # args: local_dir
     local dns=$(hostname -f)
     local dir=$local_dir/$dns
 
-    dir=/tmp/home-zsh-modules
     [ -d $dir ] || return
     
     local module

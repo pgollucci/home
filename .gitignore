@@ -13,6 +13,7 @@
 .ssh/known_hosts
 .subversion/auth
 .viminfo
+.zsh/local
 .zsh_history
 Applications/
 Desktop
