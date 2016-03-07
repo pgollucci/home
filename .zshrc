@@ -1,77 +1,31 @@
-# Path to your oh-my-zsh configuration.
-ZSH=$HOME/.oh-my-zsh
+__load() {
+    
+    local DEBUG=""
+    [ -n "$DEBUG" ] && set -x
+    
+    ZDOTDIR=$HOME
+    ZSH_DIR=$ZDOTDIR/.zsh
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-ZSH_THEME="pgollucci"
+    . $ZSH_DIR/lib/util.zsh
 
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+    local theme="default"
 
-# Set to this to use case-sensitive completion
-# CASE_SENSITIVE="true"
+    local modules_dir=$ZSH_DIR/modules
+    local local_dir=$ZSH_DIR/local
+    local themes_dir=$ZSH_DIR/themes
+    local prompts_dir=$ZSH_DIR/prompts
+    local completions_dir=$ZSH_DIR/completions
 
-# Comment this out to disable weekly auto-update checks
-DISABLE_AUTO_UPDATE="true"
+    local theme_dir="$themes_dir/$theme"
+    local prompt_dir="$theme_dir"
+    
+    modules_load "$modules_dir"
+    local_load "$local_dir"
+    theme_load "$theme_dir"
+    prompt_load "$prompts_dir" "$prompt_dir"
+    completions_load "$completions_dir"
 
-# Uncomment following line if you want to disable colors in ls
-# DISABLE_LS_COLORS="true"
-
-# Uncomment following line if you want to disable autosetting terminal title.
-DISABLE_AUTO_TITLE="true"
-
-# Uncomment following line if you want red dots to be displayed while waiting for completion
-# COMPLETION_WAITING_DOTS="true"
-
-ZSH_CUSTOM=$HOME/.zsh
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(
-	bundler git github rbenv pyenv boot2docker docker
-        emacs 
-	p6rwscd p6rwsalias
-	p6alias
-	ec2
-	gh
-	)
-
-# PATH
-function path_if {
-  local dir=$1
-  if [ -d $dir ]; then
-    PATH="${PATH}:$dir"
-  fi
+    set +x
 }
-PATH=
 
-path_if $HOME/bin
-path_if $HOME/Applications/Emacs.app/Contents/MacOS/bin
-path_if /repos/pgollucci/poudriere-plugins/bin
-path_if /repos/pgollucci/freebsd-bugzilla-cli/bin
-path_if /repos/freebsd/poudriere/src/bin
-path_if /usr/local/opt/go/libexec/bin
-path_if /usr/local/packer/bin
-path_if /opt/X11/bin
-path_if /bin
-path_if /sbin
-path_if /usr/bin
-path_if /usr/sbin
-path_if /usr/local/bin
-path_if /usr/local/sbin
-
-
-export PATH
-
-fpath=(~/.zsh/completion $fpath)
-source $ZSH/oh-my-zsh.sh
-
-# Customize to your needs...
-[ -f /usr/local/bin/aws_zsh_completer.sh ] && source /usr/local/bin/aws_zsh_completer.sh
-
-# added by travis gem
-[ -f /Users/pgollucci/.travis/travis.sh ] && source /Users/pgollucci/.travis/travis.sh
+__load

@@ -16,6 +16,7 @@ shift $(( OPTIND - 1 ));
 OS=$(uname -s)
 USER=${1:-pgollucci}
 THOME=/tmp/$USER
+
 case $OS in
   Darwin) HOME=/Users/$USER ;;
   **) HOME=/home/$USER
@@ -29,9 +30,20 @@ sudo chown $USER $THOME
 
 echo "Cloning Repos"
 git clone -q git@github.com:pgollucci/home.git          $THOME
-git clone -q git@github.com:pgollucci/dotfiles.git      $THOME/.dotfiles
-git clone -q git@github.com:robbyrussell/oh-my-zsh.git  $THOME/.oh-my-zsh
-( cd $THOME/.dotfiles/ ; git submodule -q update -q --init --recursive )
+
+# ruby
+git clone -q git@github.com:postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
+git clone -q git@github.com:sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
+mkdir -p $THOME/.repos/langs/rbenv/plugins
+git clone -q git@github.com:sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
+
+# perl
+git clone git@github.com/tokuhirom/plenv.git            $THOME/.repos/langs/.plenv
+mkdir -p $THOME/.repos/langs/plenv/plugins
+git clone git@github.com/tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
+
+# python
+git clone git@github.com/yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
 
 echo "Transfering"
 rsync -atz --delete $THOME/ $HOME/

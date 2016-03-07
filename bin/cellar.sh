@@ -12,34 +12,23 @@ brew tap homebrew/dupes
 brew tap homebrew/binary
 brew tap caskroom/cask
 
-## base utilities
-for pkg in gpg go subversion git hub irssi nmap swaks xz; do
-  brew install $pkg
-done
+## src distribution apps
+base_pkgs="gpg go subversion git hub irssi nmap swaks sqlite xz graphiz"
+devel_pkgs="autoconf auotmake"
+db_pkgs="mysql postgresql innotop redis memcache"
+devops_pkgs="awscli packer ansible docker boot2docker"
 
-## dbs and tools
-for pkg in mysql postgresql innotop; do
-  brew install $pkg
-done
-
-## aws, docker, packer ansible
-for pkg in awscli pyenv pyenv-virtualenv packer ansible boot2docker; do
-  brew install $pkg
-done
-
-## 3rd party apps used by $work
-for pkg in imagemagick netpbm geos redis; do
-  brew install $pkg
+for pkg in $base_pkgs $devel_pkgs $db_pkgs $devops_pkgs; do
+  brew install pkg
 done
 
 ## binary distribution apps
-brew install brew-cask
-for pkg in alfred dash evernote firefox gitx google-chrome google-drive google-hangouts \
+binary_pkgs="alfred dash evernote firefox gitx google-chrome google-drive google-hangouts \
 	hipchat iterm2 java r skype skitch vagrant virtualbox \
-	utorrent vlc xquartz wireshark wkhtmltopdf; do
+	utorrent vlc xquartz wireshark wkhtmltopdf"
+brew install brew-cask
+for pkg in $binary_pkgs
   brew cask install $pkg
 done
 
 brew prune
-
-ln -s $HOME/bin/rdesktop /usr/local/bin/rdesktop
