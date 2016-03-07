@@ -1,7 +1,5 @@
 __setup() {
 
-    path_if /opt/homebrew-cask/Caskroom/emacs/24.5-1/Emacs.app/Contents/MacOS/bin
-    path_if /opt/homebrew-cask/Caskroom/emacs/24.5-1/Emacs.app/Contents/MacOS
     alias emacs='emacsclient --alternate-editor "" --create-frame'
 }
 
