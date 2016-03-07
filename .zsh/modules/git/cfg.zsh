@@ -2,6 +2,7 @@ __setup() {
 
     eval "$(hub alias -s)"
 
+    alias g="git"
 }
 
 git_prompt_info() {

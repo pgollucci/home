@@ -53,7 +53,7 @@
 # alias {{{
 [alias]
     # basic {{{
-    st = status -s
+    st = status
     cl = clone
     ci = commit
     co = checkout
