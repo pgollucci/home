@@ -5,6 +5,8 @@
 .aws/config
 .aws/credentials
 .config
+.emacs.d/elpa/*
+.emacs.d/ac-comphist.dat
 .irssi/nicklistfifo
 .irssi/sasl.auth
 .private
