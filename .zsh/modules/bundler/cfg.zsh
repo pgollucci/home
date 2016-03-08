@@ -1,4 +1,4 @@
-_setup() {
+__setup() {
 
     local cores_num="$(sysctl hw.ncpu | awk '{print $2}')"
     alias be="bundle exec"
