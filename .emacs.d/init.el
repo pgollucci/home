@@ -20,6 +20,7 @@
 (package 'magit)
 (package 'flx-ido)
 (package 'flx-isearch)
+(package 'xml-rpc)
 (package 'yasnippet)
 
 (package 'ruby-guard)
@@ -36,10 +37,10 @@
 (personal 'theme)
 (personal 'utf8)
 
-;; languages
-;; ------------------
+; languages
 (personal 'js3-mode)
 (personal 'yaml-mode)
 
 ;; submodule managed
 ;; ------------------
+(vendor 'confluence)
