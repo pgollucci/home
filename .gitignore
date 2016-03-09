@@ -28,3 +28,16 @@ OneDrive
 Pictures
 Public
 dev
+tmp
+.account
+.cache
+.emacs.d/backups
+.emacs.d/vendor
+.gem
+.gnupg
+.oracle_jre_usage
+.repos
+.rnd
+.vagrant.d
+.vim
+.wireshark-etc
