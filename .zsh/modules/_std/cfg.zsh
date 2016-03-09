@@ -1,5 +1,6 @@
 __setup() {
     path_if $HOME/bin
+    path_if /usr/local/bin
 
     alias '_'='sudo'    
     alias rmrf='rm -rf'
