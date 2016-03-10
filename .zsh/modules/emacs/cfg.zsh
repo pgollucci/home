@@ -1,14 +1,14 @@
 __setup() {
 
-    alias emacs='emacsclient --alternate-editor "" --create-frame'
+    alias emacs=emacs_wrapper
 }
 
 emacs_wrapper() {
 
-  local x=`emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null`
-
-  if [ -z "$x" -o "$x" = "nil" ]; then
+  if [ -z "$EMACS_X" -o "$EMACS_X" = "nil" ]; then
       # Create one if there is no X window yet.
+      local x=`emacsclient --alternate-editor '' --eval '(x-display-list)' 2>/dev/null`
+      export EMACS_X=$x
       emacsclient --alternate-editor "" --create-frame "$@"
   else
       # prevent creating another X frame if there is at least one present.

@@ -19,9 +19,9 @@ __load() {
     local theme_dir="$themes_dir/$theme"
     local prompt_dir="$theme_dir"
     
+    theme_load "$theme_dir"
     modules_load "$modules_dir"
     local_load "$local_dir"
-    theme_load "$theme_dir"
     prompt_load "$prompts_dir" "$prompt_dir"
     completions_load "$completions_dir"
 
