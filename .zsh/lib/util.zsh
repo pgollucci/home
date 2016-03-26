@@ -29,26 +29,33 @@ theme_load() { # args: theme_dir
 }
 
 prompt_load() { # args: prompts_dir prompt_dir
-    local prompts_dir="$1"
-    local prompt_dir="$2"
+    local local_dir="$1"
+    local prompts_dir="$2"
+    local prompt_dir="$3"
+    local reset_flag="$4"
 
     local prompt_lines
     . $prompt_dir/prompt.zsh
 
     setopt PROMPT_SUBST
 
-    PROMPT=
+    [ $reset_flag -eq 1 ] && PROMPT=
+
     local pl
     for pl in $(echo $prompt_lines); do
-	. $prompts_dir/$pl.zsh
-	if [ -z "$prompt_info" -a "$pl" != "blank" ]; then
-	    continue
-	fi
-	if [ -z "$PROMPT" ]; then
-	    PROMPT=$prompt_info
+	if [ x"$pl" = x"%local%" ]; then
+	    prompt_load "$local_dir" "$local_dir/prompts" "$local_dir/prompts" "0"
 	else
-	    PROMPT="$PROMPT
+	    . $prompts_dir/$pl.zsh
+	    if [ -z "$prompt_info" -a "$pl" != "blank" ]; then
+		continue
+	    fi
+	    if [ -z "$PROMPT" ]; then
+		PROMPT=$prompt_info
+	    else
+		PROMPT="$PROMPT
 $prompt_info"
+	    fi
 	fi
     done
 }

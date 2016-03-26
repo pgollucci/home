@@ -23,7 +23,7 @@ __load() {
     theme_load "$theme_dir"
     modules_load "$modules_dir"
     local_load "$local_host_dir"
-    prompt_load "$prompts_dir" "$prompt_dir"
+    prompt_load "$local_host_dir" "$prompts_dir" "$prompt_dir" "1"
     completions_load "$completions_dir"
 
     set +x
