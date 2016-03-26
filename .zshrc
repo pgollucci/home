@@ -1,8 +1,8 @@
 __load() {
-    
+
     local DEBUG=""
     [ -n "$DEBUG" ] && set -x
-    
+
     ZDOTDIR=$HOME
     ZSH_DIR=$ZDOTDIR/.zsh
 
@@ -18,10 +18,11 @@ __load() {
 
     local theme_dir="$themes_dir/$theme"
     local prompt_dir="$theme_dir"
-    
+    local local_host_dir=$(local_dir_get $local_dir)
+
     theme_load "$theme_dir"
     modules_load "$modules_dir"
-    local_load "$local_dir"
+    local_load "$local_host_dir"
     prompt_load "$prompts_dir" "$prompt_dir"
     completions_load "$completions_dir"
 

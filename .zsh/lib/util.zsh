@@ -32,8 +32,6 @@ prompt_load() { # args: prompts_dir prompt_dir
     local prompts_dir="$1"
     local prompt_dir="$2"
 
-    colors_load
-
     local prompt_lines
     . $prompt_dir/prompt.zsh
 
@@ -55,32 +53,26 @@ $prompt_info"
     done
 }
 
-local_load() { # args: local_dir
+local_dir_get() { # args: local_dir
     local local_dir="$1"
 
     local dns=$(hostname -f)
     local dir=$local_dir/$dns
 
-    [ -d $dir ] || return
-
-    local module
-    for module in $dir/*; do
-	module_load $module
-    done
+    echo $dir
 }
 
-# XXX: intentionally global
-colors_load() { # no args
+local_load() { # args: local_dir
+    local local_dir="$1"
 
-    red="%{$fg[red]%}"
-    yellow="%{$fg[yellow]%}"
-    green="%{$fg[green]%}"
-    blue="%{$fg[blue]%}"
-    cyan="%{$fg[cyan]%}"
-    magenta="%{$fg[magenta]%}"
-    black="%{$fg[black]%}"
-    white="%{$fg[white]%}"
-    norm="%{$reset_color%}"
+    [ -d $local_dir ] || return
+
+    local module
+    for module in $local_dir/*; do
+	if [ x"$module" != x"$local_dir/prompts" ]; then
+	  module_load $module
+	fi
+    done
 }
 
 completions_load() { # completions_dir

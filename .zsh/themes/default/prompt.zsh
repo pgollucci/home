@@ -4,4 +4,3 @@ prompt_setup() {
 }
 
 prompt_setup
-
