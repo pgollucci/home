@@ -2,6 +2,21 @@ __setup() {
 
 }
 
+aws_clear() {
+  unalias aws
+  unset AWS_PROFILE
+  unset AWS_ENV
+  unset AWS_VPC
+}
+
+aws_prompt_info() {
+
+  if [ -n "$AWS_PROFILE" ]; then
+    echo "[$AWS_PROFILE($AWS_ENV) - $AWS_REGION($AWS_VPC)]"
+  fi
+
+}
+
 sts_prompt_info() {
 
     local creds=$HOME/.aws/credentials

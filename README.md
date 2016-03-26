@@ -38,6 +38,7 @@ $HOME/bin/cellar.sh
 - _builtins
 - _std
 - aws
+- bundler
 - emacs
 - git
 - irc
