@@ -7,7 +7,7 @@ path_if() { # args: dir
 
 modules_load() { # args: modules_dir
     local modules_dir="$1"
-    
+
     local module
     for module in $modules_dir/*; do
 	module_load "$module"
@@ -17,7 +17,9 @@ modules_load() { # args: modules_dir
 module_load() { # args: module_dir
     local module_dir="$1"
 
+    export ___dir=$module_dir
     . $module_dir/cfg.zsh
+    unset ___dir
 }
 
 theme_load() { # args: theme_dir
@@ -31,7 +33,7 @@ prompt_load() { # args: prompts_dir prompt_dir
     local prompt_dir="$2"
 
     colors_load
-    
+
     local prompt_lines
     . $prompt_dir/prompt.zsh
 
@@ -51,7 +53,7 @@ prompt_load() { # args: prompts_dir prompt_dir
 $prompt_info"
 	fi
     done
-} 
+}
 
 local_load() { # args: local_dir
     local local_dir="$1"
@@ -60,7 +62,7 @@ local_load() { # args: local_dir
     local dir=$local_dir/$dns
 
     [ -d $dir ] || return
-    
+
     local module
     for module in $dir/*; do
 	module_load $module
@@ -88,7 +90,7 @@ completions_load() { # completions_dir
     for dir in $completions_dir/*; do
 	fpath=($dir $fpath)
     done
-}    
+}
 
 cd_make_aliases() { # args: dir
     local dir="$1"
@@ -123,8 +125,3 @@ debug() {
 
     echo "$@"
 }
-
-
-
-
-    
