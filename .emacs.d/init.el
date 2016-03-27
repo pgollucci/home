@@ -15,32 +15,19 @@
 (package-initialize)
 (when (not package-archive-contents) (package-refresh-contents))
 
-(package 'auto-complete)
-(package 'popup)
-(package 'magit)
-(package 'flx-ido)
-(package 'flx-isearch)
-(package 'xml-rpc)
-(package 'yasnippet)
-
-(package 'ruby-guard)
-(package 'js3-mode)
-(package 'yaml-mode)
-
-;; mine
-;; ------------------
-(personal 'auto-complete)
+(personal 'auto-complete-setup)
 (personal 'bindings)
 (personal 'global)
 (personal 'ido)
 (personal 'server-mode)
+(personal 'popup-setup)
 (personal 'theme)
 (personal 'utf8)
 
 ; languages
-(personal 'js3-mode)
-(personal 'yaml-mode)
-
-;; submodule managed
-;; ------------------
-(vendor 'confluence)
+(personal 'confluence-setup)
+(personal 'js)
+(personal 'vc)
+(personal 'ruby)
+(personal 'shell)
+(personal 'yaml)

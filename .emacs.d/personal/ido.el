@@ -1,3 +1,6 @@
+(package 'flx-ido)
+(package 'flx-isearch)
+
 (ido-mode t)
 (setq ido-enable-flex-matching t) ; fuzzy matching is a must have
 (setq ido-enable-last-directory-history nil) ; forget latest selected directory names

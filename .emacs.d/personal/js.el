@@ -1,3 +1,4 @@
+(package 'js3-mode)
 (setq js3-mirror-mode t)
 (autoload 'js3-mode "js3-mode" nil t)
 

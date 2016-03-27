@@ -1,3 +1,4 @@
+(vendor 'confluence)
 (setq confluence-url "http://intranet/confluence/rpc/xmlrpc")
 (global-set-key "\C-xwf" 'confluence-get-page)
 
