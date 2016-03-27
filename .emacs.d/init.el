@@ -27,6 +27,7 @@
 ; languages
 (personal 'confluence-setup)
 (personal 'js)
+(personal 'markdown-setup)
 (personal 'vc)
 (personal 'ruby)
 (personal 'shell)
