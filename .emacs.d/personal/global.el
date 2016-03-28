@@ -4,6 +4,8 @@
 ;; "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(setq dired-use-ls-dired nil)
+
 ;; Display line and column numbers
 (setq line-number-mode    t)
 (setq column-number-mode  t)
