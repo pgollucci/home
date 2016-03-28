@@ -16,7 +16,7 @@ brew tap homebrew/x11
 brew tap caskroom/cask
 
 ## src distribution apps
-base_pkgs="gpg go subversion git hub irssi nmap swaks sqlite xz graphiz rdesktop"
+base_pkgs="ctags-exuberant gpg go subversion git hub irssi nmap swaks sqlite xz graphiz rdesktop"
 devel_pkgs="autoconf automake"
 db_pkgs="mysql postgresql innotop redis memcache"
 devops_pkgs="awscli packer ansible docker boot2docker"
@@ -35,3 +35,5 @@ for pkg in $binary_pkgs; do
 done
 
 brew prune
+
+sudo rm -f /usr/bin/ctags
