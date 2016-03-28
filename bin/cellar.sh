@@ -16,7 +16,7 @@ brew tap homebrew/x11
 brew tap caskroom/cask
 
 ## src distribution apps
-base_pkgs="ctags-exuberant gpg go subversion git hub irssi nmap swaks sqlite xz graphiz rdesktop"
+base_pkgs="ctags-exuberant gpg go subversion hub htop-osx irssi nmap swaks sqlite xz graphiz rdesktop"
 devel_pkgs="autoconf automake"
 db_pkgs="mysql postgresql innotop redis memcache"
 devops_pkgs="awscli packer ansible docker boot2docker"
@@ -24,6 +24,9 @@ devops_pkgs="awscli packer ansible docker boot2docker"
 for pkg in $base_pkgs $devel_pkgs $db_pkgs $devops_pkgs; do
   brew install $pkg
 done
+
+brew install git --without-completions
+brew install git-extras
 
 ## binary distribution apps
 binary_pkgs="alfred chefdk dash evernote firefox gitx google-chrome google-drive google-hangouts \
