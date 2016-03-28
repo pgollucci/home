@@ -5,6 +5,7 @@ __setup() {
 
   . ${___dir}/colors.zsh
   . ${___dir}/history.zsh
+  . ${___dir}/sudo.zsh
 }
 
 __setup
