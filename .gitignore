@@ -5,6 +5,7 @@
 .aws/config
 .aws/credentials
 .config
+.dropbox
 .emacs.d/elpa/*
 .emacs.d/ac-comphist.dat
 .irssi/nicklistfifo
