@@ -10,6 +10,7 @@ brew 'autoconf'
 brew 'automake'
 brew 'awscli'
 brew 'ctags-exuberant'
+brew 'emacs'
 brew 'gpg'
 brew 'git', args: ['without-completions']
 brew 'git-extras'
