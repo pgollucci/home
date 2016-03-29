@@ -18,6 +18,11 @@ curl -o - -s https://raw.githubusercontent.com/pgollucci/home/master/bin/hinit |
 $HOME/bin/cellar.sh
 ```
 
+## Configure OSX
+```shell
+$HOME/bin/defaults.sh
+```
+
 ## Features
 - no shell framework deps
 - fully customizable prompt/theme
@@ -50,12 +55,14 @@ $HOME/bin/cellar.sh
 - ssh
 - svn
 - zfs
+- zsh
 
 ## Prompts
 - aws
 - blank
 - dir
 - git
+- nl
 - plenv
 - pyenv
 - rbenv
