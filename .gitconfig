@@ -181,3 +181,5 @@
 
 [hub]
 	host = github.kdc.capitalone.com
+[credential]
+	helper = osxkeychain
