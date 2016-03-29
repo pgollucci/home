@@ -1,7 +1,7 @@
 __setup() {
 
     export PLENV_ROOT=$HOME/.repos/langs/plenv
-    export PATH=$PLENV_ROOT/bin:$PATH
+    path_if $PLENV_ROOT/bin
 
     if [ -x $PLENV_ROOT/bin/plenv ]; then
       export HAS_PLENV=1

@@ -1,7 +1,7 @@
 __setup() {
 
     export RBENV_ROOT=$HOME/.repos/langs/rbenv
-    export PATH=$RBENV_ROOT/bin:$PATH
+    path_if $RBENV_ROOT/bin
 
     if [ -x $RBENV_ROOT/bin/rbenv ]; then
         export HAS_RBENV=1

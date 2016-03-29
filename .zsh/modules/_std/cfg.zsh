@@ -1,6 +1,20 @@
-__setup() {
+default_path() {
+
+    PATH=
     path_if $HOME/bin
+    path_if /opt/X11/bin
     path_if /usr/local/bin
+    path_if /usr/local/sbin
+    path_if /usr/sbin
+    path_if /usr/bin
+    path_if /bin
+    path_if /sbin
+}
+
+
+__setup() {
+
+    default_path
 
     alias '_'='sudo'    
     alias rmrf='rm -rf'
@@ -34,6 +48,12 @@ __setup() {
 
     alias tarx='tar -xvzof'
     alias tart='tar -tvzf'
+
+}
+
+path() {
+
+  env | grep -i path | cut -f 2 -d= | perl -F: -MData::Dumper -lane 'print Dumper \@F' | sed -e "s/[',]//g" | egrep -v '\]|\[' | grep /
 }
 
 xclean() {

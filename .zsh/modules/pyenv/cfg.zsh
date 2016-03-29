@@ -1,7 +1,7 @@
 __setup() {
 
     export PYENV_ROOT=$HOME/.repos/langs/pyenv
-    export PATH=$PYENV_ROOT/bin:$PATH
+    path_if $PYENV_ROOT/bin
 
     if [ -x $PYENV_ROOT/bin/pyenv ]; then
       export HAS_PYENV=1
