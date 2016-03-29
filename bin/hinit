@@ -29,31 +29,44 @@ sudo mkdir $THOME
 sudo chown $USER $THOME
 
 echo "Cloning Repos"
-git clone -q git@github.com:pgollucci/home.git          $THOME
+git clone -q https://github.com/pgollucci/home.git          $THOME
 
 # ruby
-git clone -q git@github.com:postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
-git clone -q git@github.com:sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
+git clone -q https://github.com/postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
+git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
 mkdir -p $THOME/.repos/langs/rbenv/plugins
-git clone -q git@github.com:sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
+git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
 
 # perl
-git clone git@github.com:tokuhirom/plenv.git            $THOME/.repos/langs/.plenv
+git clone -q https://github.com/tokuhirom/plenv.git            $THOME/.repos/langs/.plenv
 mkdir -p $THOME/.repos/langs/plenv/plugins
-git clone git@github.com:tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
+git clone -q https://github.com/tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
 
 # python
-git clone git@github.com:yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
+git clone -q https://github.com/yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
 
 echo "Transfering"
-rsync -atz --delete $THOME/ $HOME/
+sudo rsync \
+  -atz \
+  --exclude Applications \
+  --exclude Desktop \
+  --exclude Documents \
+  --exclude Downloads \
+  --exclude Dropbox \
+  --exclude Library \
+  --exclude Movies \
+  --exclude Music \
+  --exclude Pictures \
+  --exclude Public \
+  --delete \
+  $THOME/ $HOME/
 
 echo "Cleaning"
 rm -rf $THOME
 
 #### Private Repo
 echo "Private bits"
-( cd $HOME ; git clone -q git@github.com:pgollucci/home-private.git $HOME/.private )
+( cd $HOME ; git clone -q https://github.com/pgollucci/home-private.git $HOME/.private )
 if [ $Private -eq 1 ]; then
   cd $HOME/.ssh
   ln -s $HOME/.private/ssh/2/id* .
@@ -68,6 +81,6 @@ if [ $Private -ne 1 ]; then
 fi
 
 echo "Set Owners"
-chown -Rh $USER $HOME
+sudo chown -Rh $USER $HOME
 
 echo "Done"
