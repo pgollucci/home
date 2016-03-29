@@ -35,7 +35,8 @@ prompt_load() { # args: prompts_dir prompt_dir
     local reset_flag="$4"
 
     local prompt_lines
-    . $prompt_dir/prompt.zsh
+    [ -r $prompt_dir/prompt.zsh ] || return
+   . $prompt_dir/prompt.zsh
 
     setopt PROMPT_SUBST
 
