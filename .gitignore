@@ -11,11 +11,13 @@
 .irssi/nicklistfifo
 .irssi/sasl.auth
 .private
+.serverauth.*
 .ssh/authorized_keys
 .ssh/id*
 .ssh/known_hosts
 .subversion/auth
 .viminfo
+.zcompdump*
 .zsh/local
 .zhistory
 .zplug
