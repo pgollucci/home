@@ -45,6 +45,9 @@ git clone -q https://github.com/tokuhirom/Perl-Build.git       $THOME/.repos/lan
 # python
 git clone -q https://github.com/yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
 
+# zplug
+git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.zplug
+
 echo "Transfering"
 sudo rsync \
   -atz \

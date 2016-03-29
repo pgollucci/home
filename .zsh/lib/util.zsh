@@ -5,6 +5,16 @@ path_if() { # args: dir
   fi
 }
 
+zplug_load() {
+
+    . $HOME/.zplug/zplug
+}
+
+zplug_run() {
+
+    zplug install
+}
+
 modules_load() { # args: modules_dir
     local modules_dir="$1"
 

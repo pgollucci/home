@@ -20,11 +20,13 @@ __load() {
     local prompt_dir="$theme_dir"
     local local_host_dir=$(local_dir_get $local_dir)
 
+    zplug_load
     theme_load "$theme_dir"
     modules_load "$modules_dir"
     local_load "$local_host_dir"
     prompt_load "$local_host_dir" "$prompts_dir" "$prompt_dir" "1"
     completions_load "$completions_dir"
+    zplug_run
 
     set +x
 }

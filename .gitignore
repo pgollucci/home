@@ -16,7 +16,8 @@
 .subversion/auth
 .viminfo
 .zsh/local
-.zsh_history
+.zhistory
+.zplug
 Applications/
 Desktop
 Documents
