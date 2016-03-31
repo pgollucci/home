@@ -7,12 +7,13 @@ aws_clear() {
   unset AWS_PROFILE
   unset AWS_ENV
   unset AWS_VPC
+  unset ENV_LEVEL
 }
 
 aws_prompt_info() {
 
   if [ -n "$AWS_PROFILE" ]; then
-    echo "[$AWS_PROFILE($AWS_ENV) - $AWS_REGION($AWS_VPC)]"
+    echo "[$AWS_PROFILE($AWS_ENV/$ENV_LEVEL) - $AWS_REGION($AWS_VPC)]"
   fi
 
 }
@@ -27,7 +28,7 @@ sts_prompt_info() {
     local now=$(date "+%s")
     local diff=$(($now-$mtime))
 
-    if [ $diff -gt 2800 ]; then
+    if [ $diff -gt 3500 ]; then
 	echo "${magenta}sts:   ${red}$diff${norm}s"
     else
 	echo "${magenta}sts:   ${green}$diff${norm}s"
