@@ -5,8 +5,8 @@ default_path() {
     path_if /opt/X11/bin
     path_if /usr/local/bin
     path_if /usr/local/sbin
-    path_if /usr/sbin
     path_if /usr/bin
+    path_if /usr/sbin
     path_if /bin
     path_if /sbin
 }
