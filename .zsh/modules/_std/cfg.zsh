@@ -51,6 +51,12 @@ __setup() {
 
 }
 
+slen() {
+  local s="$1"
+
+  perl -le "print length '$s'"
+}
+
 path() {
 
   env | grep -i path | cut -f 2 -d= | perl -F: -MData::Dumper -lane 'print Dumper \@F' | sed -e "s/[',]//g" | egrep -v '\]|\[' | grep /
