@@ -25,7 +25,6 @@
 .rnd
 .serverauth.*
 .ssh/authorized_keys
-.ssh/dynamic
 .ssh/id*
 .ssh/known_hosts
 .subversion/auth
