@@ -20,8 +20,7 @@ zplug_load() {
 zplug_run() {
 
      zplug install
-     zplug load --verbose
-     zplug list
+     zplug load
 }
 
 modules_load() { # args: modules_dir
