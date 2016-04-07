@@ -48,6 +48,9 @@ git clone -q https://github.com/yyuu/pyenv.git                 $THOME/.repos/lan
 # zplug
 git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.zplug
 
+# zprezto
+git clone -q https://github.com/sorin-ionescu/prezto.git       $THOME/.zprezto
+
 echo "Transfering"
 sudo rsync \
   -atz \

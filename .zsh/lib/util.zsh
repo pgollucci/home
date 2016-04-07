@@ -5,14 +5,23 @@ path_if() { # args: dir
   fi
 }
 
+zprezto_load() {
+
+    . $HOME/.zprezto/init.zsh
+}
+
 zplug_load() {
 
     . $HOME/.zplug/zplug
+
+    zprezto_load
 }
 
 zplug_run() {
 
-    zplug install
+     zplug install
+     zplug load --verbose
+     zplug list
 }
 
 modules_load() { # args: modules_dir
@@ -98,7 +107,7 @@ completions_load() { # completions_dir
 
     local dir
     for dir in $completions_dir/*; do
-	fpath=($dir $fpath)
+	fpath+=($dir)
     done
 }
 

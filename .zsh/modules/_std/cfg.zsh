@@ -11,10 +11,19 @@ default_path() {
     path_if /sbin
 }
 
+pgs() { # [find] [replace] [filename]
+    perl -i.orig -pe 's/'"$1"'/'"$2"'/g' "$3"
+}
 
 __setup() {
 
     default_path
+
+    zplug "zsh-users/zsh-syntax-highlighting"
+    zplug "zsh-users/zsh-completions"	
+
+    zplug "robbyrussell/oh-my-zsh", of:"lib/grep/*.zsh"
+    zplug "robbyrussell/oh-my-zsh", of:"plugins/encode64/*.zsh"
 
     alias '_'='sudo'    
     alias rmrf='rm -rf'

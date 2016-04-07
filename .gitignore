@@ -35,7 +35,10 @@
 .zcompdump*
 .zhistory
 .zplug
+.zprezto
 .zsh/local
+.zsh-update
+.zshrc.zwc
 .zsh_history
 Applications
 Desktop

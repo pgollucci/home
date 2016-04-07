@@ -1,12 +1,7 @@
-sudo-command-line() {
-    [[ -z $BUFFER ]] && zle up-history
-    if [[ $BUFFER == sudo\ * ]]; then
-        LBUFFER="${LBUFFER#sudo }"
-    else
-        LBUFFER="sudo $LBUFFER"
-    fi
+__setup() {
+
+    zplug "robbyrussell/oh-my-zsh", of:"plugins/sudo/*.zsh"
 }
 
-zle -N sudo-command-line
-# Defined shortcut keys: [Esc] [Esc]
-bindkey "\e\e" sudo-command-line
+__setup
+:
