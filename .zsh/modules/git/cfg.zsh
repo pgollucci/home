@@ -41,4 +41,28 @@ git_short_sha_get() {
     git rev-parse --short HEAD 2>/dev/null
 }
 
+gh_clone_org_repos() {
+    local gh="$1"
+    local org="$2"
+    local dir="$3"
+    local user="$4"
+
+    local repos="$(curl -u $user -s -i ${gh}/${org}/repositories | \
+			 grep "href=\"/$org\/" | \
+			 grep -v "class" | \
+			 sed -e 's,.*="/,,' -e 's,".*,,' -e "s,$org/,," | \
+			 sort)"
+
+    local repo
+    for repo in $(echo $repos); do
+	if [ -d $dir/$org/$repo ]; then
+	    echo "=====> $repo [pull]"
+	    (cd $dir/$org/$repo ; git pull -q)
+	else
+	    echo "=====> $repo [clone]"
+	    (cd $dir/$org ; git clone -q ${gh}/${org}/${repo}.git > /dev/null)
+	fi
+    done
+}
+
 __setup
