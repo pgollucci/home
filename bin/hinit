@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ex
 
 #### Options
 Private=0
@@ -28,12 +28,10 @@ sudo rm -rf $THOME
 sudo mkdir $THOME
 sudo chown $USER $THOME
 
-mkdir $THOME/.zcache
-
-mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
-
 echo "Cloning Repos"
 git clone -q https://github.com/pgollucci/home.git          $THOME
+mkdir $THOME/.zcache
+mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
 
 # ruby
 git clone -q https://github.com/postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
@@ -42,7 +40,7 @@ mkdir -p $THOME/.repos/langs/rbenv/plugins
 git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
 
 # perl
-git clone -q https://github.com/tokuhirom/plenv.git            $THOME/.repos/langs/.plenv
+git clone -q https://github.com/tokuhirom/plenv.git            $THOME/.repos/langs/plenv
 mkdir -p $THOME/.repos/langs/plenv/plugins
 git clone -q https://github.com/tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
 
@@ -68,11 +66,14 @@ sudo rsync \
   --exclude Music \
   --exclude Pictures \
   --exclude Public \
+  --exclude tmp \
+  --exclude .ssh/dynamic \
+  --exclude .Trash \
   --delete \
   $THOME/ $HOME/
 
 echo "Cleaning"
-rm -rf $THOME
+#rm -rf $THOME
 
 #### Private Repo
 echo "Private bits"
@@ -91,6 +92,6 @@ if [ $Private -ne 1 ]; then
 fi
 
 echo "Set Owners"
-sudo chown -Rh $USER $HOME
+sudo chown -Rh $USER:$USER $HOME
 
 echo "Done"
