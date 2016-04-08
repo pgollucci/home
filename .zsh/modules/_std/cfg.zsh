@@ -30,7 +30,7 @@ default_path() {
     path_if /sbin
 }
 
-pgs() { 
+pgs() {
     find . -type f | xargs perl -pi -e "s,$1,$2,g"
 }
 
@@ -39,12 +39,12 @@ __setup() {
     default_path
 
     zplug "zsh-users/zsh-syntax-highlighting"
-    zplug "zsh-users/zsh-completions"	
+    zplug "zsh-users/zsh-completions"
 
     zplug "robbyrussell/oh-my-zsh", of:"lib/grep/*.zsh"
     zplug "robbyrussell/oh-my-zsh", of:"plugins/encode64/*.zsh"
 
-    alias '_'='sudo'    
+    alias '_'='sudo'
     alias rmrf='rm -rf'
     alias cpr='cp -R'
     alias mvf='mv -f'
@@ -55,7 +55,7 @@ __setup() {
     alias h='history 25'
     alias duh='du -h'
     alias history='fc -l 1'
-    
+
     alias sha1="openssl dgst -sha1"
     alias sha2="openssl dgst -sha256"
     alias b64="openssl enc -base64"
@@ -63,7 +63,7 @@ __setup() {
     alias prettyjson="python -mjson.tool"
 
     alias myip="dig +short myip.opendns.com @resolver1.opendns.com"
-    
+
     alias whichlinux='uname -a; cat /etc/*release; cat /etc/issue'
 
     alias flushdns='sudo dscacheutil -flushcache'
@@ -92,20 +92,20 @@ path() {
 
 xclean() {
     find . \( -type f -o -type l \)  -a \
-         \( \
+	 \( \
 	    -name ".DS_Store" -o \
-            -name "*.bak" -o \
-            -name "*~" -o \
-            -name ".\#*" -o \
-            -name "\#*" -o \
-            -name "*.rej" -o \
-            -name "svn-commit.*" -o \
-            -name "*.orig" -o \
-            -name "*-i" -o \
-            -name "*.tmp" -o \
-            -name "=~+*" \
-        \) \
-        -print -exec rm -f "{}" \;
+	    -name "*.bak" -o \
+	    -name "*~" -o \
+	    -name ".\#*" -o \
+	    -name "\#*" -o \
+	    -name "*.rej" -o \
+	    -name "svn-commit.*" -o \
+	    -name "*.orig" -o \
+	    -name "*-i" -o \
+	    -name "*.tmp" -o \
+	    -name "=~+*" \
+	\) \
+	-print -exec rm -f "{}" \;
 }
 
 mkpasswd() {
