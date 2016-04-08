@@ -4,6 +4,7 @@ __load() {
     [ -n "$DEBUG" ] && set -x
 
     ZDOTDIR=$HOME
+    ZSH_CACHE_DIR=$ZDOTDIR/.zcache
     ZSH_DIR=$ZDOTDIR/.zsh
 
     . $ZSH_DIR/lib/util.zsh

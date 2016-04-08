@@ -11,8 +11,8 @@ default_path() {
     path_if /sbin
 }
 
-pgs() { # [find] [replace] [filename]
-    perl -i.orig -pe 's/'"$1"'/'"$2"'/g' "$3"
+pgs() { 
+    find . -type f | xargs perl -pi -e "s,$1,$2,g"
 }
 
 __setup() {

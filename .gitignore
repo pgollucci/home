@@ -32,6 +32,7 @@
 .vim
 .viminfo
 .wireshark-etc
+.zcache
 .zcompdump*
 .zhistory
 .zplug

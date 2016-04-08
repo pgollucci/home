@@ -7,7 +7,7 @@ zshr() {
     zrecompile -p $f && command rm -f $f.zwc.old
   done
 
-  source ~/.zshrc
+  exec $SHELL -l
 }
 
 __setup() {

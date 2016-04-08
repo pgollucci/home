@@ -28,6 +28,8 @@ sudo rm -rf $THOME
 sudo mkdir $THOME
 sudo chown $USER $THOME
 
+mkdir $THOME/.zcache
+
 echo "Cloning Repos"
 git clone -q https://github.com/pgollucci/home.git          $THOME
 
