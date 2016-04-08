@@ -6,6 +6,7 @@ tap 'homebrew/dupes'
 tap 'homebrew/binary'
 tap 'homebrew/x11'
 
+brew 'apple-gcc42'
 brew 'autoconf'
 brew 'automake'
 brew 'awscli'
