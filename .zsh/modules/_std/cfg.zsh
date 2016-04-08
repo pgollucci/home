@@ -1,3 +1,22 @@
+cd_make_aliases() { # args: dir
+    local dir="$1"
+
+    if [ -d $dir ]; then
+	local d
+	for d in $(cd $dir ; /bin/ls -1d *); do
+	    eval "alias cd$d='cd $dir/$d'"
+	done
+    fi
+}
+
+path_if() {
+    local dir=$1
+
+    if [ -d $dir ]; then
+	PATH="${PATH}:$dir"
+    fi
+}
+
 default_path() {
 
     PATH=

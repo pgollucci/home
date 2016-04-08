@@ -1,10 +1,3 @@
-path_if() { # args: dir
-  local dir=$1
-  if [ -d $dir ]; then
-    PATH="${PATH}:$dir"
-  fi
-}
-
 zprezto_load() {
 
     . $HOME/.zprezto/init.zsh
@@ -108,17 +101,6 @@ completions_load() { # completions_dir
     for dir in $completions_dir/*; do
 	fpath+=($dir)
     done
-}
-
-cd_make_aliases() { # args: dir
-    local dir="$1"
-
-    if [ -d $dir ]; then
-	local d
-	for d in $(cd $dir ; /bin/ls -1d *); do
-	    eval "alias cd$d='cd $dir/$d'"
-	done
-    fi
 }
 
 msg() {
