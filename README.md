@@ -23,6 +23,11 @@ $HOME/bin/cellar.sh
 $HOME/bin/defaults.sh
 ```
 
+## Install virtual envs
+```shell
+$HOME/bin/bin.langs.sh
+```
+
 ## Features
 - no shell framework deps
 - fully customizable prompt/theme
@@ -67,4 +72,3 @@ $HOME/bin/defaults.sh
 - pyenv
 - rbenv
 - std
-
