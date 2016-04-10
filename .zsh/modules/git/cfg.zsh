@@ -47,7 +47,7 @@ gh_clone_org_repos() {
     local dir="$3"
     local user="$4"
 
-    local repos="$(curl -u $user -s -i ${gh}/${org}/repositories | \
+    local repos="$(curl -s -i ${gh}/${org}/repositories | \
 			 grep "href=\"/$org\/" | \
 			 grep -v "class" | \
 			 sed -e 's,.*="/,,' -e 's,".*,,' -e "s,$org/,," | \
