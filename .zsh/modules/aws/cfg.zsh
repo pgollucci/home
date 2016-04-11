@@ -45,7 +45,7 @@ aws_sts_prompt_info() {
 aws_cft_stacks_list() {
     local glob="$1"
 
-    aws --output text cloudformation describe-stacks --query "Stacks[*].{Id: StackId, Name: StackName, Status: StackStatus, Date: CreationTime}" | grep "$globa"
+    aws --output text cloudformation describe-stacks --query "Stacks[*].{Id: StackId, Name: StackName, Status: StackStatus, Date: CreationTime}" | grep "$glob"
 }
 
 aws_cft_stack_delete() {
