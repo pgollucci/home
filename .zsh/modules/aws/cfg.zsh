@@ -42,4 +42,15 @@ aws_sts_prompt_info() {
     fi
 }
 
+aws_cft_stacks_list() {
+    local glob="$1"
+
+    aws --output text cloudformation describe-stacks --query "Stacks[*].{Id: StackId, Name: StackName, Status: StackStatus, Date: CreationTime}" | grep frank
+}
+
+aws_cft_stack_delete() {
+    local name="$1"
+
+    aws cloudformation delete-stack --stack-name $name
+}
 __setup
