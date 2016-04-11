@@ -60,4 +60,9 @@ aws_rds_snapshot_list() {
     aws --output text rds describe-db-snapshots --query "DBSnapshots[].{VPC:VpcId, DB:DBInstanceIdentifier, Snapshot:DBSnapshotIdentifier, Created:SnapshotCreateTime}" | grep "$glob"
 }
 
+aws_sts_expire() {
+
+    touch -r ~/README.md ~/.aws/credentiasl
+}
+
 __setup
