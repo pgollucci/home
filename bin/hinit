@@ -61,6 +61,7 @@ sudo rsync \
   --exclude Documents \
   --exclude Downloads \
   --exclude Dropbox \
+  --exclude Google\ Drive \
   --exclude Library \
   --exclude Movies \
   --exclude Music \
