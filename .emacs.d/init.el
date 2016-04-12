@@ -15,6 +15,7 @@
 (package-initialize)
 (when (not package-archive-contents) (package-refresh-contents))
 
+(personal 'ace-windows)
 (personal 'auto-complete-setup)
 (personal 'bindings)
 (personal 'global)
