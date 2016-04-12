@@ -29,6 +29,7 @@ brew 'sqlite'
 brew 'xz'
 brew 'graphviz'
 brew 'rdesktop'
+brew 'lftp'
 
 cask 'alfred'
 cask 'chefdk'
