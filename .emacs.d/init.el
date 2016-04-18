@@ -16,6 +16,7 @@
 (when (not package-archive-contents) (package-refresh-contents))
 
 (personal 'ace-windows)
+(personal 'ag-setup)
 (personal 'auto-complete-setup)
 (personal 'bindings)
 (personal 'global)
