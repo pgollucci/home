@@ -13,7 +13,8 @@ zshr() {
 __setup() {
 
   alias zshe="$EDITOR ~/.zshrc"
-
+  alias ee="$EDITOR ~/.emacs.d/init.el"
+  
   . ${___dir}/colors.zsh
   . ${___dir}/history.zsh
   . ${___dir}/sudo.zsh
