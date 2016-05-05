@@ -18,6 +18,7 @@
 (personal 'ace-windows)
 (personal 'ag-setup)
 (personal 'auto-complete-setup)
+(personal 'buffers)
 (personal 'bindings)
 (personal 'global)
 (personal 'ido)
