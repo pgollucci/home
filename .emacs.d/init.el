@@ -22,6 +22,7 @@
 (personal 'bindings)
 (personal 'global)
 (personal 'ido)
+(personal 'jenkins-setup)
 (personal 'server-mode)
 (personal 'popup-setup)
 (personal 'theme)

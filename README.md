@@ -25,7 +25,7 @@ $HOME/bin/defaults.sh
 
 ## Install virtual envs
 ```shell
-$HOME/bin/bin.langs.sh
+$HOME/bin/langs.sh
 ```
 
 ## Features
