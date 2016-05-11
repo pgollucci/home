@@ -30,6 +30,7 @@ sudo chown $USER $THOME
 
 echo "Cloning Repos"
 git clone -q https://github.com/pgollucci/home.git          $THOME
+git clone -q https://github.com/pgollucci/emacs.git         $THOME/.emacs.d
 mkdir $THOME/.zcache
 mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
 
