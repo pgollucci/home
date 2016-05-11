@@ -15,6 +15,7 @@
 ;; (display-battery-mode 1)
 
 ;; Small fringes
+(require 'fringe)
 (set-fringe-mode '(1 . 1))
 
 ;; Emacs gurus don't need no stinking scroll bars

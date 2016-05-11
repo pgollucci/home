@@ -11,7 +11,7 @@ brew update
 
 brew tap homebrew/bundle
 
-brew bundle --file=$HOMR/bin/Brewfile
+brew bundle --file=$HOME/bin/Brewfile
 
 brew prune
 
