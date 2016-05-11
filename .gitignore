@@ -10,7 +10,7 @@
 .config
 .cups
 .dropbox
-.emacs.d/.gitignore
+.emacs.d
 .gem
 .gnupg
 .irssi/nicklistfifo
