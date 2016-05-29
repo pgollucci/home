@@ -35,6 +35,7 @@ brew 'rdesktop'
 brew 'lftp'
 
 cask 'alfred'
+cask 'amazon-workspaces'
 cask 'chefdk'
 cask 'dash'
 cask 'evernote'
