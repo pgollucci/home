@@ -16,17 +16,27 @@ shift $(( OPTIND - 1 ));
 OS=$(uname -s)
 USER=${1:-pgollucci}
 THOME=/tmp/$USER
+SUDO=sudo
 
 case $OS in
-  Darwin) HOME=/Users/$USER ;;
-  **) HOME=/home/$USER
+  *CYGWIN*)
+    SUDO=
+    HOME=/home/$USER
+    ;;
+  Darwin) 
+    HOME=/Users/$USER 
+    ;;
+  **) 
+    HOME=/home/$USER
+    ;;
 esac
+
 
 #### Main Setup
 echo "Creating Staging Area"
-sudo rm -rf $THOME
-sudo mkdir $THOME
-sudo chown $USER $THOME
+$SUDO rm -rf $THOME
+$SUDO mkdir $THOME
+$SUDO chown $USER $THOME
 
 echo "Cloning Repos"
 git clone -q https://github.com/pgollucci/home.git          $THOME
@@ -55,7 +65,7 @@ git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.zplug
 git clone -q https://github.com/sorin-ionescu/prezto.git       $THOME/.zprezto
 
 echo "Transfering"
-sudo rsync \
+$SUDO rsync \
   -atz \
   --exclude Applications \
   --exclude Desktop \
@@ -94,6 +104,6 @@ if [ $Private -ne 1 ]; then
 fi
 
 echo "Set Owners"
-sudo chown -Rh $USER:$USER $HOME
+$SUDO chown -Rh $USER:$USER $HOME
 
 echo "Done"
