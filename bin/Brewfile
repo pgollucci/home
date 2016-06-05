@@ -31,7 +31,7 @@ brew 'swaks'
 brew 'sqlite'
 brew 'xz'
 brew 'graphviz'
-brew 'rdesktop'
+brew 'freerdp'
 brew 'lftp'
 
 cask 'alfred'
