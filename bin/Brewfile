@@ -13,7 +13,7 @@ brew 'autoconf'
 brew 'automake'
 brew 'awscli'
 brew 'ctags-exuberant'
-brew 'emacs'
+brew 'emacs', args: ['with-coca', 'with-x11']
 brew 'gpg'
 brew 'git', args: ['without-completions']
 brew 'git-extras'
