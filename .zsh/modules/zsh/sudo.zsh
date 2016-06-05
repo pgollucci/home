@@ -1,6 +1,6 @@
 __setup() {
 
-    zplug "robbyrussell/oh-my-zsh", of:"plugins/sudo/*.zsh"
+    zplug "robbyrussell/oh-my-zsh", use:"plugins/sudo/*.zsh"
 }
 
 __setup

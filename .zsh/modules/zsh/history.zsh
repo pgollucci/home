@@ -1,3 +1,3 @@
-zplug 'sorin-ionescu/prezto', from:github, of:'modules/history/*.zsh'
+zplug 'sorin-ionescu/prezto', from:github, use:'modules/history/*.zsh'
 
 zplug "jimeh/zsh-peco-history"

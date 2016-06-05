@@ -1,7 +1,7 @@
 __setup() {
 
     eval "$(hub alias -s)"
-    zplug 'sorin-ionescu/prezto', from:github, of:'modules/git/*.zsh'
+    zplug 'sorin-ionescu/prezto', from:github, use:'modules/git/*.zsh'
 }
 
 git_prompt_info() {
