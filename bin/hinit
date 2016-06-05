@@ -85,7 +85,7 @@ $SUDO rsync \
   $THOME/ $HOME/
 
 echo "Cleaning"
-#rm -rf $THOME
+rm -rf $THOME
 
 #### Private Repo
 echo "Private bits"
