@@ -14,5 +14,3 @@ brew tap homebrew/bundle
 brew bundle --file=$HOME/bin/Brewfile
 
 brew prune
-
-sudo rm -rf /usr/bin/ctags
