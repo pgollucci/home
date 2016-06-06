@@ -1,13 +1,17 @@
 #!/bin/sh -ex
 
 #### Options
-Private=0
+Clean=
+Dry=-n
 Help=0
+Private=0
 
-while getopts hp o; do
+while getopts cDhp o; do
   case "$o" in
-    h) echo "hinit [-hp]"; exit 0;;
-    p) Private=1;;
+    c) Clean="--delete" ;;
+    D) Dry="" ;;
+    h) echo "hinit [-chp]"; exit 0 ;;
+    p) Private=1 ;;
   esac
 done
 
@@ -66,26 +70,24 @@ git clone -q https://github.com/sorin-ionescu/prezto.git       $THOME/.zprezto
 
 echo "Transfering"
 $SUDO rsync \
-  -atz \
+  -atz $Dry $Clean \
   --exclude Applications \
   --exclude Desktop \
   --exclude Documents \
   --exclude Downloads \
   --exclude Dropbox \
   --exclude Google\ Drive \
+  --exclude OneDrive\ \-\ Capital\ One\ Financial\ Corporation \
   --exclude Library \
   --exclude Movies \
   --exclude Music \
   --exclude Pictures \
   --exclude Public \
+  --exclude dev \
   --exclude tmp \
   --exclude .ssh/dynamic \
   --exclude .Trash \
-  --delete \
   $THOME/ $HOME/
-
-echo "Cleaning"
-rm -rf $THOME
 
 #### Private Repo
 echo "Private bits"

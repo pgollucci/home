@@ -6,7 +6,9 @@
 .aws/config
 .aws/credentials
 .berkshelf
+.bundle
 .cache
+.chef.d
 .config
 .cups
 .dropbox
@@ -21,6 +23,7 @@
 .repos
 .rnd
 .serverauth.*
+.ssh/dynamic
 .ssh/authorized_keys
 .ssh/id*
 .ssh/known_hosts

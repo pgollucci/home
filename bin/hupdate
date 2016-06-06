@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-repos=" \
+repos="\
 	.repos/langs/plenv \
 	.repos/langs/plenv/plugins/perl-build \
 	.repos/langs/pyenv \
@@ -14,9 +14,5 @@ repos=" \
 
 for repo in $repos; do
   echo "=====> $repo"
-  ( 
-    cd ~/${repo}
-    git fetch origin
-    git pull
-  )
+  ( cd ~/${repo} ; git pull)
 done
