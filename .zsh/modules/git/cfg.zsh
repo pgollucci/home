@@ -62,6 +62,7 @@ gh_clone_org_repos() {
 	    (cd $dir/$org/$repo ; git pull -q)
 	else
 	    echo "=====> $repo [clone]"
+	    mkdir -p $dir/$org
 	    (cd $dir/$org ; git clone -q ${gh}/${org}/${repo}.git > /dev/null)
 	fi
     done
