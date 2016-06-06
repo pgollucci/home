@@ -21,7 +21,9 @@ modules_load() { # args: modules_dir
 
     local module
     for module in $modules_dir/*; do
-	module_load "$module"
+        if [ x"$module" != x"README.md" ]; then
+  	  module_load "$module"
+        fi
     done
 }
 
