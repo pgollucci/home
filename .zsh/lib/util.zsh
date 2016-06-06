@@ -21,9 +21,7 @@ modules_load() { # args: modules_dir
 
     local module
     for module in $modules_dir/*; do
-        if [ x"$module" != x"README.md" ]; then
-  	  module_load "$module"
-        fi
+	module_load "$module"
     done
 }
 
@@ -31,7 +29,9 @@ module_load() { # args: module_dir
     local module_dir="$1"
 
     export ___dir=$module_dir
-    . $module_dir/cfg.zsh
+    if [ -d $module_dir ]; then
+	. $module_dir/cfg.zsh
+    fi
     unset ___dir
 }
 
