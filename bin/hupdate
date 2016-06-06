@@ -1,0 +1,22 @@
+#!/bin/sh -e
+
+repos=" \
+	.repos/langs/plenv \
+	.repos/langs/plenv/plugins/perl-build \
+	.repos/langs/pyenv \
+	.repos/langs/rbenv \
+	.repos/langs/ruby-install \
+	.repos/langs/rbenv/plugins/ruby-build \
+	.zplug \
+	.zprezto \
+	.emacs.d \
+"
+
+for repo in $repos; do
+  echo "=====> $repo"
+  ( 
+    cd ~/${repo}
+    git fetch origin
+    git pull
+  )
+done
