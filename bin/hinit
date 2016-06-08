@@ -27,10 +27,10 @@ case $OS in
     SUDO=
     HOME=/home/$USER
     ;;
-  Darwin) 
-    HOME=/Users/$USER 
+  Darwin)
+    HOME=/Users/$USER
     ;;
-  **) 
+  **)
     HOME=/home/$USER
     ;;
 esac
@@ -61,6 +61,9 @@ git clone -q https://github.com/tokuhirom/Perl-Build.git       $THOME/.repos/lan
 
 # python
 git clone -q https://github.com/yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
+
+# go
+git clone -q https://github.com/wfarr/goenv.git                $THOME/.repos/langs/goenv
 
 # zplug
 git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.zplug

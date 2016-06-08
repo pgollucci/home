@@ -17,7 +17,12 @@ pyenv_prompt_line() {
 pyenv_version() {
 
     if [ $HAS_PYENV ]; then
-	pyenv version-name
+	local ver=$(pyenv version-name)
+	if [ x"$ver" != x"system" ]; then
+	    echo $ver
+	else
+	    echo "system:$(python -V 2>&1 | cut -f 2 -d ' ')"
+	fi
     else
 	echo "system:$(python -V 2>&1 | cut -f 2 -d ' ')"
     fi

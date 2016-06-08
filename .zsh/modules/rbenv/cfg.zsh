@@ -17,7 +17,12 @@ rbenv_prompt_line() {
 rbenv_version() {
 
     if [ $HAS_RBENV ]; then
-	rbenv version-name
+	local ver=$(rbenv version-name)
+	if [ x"$ver" != x"system" ]; then
+	    echo $ver
+	else
+	    echo "system:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
+	fi
     else
 	echo "system:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
     fi
