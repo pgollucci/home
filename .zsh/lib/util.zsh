@@ -60,6 +60,8 @@ prompt_load() { # args: reset_flag
 $prompt_info"
 	fi
     done
+
+    echo $PROMPT
 }
 
 local_dir_get() { # args: local_dir

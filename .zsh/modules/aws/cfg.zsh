@@ -12,8 +12,8 @@ aws_clear() {
 
 aws_prompt_line() {
 
-  local aws="$(aws_target_prompt_info)"
-  local sts="$(aws_sts_prompt_info)"
+  local aws="\$(aws_target_prompt_info)"
+  local sts="\$(aws_sts_prompt_info)"
   [ -n "$aws" ] && echo "${magenta}aws:${norm}$aws"
   [ -n "$sts" ] && echo "${magenta}sts:${norm}$sts"
 }
