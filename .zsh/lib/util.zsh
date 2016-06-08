@@ -71,7 +71,13 @@ local_dir_get() { # args: local_dir
     echo $dir
 }
 
-local_load() { modules_load "$1" }
+local_load() {
+    local local_dir="$1"
+
+    if [ -d "$local_dir" ]; then
+	modules_load "$local_dir"
+    fi
+}
 
 completions_load() { # completions_dir
     local completions_dir="$1"
