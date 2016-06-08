@@ -4,13 +4,14 @@ __setup() {
     path_if $RBENV_ROOT/bin
 
     if [ -x $RBENV_ROOT/bin/rbenv ]; then
-        export HAS_RBENV=1
-        eval "$(rbenv init - zsh)"
+	export HAS_RBENV=1
+	eval "$(rbenv init - zsh)"
     fi
 }
 
-rbenv_prompt_info() {
-    echo "rbenv: [$(rbenv_version)]"
+rbenv_prompt_line() {
+
+    echo "${magenta}rbenv: [\$(rbenv_version)]${norm}"
 }
 
 rbenv_version() {

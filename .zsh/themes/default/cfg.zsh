@@ -10,5 +10,9 @@ theme_setup() {
     unsetopt correct_all
 }
 
-theme_setup
+my_prompt_lines() {
 
+    echo "std pyenv rbenv plenv proxy git aws %local% dir blank"
+}
+
+theme_setup

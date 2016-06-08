@@ -41,35 +41,23 @@ theme_load() { # args: theme_dir
     . $theme_dir/cfg.zsh
 }
 
-prompt_load() { # args: prompts_dir prompt_dir
-    local local_dir="$1"
-    local prompts_dir="$2"
-    local prompt_dir="$3"
-    local reset_flag="$4"
-
-    local prompt_lines
-    [ -r $prompt_dir/prompt.zsh ] || return
-   . $prompt_dir/prompt.zsh
-
-    setopt PROMPT_SUBST
+prompt_load() { # args: reset_flag
+    local reset_flag="$1"
+    local func="$2"
 
     [ $reset_flag -eq 1 ] && PROMPT=
 
+    setopt PROMPT_SUBST
+
+    local prompt_lines="$(${func}_prompt_lines)"
     local pl
     for pl in $(echo $prompt_lines); do
 	if [ x"$pl" = x"%local%" ]; then
-	    prompt_load "$local_dir" "$local_dir/prompts" "$local_dir/prompts" "0"
+	    prompt_load "0" "local"
 	else
-	    . $prompts_dir/$pl.zsh
-	    if [ -z "$prompt_info" -a "$pl" != "blank" ]; then
-		continue
-	    fi
-	    if [ -z "$PROMPT" ]; then
-		PROMPT=$prompt_info
-	    else
-		PROMPT="$PROMPT
+	    local prompt_info="$(${pl}_prompt_line)"
+	    PROMPT="$PROMPT
 $prompt_info"
-	    fi
 	fi
     done
 }
@@ -83,18 +71,7 @@ local_dir_get() { # args: local_dir
     echo $dir
 }
 
-local_load() { # args: local_dir
-    local local_dir="$1"
-
-    [ -d $local_dir ] || return
-
-    local module
-    for module in $local_dir/*; do
-	if [ x"$module" != x"$local_dir/prompts" ]; then
-	  module_load $module
-	fi
-    done
-}
+local_load() { modules_load "$1" }
 
 completions_load() { # completions_dir
     local completions_dir="$1"

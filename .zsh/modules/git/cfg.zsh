@@ -6,13 +6,13 @@ __setup() {
     zplug 'sorin-ionescu/prezto', from:github, use:'modules/git/*.zsh'
 }
 
-git_prompt_info() {
-
+git_prompt_line() {
+    prompt_info="$magenta\$(git_prompt_info)$norm"
     local str="$(git_repo_get)($(git_branch_get)) $(git_short_sha_get)$(git_dirty_get)"
     if [ x"$str" != x"() " ]; then
-	echo "git:   [$str]"
+	echo "${magenta}git:   [$str]${norm}"
     else
-	echo "git:   []"
+	echo "${maqgenta}git:   []${norm}"
     fi
 }
 

@@ -4,7 +4,6 @@ __load() {
     [ -n "$DEBUG" ] && set -x
 
     ZDOTDIR=$HOME
-    ZSH_CACHE_DIR=$ZDOTDIR/.zcache
     ZSH_DIR=$ZDOTDIR/.zsh
 
     . $ZSH_DIR/lib/util.zsh
@@ -25,7 +24,7 @@ __load() {
     theme_load "$theme_dir"
     modules_load "$modules_dir"
     local_load "$local_host_dir"
-    prompt_load "$local_host_dir" "$prompts_dir" "$prompt_dir" "1"
+    prompt_load "1" "my"
     completions_load "$completions_dir"
     zplug_run
 

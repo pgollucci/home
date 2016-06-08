@@ -9,8 +9,9 @@ __setup() {
     fi
 }
 
-plenv_prompt_info() {
-    echo "plenv: [$(plenv_version)]"
+plenv_prompt_line() {
+
+    echo "${magenta}plenv: [$(plenv_version)]${norm}"
 }
 
 plenv_version() {

@@ -10,16 +10,18 @@ aws_clear() {
   unset ENV_LEVEL
 }
 
-aws_prompt_info() {
+aws_prompt_line() {
 
-  aws_sts_prompt_info
-  aws_target_prompt_info
+  local aws="$(aws_target_prompt_info)"
+  local sts="$(aws_sts_prompt_info)"
+  [ -n "$aws" ] && echo "${magenta}aws:${norm}$aws"
+  [ -n "$sts" ] && echo "${magenta}sts:${norm}$sts"
 }
 
 aws_target_prompt_info() {
 
   if [ -n "$AWS_PROFILE" ]; then
-    echo "[$AWS_PROFILE($AWS_ENV/$ENV_LEVEL) - $AWS_REGION($AWS_VPC)]"
+    echo "   [$AWS_PROFILE($AWS_ENV/$ENV_LEVEL) - $AWS_REGION($AWS_VPC)]"
   fi
 
 }
@@ -27,8 +29,6 @@ aws_target_prompt_info() {
 aws_sts_prompt_info() {
 
     local creds=$HOME/.aws/credentials
-
-    echo "${magenta}aws:${norm}\c"
     [ -e $creds ] || return
 
     local mtime=$(command stat -f "%m" $creds)
@@ -36,9 +36,9 @@ aws_sts_prompt_info() {
     local diff=$(($now-$mtime))
 
     if [ $diff -gt 3500 ]; then
-	echo "   ${magenta}sts [${red}$diff${norm}s] \c"
+	echo "   [${red}$diff${norm}s] \c"
     else
-	echo "   ${magenta}sts [${green}$diff${norm}s] \c"
+	echo "   [${green}$diff${norm}s] \c"
     fi
 }
 
@@ -62,7 +62,7 @@ aws_rds_snapshot_list() {
 
 aws_sts_expire() {
 
-    touch -r ~/README.md ~/.aws/credentiasl
+    touch -r ~/README.md ~/.aws/credentials
 }
 
 __setup

@@ -1,3 +1,22 @@
+blank_prompt_line() {
+
+    echo ""
+}
+
+dir_prompt_line() {
+
+    echo "${green}%/${norm}"
+}
+
+std_prompt_line() {
+
+    local tty="$cyan%l$norm"
+    local user="$blue%n$norm"
+    local host="$yellow%M$norm"
+
+    echo "[$tty]$user@$host"
+}
+
 cd_make_aliases() { # args: dir
     local dir="$1"
 

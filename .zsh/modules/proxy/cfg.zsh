@@ -16,4 +16,9 @@ proxy_prompt_info() {
   echo "proxy: [ALL_PROXY=$ALL_PROXY]"
 }
 
+proxy_prompt_line() {
+
+    echo "$magenta\$(proxy_prompt_info)$norm"
+}
+
 __setup
