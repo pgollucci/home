@@ -11,14 +11,11 @@ proxy_off() {
   done
 }
 
-proxy_prompt_info() {
-
-  echo "proxy: [ALL_PROXY=$ALL_PROXY]"
-}
-
 proxy_prompt_line() {
 
-    echo "$magenta\$(proxy_prompt_info)$norm"
+    if [ -n "${ALL_PROXY}" ]; then
+	echo "${magenta}proxy: [ALL_PROXY=$ALL_PROXY]${norm}"
+    fi
 }
 
 __setup

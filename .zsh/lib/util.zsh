@@ -41,25 +41,40 @@ theme_load() { # args: theme_dir
     . $theme_dir/cfg.zsh
 }
 
-prompt_load() { # args: reset_flag
-    local reset_flag="$1"
-    local func="$2"
+run_time_prompt() {
 
-    [ $reset_flag -eq 1 ] && PROMPT=
+    local prompt_func
+    for prompt_func in "$@"; do
+	case $prompt_func in
+	    blank_prompt_line) print " " ;;
+	    * )
+		local output="$($prompt_func)"
+		[ -n "$output" ] && echo $output
+	esac
+    done
+}
+
+prompt_load() { # args: reset_flag  func
 
     setopt PROMPT_SUBST
 
-    local prompt_lines="$(${func}_prompt_lines)"
-    local pl
-    for pl in $(echo $prompt_lines); do
-	if [ x"$pl" = x"%local%" ]; then
-	    prompt_load "0" "local"
-	else
-	    local prompt_info="$(${pl}_prompt_line)"
-	    PROMPT="$PROMPT
-$prompt_info"
-	fi
-    done
+    local my_prompts="$(my_prompt_lines)"
+    local local_prompts=""
+
+    declare -f local_prompt_lines > /dev/null
+    if [ $? -eq 0 ]; then
+	local_prompts="$(local_prompt_lines)"
+    fi
+
+    local prompt_funcs="$(echo $my_prompts | \
+				sed -e "s,%local%,$local_prompts,g" \
+				    -e "s,  , ,g" \
+				    -e 's, ,_prompt_line ,g' \
+				    -e 's, ," ",g' \
+				    -e 's,^,",' \
+				    -e 's,$,_prompt_line",')"
+
+    PROMPT="\$(run_time_prompt $prompt_funcs)"
 }
 
 local_dir_get() { # args: local_dir

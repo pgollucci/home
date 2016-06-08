@@ -1,6 +1,7 @@
 blank_prompt_line() {
 
-    echo ""
+    echo "
+"
 }
 
 dir_prompt_line() {

@@ -11,7 +11,7 @@ __setup() {
 
 rbenv_prompt_line() {
 
-    echo "${magenta}rbenv: [\$(rbenv_version)]${norm}"
+    echo "${magenta}rbenv: [$(rbenv_version)]${norm}"
 }
 
 rbenv_version() {

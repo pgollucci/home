@@ -7,12 +7,10 @@ __setup() {
 }
 
 git_prompt_line() {
-    prompt_info="$magenta\$(git_prompt_info)$norm"
+
     local str="$(git_repo_get)($(git_branch_get)) $(git_short_sha_get)$(git_dirty_get)"
     if [ x"$str" != x"() " ]; then
 	echo "${magenta}git:   [$str]${norm}"
-    else
-	echo "${maqgenta}git:   []${norm}"
     fi
 }
 
