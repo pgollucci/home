@@ -42,24 +42,6 @@ aws_sts_prompt_info() {
     fi
 }
 
-aws_cft_stacks_list() {
-    local glob="$1"
-
-    aws --output text cloudformation describe-stacks --query "Stacks[*].{Id: StackId, Name: StackName, Status: StackStatus, Date: CreationTime}" | grep "$glob"
-}
-
-aws_cft_stack_delete() {
-    local name="$1"
-
-    aws cloudformation delete-stack --stack-name $name
-}
-
-aws_rds_snapshot_list() {
-    local glob="$1"
-
-    aws --output text rds describe-db-snapshots --query "DBSnapshots[].{VPC:VpcId, DB:DBInstanceIdentifier, Snapshot:DBSnapshotIdentifier, Created:SnapshotCreateTime}" | grep "$glob"
-}
-
 aws_sts_expire() {
 
     touch -r ~/README.md ~/.aws/credentials

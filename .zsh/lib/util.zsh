@@ -60,8 +60,6 @@ prompt_load() { # args: reset_flag
 $prompt_info"
 	fi
     done
-
-    echo $PROMPT
 }
 
 local_dir_get() { # args: local_dir
@@ -82,6 +80,12 @@ completions_load() { # completions_dir
     for dir in $completions_dir/*; do
 	fpath+=($dir)
     done
+}
+
+init_cap() {
+    local str="$1"
+
+    echo $str | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1'
 }
 
 msg() {
