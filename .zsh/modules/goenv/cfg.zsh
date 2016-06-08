@@ -5,7 +5,7 @@ __setup() {
 
     if [ -x $GOENV_ROOT/bin/goenv ]; then
       export HAS_GOENV=1
-      eval "$(goenv init - zsh)"
+      eval "$(goenv init - )"
     fi
 }
 
@@ -17,9 +17,8 @@ goenv_prompt_line() {
 goenv_version() {
 
     if [ $HAS_GOENV ]; then
-	local ver=$(goenv version-name)
-	if [ x"$ver" != x"system" ]; then
-	    echo $ver
+	if [ -n "$GOENV_VERSION" ]; then
+	    echo "$GOENV_VERSION"
 	else
 	    echo "system:$(go version |awk '{print $3}' |sed -e 's,go,,')"
 	fi
@@ -27,5 +26,11 @@ goenv_version() {
 	echo "system:$(go version |awk '{print $3}' |sed -e 's,go,,')"
     fi
 }
+
+goev() {
+
+    eval `goenv shell $1`
+}
+
 
 __setup
