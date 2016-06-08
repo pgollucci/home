@@ -12,7 +12,20 @@ theme_setup() {
 
 my_prompt_lines() {
 
-    echo "std pyenv rbenv plenv proxy git aws %local% dir blank"
+    echo "std langs proxy git aws %local% dir blank"
+}
+
+langs_prompt_line() {
+
+    local output=""
+
+    local lang
+    for lang in pyenv rbenv plenv; do
+	local lenv="$(${lang}_prompt_line)"
+	output="$output $lenv"
+    done
+
+    echo $output | sed -e 's,^ *,,'
 }
 
 theme_setup
