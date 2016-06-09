@@ -41,11 +41,33 @@ git_short_sha_get() {
     git rev-parse --short HEAD 2>/dev/null
 }
 
+gh_list_all_orgs() {
+    local gh="$1"
+    local pass="$2"
+    local user=${3:-$USER}
+
+    local file=/tmp/gh.orgs.txt
+    rm -f $file
+
+    local since=0
+    while [ : ]; do
+	curl -i -s -u "$user:$pass" -X GET "${gh}/organizations?since=$since" >> $file
+	since="$(grep ^Link $file | tail -1 | awk '{ print $2 }' | sed -e 's,.*=,,' -e 's,[>;],,'g)"
+
+	if ! echo $since | grep -q '^[0-9]*$'; then
+	    break
+	fi
+    done
+
+    cat $file | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
+    rm -f $file
+}
+
 gh_clone_org_repos() {
     local gh="$1"
     local org="$2"
     local dir="$3"
-    local user="$4"
+    local user="${4:-$USER}"
 
     local repos="$(curl -s -i ${gh}/${org}/repositories | \
 			 grep "href=\"/$org\/" | \
@@ -53,17 +75,32 @@ gh_clone_org_repos() {
 			 sed -e 's,.*="/,,' -e 's,".*,,' -e "s,$org/,," | \
 			 sort)"
 
-    local repo
-    for repo in $(echo $repos); do
-	if [ -d $dir/$org/$repo ]; then
-	    echo "=====> $repo [pull]"
-	    (cd $dir/$org/$repo ; git pull -q)
-	else
-	    echo "=====> $repo [clone]"
-	    mkdir -p $dir/$org
-	    (cd $dir/$org ; git clone -q ${gh}/${org}/${repo}.git > /dev/null)
-	fi
-    done
+    local parallel=8
+    local i=0
+    (
+	local repo
+	for repo in $(echo $repos); do
+	    ((i=i%parallel)); ((i++==0)) && wait
+	    gh_clone_or_pull_repo "$gh" "$org" "$dir" "$repo" &
+	done
+    )
 }
+
+gh_clone_or_pull_repo() {
+    local gh="$1"
+    local org="$2"
+    local dir="$3"
+    local repo="$4"
+
+    if [ -d $dir/$org/$repo ]; then
+	echo "=====> $repo [pull]"
+	(cd $dir/$org/$repo ; git pull -q)
+    else
+	echo "=====> $repo [clone]"
+	mkdir -p $dir/$org/$repo
+	(cd $dir/$org ; git clone -q --depth 1 ${gh}/${org}/${repo}.git > /dev/null)
+    fi
+}
+
 
 __setup
