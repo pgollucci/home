@@ -117,13 +117,12 @@ run_parallel() {
     local cmd="$1"
     shift 1
 
-    (
-	local thing
-	for thing in $(echo $things); do
-	    ((i=i%parallel)); ((i++==0)) && wait
-	    local rc="$($cmd $@ "$thing")" &
-	done
-    )
+    local thing
+    for thing in $(echo $things); do
+	((i=i%parallel)); ((i++==0)) && wait
+	local rc="$($cmd $@ "$thing" > /tmp/stdout-$thing 2>&/tmp/stderr-$thing)" &
+	cat /tmp/stdout-$thing /tmp/stderr-$thing
+    done
 }
 
 msg() {

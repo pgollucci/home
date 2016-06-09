@@ -75,7 +75,7 @@ gh_clone_org_repos() {
 			 sed -e 's,.*="/,,' -e 's,".*,,' -e "s,$org/,," | \
 			 sort)"
 
-    run_parallel "0" "1" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
+    run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
 
 
