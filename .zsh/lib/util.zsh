@@ -109,6 +109,23 @@ init_cap() {
     echo $str | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1'
 }
 
+run_parallel() {
+    local i="$1"
+    local parallel="$2"
+    local things="$3"
+    shift 3
+    local cmd="$1"
+    shift 1
+
+    (
+	local thing
+	for thing in $(echo $things); do
+	    ((i=i%parallel)); ((i++==0)) && wait
+	    local rc="$($cmd $@ "$thing")" &
+	done
+    )
+}
+
 msg() {
     echo "$@"
 }

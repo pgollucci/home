@@ -75,16 +75,9 @@ gh_clone_org_repos() {
 			 sed -e 's,.*="/,,' -e 's,".*,,' -e "s,$org/,," | \
 			 sort)"
 
-    local parallel=8
-    local i=0
-    (
-	local repo
-	for repo in $(echo $repos); do
-	    ((i=i%parallel)); ((i++==0)) && wait
-	    gh_clone_or_pull_repo "$gh" "$org" "$dir" "$repo" &
-	done
-    )
+    run_parallel "0" "1" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
+
 
 gh_clone_or_pull_repo() {
     local gh="$1"
