@@ -121,7 +121,6 @@ run_parallel() {
     for thing in $(echo $things); do
 	((i=i%parallel)); ((i++==0)) && wait
 	local rc="$($cmd $@ "$thing" > /tmp/stdout-$thing 2>&/tmp/stderr-$thing)" &
-	cat /tmp/stdout-$thing /tmp/stderr-$thing
     done
 }
 

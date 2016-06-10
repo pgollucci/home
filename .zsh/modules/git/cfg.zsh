@@ -41,26 +41,40 @@ git_short_sha_get() {
     git rev-parse --short HEAD 2>/dev/null
 }
 
+gh_paginate() {
+    local url="$1"
+    local auth="$2"
+
+    local file=/tmp/gh.pagination.txt
+
+    rm -f $file
+    curl -i -s $(echo $auth) "$url" >> $file
+
+    local next_url
+    local prev=-1
+    local num=0
+    while [ : ]; do
+	next_url="$(grep ^Link $file | tail -1 | awk '{ print $2 }'  |sed -e 's,[><;],,g')"
+	prev=$num
+	num=$(echo $next_url | sed -e 's,.*\=,,')
+
+	if [ $prev -gt $num ]; then
+	    break
+	fi
+
+	curl -i -s $(echo $auth) $next_url >> $file
+    done
+
+    cat $file
+    rm -f $file
+}
+
 gh_list_all_orgs() {
     local gh="$1"
     local pass="$2"
     local user=${3:-$USER}
 
-    local file=/tmp/gh.orgs.txt
-    rm -f $file
-
-    local since=0
-    while [ : ]; do
-	curl -i -s -u "$user:$pass" -X GET "${gh}/organizations?since=$since" >> $file
-	since="$(grep ^Link $file | tail -1 | awk '{ print $2 }' | sed -e 's,.*=,,' -e 's,[>;],,'g)"
-
-	if ! echo $since | grep -q '^[0-9]*$'; then
-	    break
-	fi
-    done
-
-    cat $file | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
-    rm -f $file
+    gh_paginate "${gh}/organizations" "-u pgollucci:3M7Ph0u3SVME" | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
 }
 
 gh_clone_org_repos() {
@@ -69,15 +83,11 @@ gh_clone_org_repos() {
     local dir="$3"
     local user="${4:-$USER}"
 
-    local repos="$(curl -s -i ${gh}/${org}/repositories | \
-			 grep "href=\"/$org\/" | \
-			 grep -v "class" | \
-			 sed -e 's,.*="/,,' -e 's,".*,,' -e "s,$org/,," | \
-			 sort)"
+    local repos="$(gh_paginate "${gh}/orgs/${org}/repos" "-u pgollucci:3M7Ph0u3SVME")"
+    repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort)
 
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
-
 
 gh_clone_or_pull_repo() {
     local gh="$1"
@@ -94,6 +104,5 @@ gh_clone_or_pull_repo() {
 	(cd $dir/$org ; git clone -q --depth 1 ${gh}/${org}/${repo}.git > /dev/null)
     fi
 }
-
 
 __setup
