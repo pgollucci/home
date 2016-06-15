@@ -53,7 +53,7 @@ gh_paginate() {
     local next_url
     local prev=-1
     local num=0
-    while [ : ]; do
+#    while [ : ]; do
 	next_url="$(grep ^Link $file | tail -1 | awk '{ print $2 }'  |sed -e 's,[><;],,g')"
 	prev=$num
 	num=$(echo $next_url | sed -e 's,.*\=,,')
@@ -63,27 +63,28 @@ gh_paginate() {
 	fi
 
 	curl -i -s $(echo $auth) $next_url >> $file
-    done
+#	break
+#    done
 
-    cat $file
+#    cat $file
     rm -f $file
 }
 
 gh_list_all_orgs() {
     local gh="$1"
     local pass="$2"
-    local user=${3:-$USER}
+    local auth="$3"
 
-    gh_paginate "${gh}/organizations" "-u pgollucci:3M7Ph0u3SVME" | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
+    gh_paginate "${gh}/organizations" "$auth" | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
 }
 
 gh_clone_org_repos() {
     local gh="$1"
     local org="$2"
     local dir="$3"
-    local user="${4:-$USER}"
+    local auth="$4"
 
-    local repos="$(gh_paginate "${gh}/orgs/${org}/repos" "-u pgollucci:3M7Ph0u3SVME")"
+    local repos="$(gh_paginate "${gh}/orgs/${org}/repos" "$auth")"
     repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort)
 
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
@@ -94,6 +95,8 @@ gh_clone_or_pull_repo() {
     local org="$2"
     local dir="$3"
     local repo="$4"
+
+    [ -d $dir/$org/$repo ] && return
 
     if [ -d $dir/$org/$repo ]; then
 	echo "=====> $repo [pull]"
