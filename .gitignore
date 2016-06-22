@@ -19,6 +19,7 @@
 .irssi/nicklistfifo
 .irssi/sasl.auth
 .lesshst
+.local
 .oracle_jre_usage
 .private
 .repos
