@@ -120,7 +120,8 @@ run_parallel() {
     local thing
     for thing in $(echo $things); do
 	((i=i%parallel)); ((i++==0)) && wait
-	local rc="$($cmd $@ "$thing" > /tmp/stdout-$thing 2>&/tmp/stderr-$thing)" &
+	echo "$cmd $@ '$thing'"
+	local rc="$($cmd $@ "$thing")" &
     done
 }
 
