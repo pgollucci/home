@@ -5,15 +5,15 @@ zprezto_load() {
 
 zplug_load() {
 
-    . $HOME/.zplug/zplug
+    . $HOME/.zplug/init.zsh
 
     zprezto_load
 }
 
 zplug_run() {
 
-     zplug install
-     zplug load
+    zplug install
+    zplug load
 }
 
 modules_load() { # args: modules_dir

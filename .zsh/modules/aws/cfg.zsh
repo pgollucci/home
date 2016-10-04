@@ -20,8 +20,8 @@ aws_prompt_line() {
 
 aws_target_prompt_info() {
 
-  if [ -n "$AWS_PROFILE" ]; then
-    echo "   [$AWS_PROFILE($AWS_ENV/$ENV_LEVEL) - $AWS_REGION($AWS_VPC)]"
+  if [ -n "$AWS_DEFAULT_PROFILE" ]; then
+    echo "   [$AWS_DEFAULT_PROFILE($AWS_ENV/$ENV_LEVEL) - $AWS_DEFAULT_REGION($AWS_VPC)]"
   fi
 
 }
