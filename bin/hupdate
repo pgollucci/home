@@ -5,8 +5,9 @@ repos="\
 	.repos/langs/plenv/plugins/perl-build \
 	.repos/langs/pyenv \
 	.repos/langs/rbenv \
-	.repos/langs/ruby-install \
 	.repos/langs/rbenv/plugins/ruby-build \
+	.repos/langs/ruby-install \
+	.repos/langs/goenv \
 	.zplug \
 	.zprezto \
 	.emacs.d \
