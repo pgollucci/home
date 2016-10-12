@@ -20,7 +20,8 @@ goenv_version() {
 	if [ -n "$GOENV_VERSION" ]; then
 	    echo "$GOENV_VERSION"
 	else
-	    echo "system:$(go version |awk '{print $3}' |sed -e 's,go,,')"
+	    local ver=$(goenv version)
+	    echo "$ver"
 	fi
     else
 	echo "system:$(go version |awk '{print $3}' |sed -e 's,go,,')"

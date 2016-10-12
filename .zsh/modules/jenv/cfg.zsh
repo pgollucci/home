@@ -20,7 +20,8 @@ jenv_version() {
 	if [ -n "$JENV_VERSION" ]; then
 	    echo "$JENV_VERSION"
 	else
-	    echo "system:$(java -version 2>&1|awk '/Environment/{print}' | cut -d' ' -f 2,6- |sed -e 's,),,')"
+	    local ver=$(jenv version | awk '{print $1}')
+	    echo "$ver"
 	fi
     else
 	echo "system:$(java -version 2>&1|awk '/Environment/{print}' | cut -d' ' -f 2,6- |sed -e 's,),,')"
