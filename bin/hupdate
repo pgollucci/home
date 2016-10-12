@@ -8,6 +8,7 @@ repos="\
 	.repos/langs/rbenv/plugins/ruby-build \
 	.repos/langs/ruby-install \
 	.repos/langs/goenv \
+	.repos/langs/jenv \
 	.zplug \
 	.zprezto \
 	.emacs.d \
