@@ -1,10 +1,12 @@
 __setup() {
 
+    aws_setup
 }
 
 aws_clear() {
   unalias aws
-  unset AWS_PROFILE
+  unset AWS_DEFAULT_PROFILE
+  unset AWS_DEFAULT_REGION
   unset AWS_ENV
   unset AWS_VPC
   unset ENV_LEVEL
@@ -23,7 +25,6 @@ aws_target_prompt_info() {
   if [ -n "$AWS_DEFAULT_PROFILE" ]; then
     echo "   [$AWS_DEFAULT_PROFILE($AWS_ENV/$ENV_LEVEL) - $AWS_DEFAULT_REGION($AWS_VPC)]"
   fi
-
 }
 
 aws_sts_prompt_info() {
@@ -45,6 +46,24 @@ aws_sts_prompt_info() {
 aws_sts_expire() {
 
     touch -r ~/README.md ~/.aws/credentials
+}
+
+aws_shortcut() {
+    local profile="$1"
+    local region="$2"
+
+    export AWS_DEFAULT_PROFILE=$profile
+    export AWS_DEFAULT_REGION=$region
+}
+
+aws_setup() {
+
+    local profile
+    for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do
+	local account=$(echo $profile | cut -c 1,4)
+
+	eval "awsa_${account}() { aws_shortcut \"$profile\" \"us-east-1\" }"
+    done
 }
 
 __setup
