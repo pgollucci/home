@@ -1,12 +1,39 @@
 #!/usr/bin/env python
 
-import re
+"""Usage: sts_map.py [-hv] mapper
+
+Proccess aws config and credential files remapping unfriendly saml profile
+names to friendly names using json mapper for mapping.
+
+mapper FILE Format:
+{
+ "acount_id": "friendly name",
+ ...
+}
+
+Arguments:
+  mapper        name relative to ~/.aws/map-mapper
+
+Options:
+  -h --help     display help
+  -v --verbose  verbose mode
+
+"""
+from docopt import docopt
+
 import ConfigParser
+
 import json
+import re
+import sys
+
 from os.path import expanduser
 from os.path import isfile
 
 def rename_section(cp, section_from, section_to):
+    """
+    """
+
     items = cp.items(section_from)
 
     cp.remove_section(section_from)
@@ -17,6 +44,9 @@ def rename_section(cp, section_from, section_to):
         cp.set(section_to, item[0], item[1])
 
 def lookup_account_map(section, table):
+    """
+    """
+
     pieces = section.split('-')
     if len(pieces) == 2:
         account_id = pieces[0]
@@ -29,6 +59,9 @@ def lookup_account_map(section, table):
     return friendly + role_name
 
 def remap(filename, table):
+    """
+    """
+
     if not isfile(filename):
         return
 
@@ -45,11 +78,16 @@ def remap(filename, table):
     with open(filename, 'w+') as configfile:
         config.write(configfile)
 
-def main():
+def main(args):
+    """
+    """
+
     home = expanduser("~")
-    map_file  = home + '/.aws/p6-map'
+    map_file  = home + '/.aws/map-'
     cred_file = home + '/.aws/credentials'
     conf_file = home + '/.aws/config'
+
+    map_file = map_file + args["mapper"]
 
     with open(map_file, 'r') as afile:
         account_map = json.load(afile)
@@ -58,4 +96,5 @@ def main():
         remap(cfile, account_map)
 
 if __name__ == "__main__":
-    main()
+    arguments = docopt(__doc__, options_first=True, version="0.0.1")
+    sys.exit(main(arguments))
