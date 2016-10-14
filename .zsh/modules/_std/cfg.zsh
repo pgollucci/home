@@ -4,6 +4,11 @@ blank_prompt_line() {
 "
 }
 
+rv_prompt_line() {
+
+    echo "rv=[$?]"
+}
+
 dir_prompt_line() {
 
     echo "${green}%/${norm}"

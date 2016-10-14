@@ -12,7 +12,7 @@ theme_setup() {
 
 my_prompt_lines() {
 
-    echo "std langs proxy git aws %local% dir blank"
+    echo "std langs proxy git aws %local% rv dir blank"
 }
 
 langs_prompt_line() {
