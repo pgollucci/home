@@ -6,7 +6,7 @@ blank_prompt_line() {
 
 rv_prompt_line() {
 
-    echo "rv=[$?]"
+    echo "rv=[%?]"
 }
 
 dir_prompt_line() {
