@@ -1,22 +1,17 @@
 #!/usr/bin/env python
 
-"""Usage: sts_map.py [-hv] mapper
+"""Usage: sts_map.py [-dhv] <mapper>
 
 Proccess aws config and credential files remapping unfriendly saml profile
 names to friendly names using json mapper for mapping.
 
-mapper FILE Format:
-{
- "acount_id": "friendly name",
- ...
-}
-
 Arguments:
-  mapper        name relative to ~/.aws/map-mapper
+  mapper               name relative to ~/.aws/map-mapper
 
 Options:
-  -h --help     display help
-  -v --verbose  verbose mode
+  -d --debug=LEVEL     debug mode LEVEL 1...9
+  -h --help            display help
+  -v --verbose         verbose mode
 
 """
 from docopt import docopt
@@ -87,7 +82,7 @@ def main(args):
     cred_file = home + '/.aws/credentials'
     conf_file = home + '/.aws/config'
 
-    map_file = map_file + args["mapper"]
+    map_file = map_file + args["<mapper>"]
 
     with open(map_file, 'r') as afile:
         account_map = json.load(afile)
@@ -97,4 +92,6 @@ def main(args):
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, options_first=True, version="0.0.1")
+    if arguments["--debug"] > 1:
+        print(arguments)
     sys.exit(main(arguments))
