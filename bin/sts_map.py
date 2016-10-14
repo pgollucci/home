@@ -1,14 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import re
 import ConfigParser
+import json
 from os.path import expanduser
-
-accounts = {
-    '346733622331': 'p6',
-    '704382739352': 'p6c1',
-    '363120648369': 'p6me'
-}
+from os.path import isfile
 
 def rename_section(cp, section_from, section_to):
     items = cp.items(section_from)
@@ -20,32 +16,46 @@ def rename_section(cp, section_from, section_to):
     for item in items:
         cp.set(section_to, item[0], item[1])
 
-def lookup_account_map(section):
+def lookup_account_map(section, table):
     pieces = section.split('-')
     if len(pieces) == 2:
-        account_id = section.split('-')[0]
-        role_name = section.split('-')[1]
+        account_id = pieces[0]
+        role_name = pieces[1]
     else:
         return section
 
-    friendly = accounts[account_id]
+    friendly = table[account_id]
 
     return friendly + role_name
 
-awsconfigfile = '/.aws/credentials'
+def remap(filename, table):
+    if not isfile(filename):
+        return
 
-home = expanduser("~")
-filename = home + awsconfigfile
+    config = ConfigParser.RawConfigParser()
+    config.read(filename)
 
-config = ConfigParser.RawConfigParser()
-config.read(filename)
+    for section in config.sections():
+        if not section == "default":
+            match = re.search('-', section)
+            if match:
+                friendly = lookup_account_map(section, table)
+                rename_section(config, section, friendly)
 
-for section in config.sections():
-    if not section == "default":
-        match = re.search('-', section)
-        if match:
-            friendly = lookup_account_map(section)
-            rename_section(config, section, friendly)
+    with open(filename, 'w+') as configfile:
+        config.write(configfile)
 
-with open(filename, 'w+') as configfile:
-    config.write(configfile)
+def main():
+    home = expanduser("~")
+    map_file  = home + '/.aws/p6-map'
+    cred_file = home + '/.aws/credentials'
+    conf_file = home + '/.aws/config'
+
+    with open(map_file, 'r') as afile:
+        account_map = json.load(afile)
+
+    for cfile in [cred_file, conf_file]:
+        remap(cfile, account_map)
+
+if __name__ == "__main__":
+    main()
