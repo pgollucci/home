@@ -5,6 +5,7 @@
 .account
 .aws/config
 .aws/credentials
+.aws/*-map
 .berkshelf
 .bundle
 .cache
