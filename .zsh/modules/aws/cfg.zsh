@@ -66,4 +66,11 @@ aws_setup() {
     done
 }
 
+aws_sts() {
+
+    ~/bin/syts.py
+    ~/bin/sts_map.py p6
+}
+
+
 __setup
