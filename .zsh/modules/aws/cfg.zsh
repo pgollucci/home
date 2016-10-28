@@ -3,15 +3,6 @@ __setup() {
     aws_setup
 }
 
-aws_clear() {
-  unalias aws
-  unset AWS_DEFAULT_PROFILE
-  unset AWS_DEFAULT_REGION
-  unset AWS_ENV
-  unset AWS_VPC
-  unset ENV_LEVEL
-}
-
 aws_prompt_line() {
 
   local aws="$(aws_target_prompt_info)"
@@ -43,6 +34,49 @@ aws_sts_prompt_info() {
     fi
 }
 
+_clear() {
+  unalias aws
+  unset AWS_DEFAULT_PROFILE
+  unset AWS_DEFAULT_REGION
+  unset AWS_ENV
+  unset AWS_VPC
+  unset ENV_LEVEL
+}
+
+aws_env_level() {
+
+    export ENV_LEVEL=$1
+}
+
+aws_env() {
+    local env="$1"
+
+    export AWS_ENV=$env
+}
+
+aws_profile() {
+    local role="$1"
+
+    export AWS_DEFAULT_PROFILE=$role
+}
+
+aws_region() {
+    local region="$1"
+
+    export AWS_DEFAULT_REGION=$region
+}
+
+_shortcut() {
+    local profile="$1"
+    local region="$2"
+    local env="$3"
+    local type="$4"
+
+    aws_profile "$profile"
+    aws_region "$region"
+    aws_env "$env"
+}
+
 aws_sts_expire() {
 
     touch -r ~/README.md ~/.aws/credentials
@@ -57,6 +91,8 @@ aws_shortcut() {
 }
 
 aws_setup() {
+
+    return
 
     local profile
     for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do

@@ -42,6 +42,8 @@ def lookup_account_map(section, table):
     """
     """
 
+    section = section.replace("profile ", "")
+
     pieces = section.split('-')
     if len(pieces) == 2:
         account_id = pieces[0]
@@ -51,7 +53,7 @@ def lookup_account_map(section, table):
 
     friendly = table[account_id]
 
-    return friendly + role_name
+    return friendly + "+" + role_name
 
 def remap(filename, table):
     """
@@ -64,11 +66,9 @@ def remap(filename, table):
     config.read(filename)
 
     for section in config.sections():
-        if not section == "default":
-            match = re.search('-', section)
-            if match:
-                friendly = lookup_account_map(section, table)
-                rename_section(config, section, friendly)
+        if not section == "DEFAULT" and not section == "saml_provider":
+            friendly = lookup_account_map(section, table)
+            rename_section(config, section, friendly)
 
     with open(filename, 'w+') as configfile:
         config.write(configfile)
