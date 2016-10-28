@@ -1,8 +1,3 @@
-__setup() {
-
-    aws_setup
-}
-
 aws_prompt_line() {
 
   local aws="$(aws_target_prompt_info)"
@@ -82,12 +77,33 @@ aws_sts_expire() {
     touch -r ~/README.md ~/.aws/credentials
 }
 
+aws_profile() {
+    local profile="$1"
+
+    export AWS_DEFAULT_PROFILE=$profile
+}
+
+aws_region() {
+    local region="$1"
+
+    export AWS_DEFAULT_REGION=$region
+}
+
 aws_shortcut() {
     local profile="$1"
     local region="$2"
 
-    export AWS_DEFAULT_PROFILE=$profile
-    export AWS_DEFAULT_REGION=$region
+    aws_profile "$profile"
+    aws_region "$region"
+}
+
+aws_clear() {
+  alias aws && unalias aws
+  unset AWS_DEFAULT_PROFILE
+  unset AWS_DEFAULT_REGION
+  unset AWS_ENV
+  unset AWS_VPC
+  unset ENV_LEVEL
 }
 
 aws_setup() {
@@ -96,7 +112,7 @@ aws_setup() {
 
     local profile
     for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do
-	local account=$(echo $profile | cut -c 1,4)
+	local account=$(echo $profile | cut -d'-' -f 1)
 
 	eval "awsa_${account}() { aws_shortcut \"$profile\" \"us-east-1\" }"
     done
@@ -104,9 +120,18 @@ aws_setup() {
 
 aws_sts() {
 
-    ~/bin/syts.py
+    ~/bin/sts.py --provider jc --nicks "aws-p6,aws-p6me,aws-p6ldar,aws-p6c1,aws-p6is" --login $JC_EMAIL
     ~/bin/sts_map.py p6
+
+    aws_setup
+
+    grep "^\[" ~/.aws/credentials
 }
 
+__setup() {
 
+    alias sts='aws_sts'
+
+    aws_setup
+}
 __setup

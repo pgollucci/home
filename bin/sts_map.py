@@ -3,10 +3,10 @@
 """Usage: sts_map.py [-dhv] <mapper>
 
 Proccess aws config and credential files remapping unfriendly saml profile
-names to friendly names using json mapper for mapping.
+names to friendly names using json <mapper> for mapping.
 
 Arguments:
-  mapper               name relative to ~/.aws/map-mapper
+  mapper               name relative to ~/.aws/map-<mapper>
 
 Options:
   -d --debug=LEVEL     debug mode LEVEL 1...9
