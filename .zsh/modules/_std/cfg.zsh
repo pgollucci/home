@@ -28,7 +28,7 @@ cd_make_aliases() { # args: dir
 
     if [ -d $dir ]; then
 	local d
-	for d in $(cd $dir ; /bin/ls -1d *); do
+	for d in $(cd $dir ; /bin/ls -1); do
 	    eval "alias cd$d='cd $dir/$d'"
 	done
     fi
