@@ -17,7 +17,7 @@ brew 'automake'
 brew 'lsof'
 brew 'awscli'
 brew 'ctags-exuberant'
-brew 'emacs', args: ['with-coca', 'with-x11']
+brew 'emacs', args: ['with-coca']
 brew 'gpg'
 brew 'git', args: ['without-completions']
 brew 'git-extras'
