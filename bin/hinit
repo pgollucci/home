@@ -44,7 +44,8 @@ $SUDO chown $USER $THOME
 
 echo "Cloning Repos"
 git clone -q https://github.com/pgollucci/home.git          $THOME
-git clone -q https://github.com/pgollucci/emacs.git         $THOME/.emacs.d
+git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/emacs
+ln -s $THOME/.repos/emacs $THOME/.emacs.d
 mkdir $THOME/.zcache
 mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
 
@@ -69,10 +70,10 @@ git clone -q https://github.com/wfarr/goenv.git                $THOME/.repos/lan
 git clone -q https://github.com/gcuisinier/jenv.git            $THOME/.repos/langs/jenv
 
 # zplug
-git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.zplug
+git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.repos/zsh/zplug
 
 # zprezto
-git clone -q https://github.com/sorin-ionescu/prezto.git       $THOME/.zprezto
+git clone -q https://github.com/sorin-ionescu/prezto.git       $THOME/.repos/zsh/zprezto
 
 echo "Transfering"
 $SUDO rsync \
@@ -83,7 +84,7 @@ $SUDO rsync \
   --exclude Downloads \
   --exclude Dropbox \
   --exclude Google\ Drive \
-  --exclude OneDrive\ \-\ Capital\ One\ Financial\ Corporation \
+  --exclude OneDrive\* \
   --exclude Library \
   --exclude Movies \
   --exclude Music \

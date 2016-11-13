@@ -9,9 +9,9 @@ repos="\
 	.repos/langs/ruby-install \
 	.repos/langs/goenv \
 	.repos/langs/jenv \
-	.zplug \
-	.zprezto \
-	.emacs.d \
+	.repos/zsh/zplug \
+	.repos/zsh/zprezto \
+	.repos/emacs \
 "
 
 for repo in $repos; do

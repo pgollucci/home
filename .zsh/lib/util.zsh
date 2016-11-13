@@ -1,11 +1,11 @@
 zprezto_load() {
 
-    . $HOME/.zprezto/init.zsh
+    . $HOME/.repos/zsh/zprezto/init.zsh
 }
 
 zplug_load() {
 
-    . $HOME/.zplug/init.zsh
+    . $HOME/.repos/zsh/zplug/init.zsh
 
     zprezto_load
 }
