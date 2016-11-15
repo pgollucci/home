@@ -12,6 +12,7 @@ cask 'xquartz'
 brew 'ack'
 brew 'ag'
 brew 'apple-gcc42'
+brew 'aspell', args: ['lang=en']
 brew 'autoconf'
 brew 'automake'
 brew 'lsof'
