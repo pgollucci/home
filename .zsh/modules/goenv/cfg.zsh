@@ -15,12 +15,11 @@ goenv_prompt_line() {
 }
 
 goenv_version() {
-
     if [ $HAS_GOENV ]; then
 	if [ -n "$GOENV_VERSION" ]; then
 	    echo "$GOENV_VERSION"
 	else
-	    local ver=$(goenv version)
+	    local ver=$(goenv version 2>/dev/null)
 	    echo "$ver"
 	fi
     else
