@@ -49,7 +49,7 @@ git clone -q https://github.com/pgollucci/home.git          $THOME
 git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/emacs
 git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
 (cd $THOME ; ln -s .repos/emacs .emacs.d)
-(cd $THOME/.emacs/defuns ; ln -s $THOME/.repos/vendor/magnars/.emacs.d/* .)
+(cd $THOME/.emacs.d/defuns ; ln -s $THOME/.repos/vendor/magnars/.emacs.d/defuns/* .)
 mkdir $THOME/.zcache
 mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
 
