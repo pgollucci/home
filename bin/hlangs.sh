@@ -46,11 +46,17 @@ uninstall_envs() {
     local lang
     local ver
 
-    for lang in rbenv pyenv plenv goenv jenv; do
-	local flag
+    for lang in jenv; do
+	local flag_f
 	case $lang in
-	    rbenv|pyenv) flag="-f" ;;
-	    *) flag="" ;;
+	    rbenv|pyenv) flag_f="-f" ;;
+	    *) flag_f="" ;;
+	esac
+
+	local flag_bare
+	case $lang in
+	    rbenv|pyenv|plenv) flag_bare="--bare" ;;
+	    *) flag_bare="" ;;
 	esac
 
 	local action
@@ -59,8 +65,9 @@ uninstall_envs() {
 	    *) action=uninstall
 	esac
 
-	for ver in $($lang versions | awk '/\d/{print $1}'); do
-	    $lang $action $flag $ver
+	for ver in $($lang versions $flag_bare | awk '/[0-9]/{print $1}' | grep -v '^\*$'); do
+	    [ x"$ver" = x"*" ] && continue
+	    $lang $action $flag_f $ver
 	done
     done
 }

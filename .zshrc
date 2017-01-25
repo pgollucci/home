@@ -5,7 +5,7 @@ __load() {
 
     ZDOTDIR=$HOME
     ZSH_DIR=$ZDOTDIR/.zsh
-    ZPLUG_ROOT=$ZDOTDIR/.lang/repos/zsh/zplug
+    ZPLUG_ROOT=$ZDOTDIR/.repos/zsh/zplug
     ZPLUG_HOME=$ZPLUG_ROOT
 
     . $ZSH_DIR/lib/util.zsh
