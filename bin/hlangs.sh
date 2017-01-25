@@ -3,23 +3,23 @@
 install_envs() {
 
     echo "python:"
-    pyenv install 2.7.12
-    pyenv install 3.5.2
+    pyenv install 2.7.13
+    pyenv install 3.5.6
 
     echo "ruby:"
-    rbenv install 2.2.5
-    rbenv install 2.3.1
-    rbenv install 2.4.0-preview2
+    rbenv install 2.2.6
+    rbenv install 2.3.3
+    rbenv install 2.4.0
+    rbenv install 2.5.0-dev
 
     echo "plenv:"
-    plenv install 5.22.2
-    plenv install 5.24.0
-    plenv install 5.25.5
+    plenv install 5.22.3
+    plenv install 5.24.1
+    plenv install 5.25.9
 
     echo "goenv:"
-    goenv install 1.5.4
-    goenv install 1.6.3
-    goenv install 1.7.2
+    goenv install 1.6.4
+    goenv install 1.7.4
 
     echo "java:"
     brew cask install java6
@@ -68,6 +68,7 @@ uninstall_envs() {
 	for ver in $($lang versions $flag_bare | awk '/[0-9]/{print $1}' | grep -v '^\*$'); do
 	    [ x"$ver" = x"*" ] && continue
 	    $lang $action $flag_f $ver
+	    rm -f $HOME/.repos/langs/$lang/version
 	done
     done
 }
