@@ -17,10 +17,12 @@
 .freerdp
 .gem
 .gnupg
+.htoprc
 .irssi/nicklistfifo
 .irssi/sasl.auth
 .lesshst
 .local
+.mysql_history
 .oracle_jre_usage
 .private
 .repos
