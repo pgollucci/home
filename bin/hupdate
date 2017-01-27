@@ -2,17 +2,17 @@
 
 repos="\
 	$HOME \
-	~/.repos/langs/plenv \
-	~/.repos/langs/plenv/plugins/perl-build \
-	~/.repos/langs/pyenv \
-	~/.repos/langs/rbenv \
-	~/.repos/langs/rbenv/plugins/ruby-build \
-	~/.repos/langs/ruby-install \
-	~/.repos/langs/goenv \
-	~/.repos/langs/jenv \
-	~/.repos/zsh/zplug \
-	~/.repos/zsh/zprezto \
-	~/.repos/emacs \
+	$HOME/.repos/langs/plenv \
+	$HOME/.repos/langs/plenv/plugins/perl-build \
+	$HOME/.repos/langs/pyenv \
+	$HOME/.repos/langs/rbenv \
+	$HOME/.repos/langs/rbenv/plugins/ruby-build \
+	$HOME/.repos/langs/ruby-install \
+	$HOME/.repos/langs/goenv \
+	$HOME/.repos/langs/jenv \
+	$HOME/.repos/zsh/zplug \
+	$HOME/.repos/zsh/zprezto \
+	$HOME/.repos/emacs \
 "
 
 for repo in $repos; do
