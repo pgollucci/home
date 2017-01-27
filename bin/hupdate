@@ -1,7 +1,9 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
-repos="\
-	$HOME \
+main() {
+
+    locsl repos="\
+  	$HOME \
 	$HOME/.repos/langs/plenv \
 	$HOME/.repos/langs/plenv/plugins/perl-build \
 	$HOME/.repos/langs/pyenv \
@@ -15,11 +17,15 @@ repos="\
 	$HOME/.repos/emacs \
 "
 
-for repo in $repos; do
-  echo "=====> $repo"
-  ( cd ${repo} ; git pull)
-done
+    local repo
+    for repo in $repos; do
+        echo "=====> $repo"
+        (cd ${repo} ; git pull)
+    done
 
-if [ -z "$SECOND" ]; then
-  SECOND=1 $HOME/bin/hupdate
-fi
+    if [ -z "$SECOND" ]; then
+        SECOND=1 $HOME/bin/hupdate
+    fi
+}
+
+main "$@"
