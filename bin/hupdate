@@ -1,20 +1,25 @@
 #!/bin/sh -e
 
 repos="\
-	.repos/langs/plenv \
-	.repos/langs/plenv/plugins/perl-build \
-	.repos/langs/pyenv \
-	.repos/langs/rbenv \
-	.repos/langs/rbenv/plugins/ruby-build \
-	.repos/langs/ruby-install \
-	.repos/langs/goenv \
-	.repos/langs/jenv \
-	.repos/zsh/zplug \
-	.repos/zsh/zprezto \
-	.repos/emacs \
+	$HOME \
+	~/.repos/langs/plenv \
+	~/.repos/langs/plenv/plugins/perl-build \
+	~/.repos/langs/pyenv \
+	~/.repos/langs/rbenv \
+	~/.repos/langs/rbenv/plugins/ruby-build \
+	~/.repos/langs/ruby-install \
+	~/.repos/langs/goenv \
+	~/.repos/langs/jenv \
+	~/.repos/zsh/zplug \
+	~/.repos/zsh/zprezto \
+	~/.repos/emacs \
 "
 
 for repo in $repos; do
   echo "=====> $repo"
-  ( cd ~/${repo} ; git pull)
+  ( cd ${repo} ; git pull)
 done
+
+if [ -z "$SECOND" ]; then
+  SECOND=1 $HOME/bin/hupdate
+fi
