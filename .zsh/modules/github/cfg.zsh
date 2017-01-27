@@ -53,6 +53,20 @@ gh_clone_org_repos() {
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
 
+gh_clone_user_repos() {
+    local gh="$1"
+    local gh_api="$2"
+    local user="$3"
+    local dir="$4"
+    local auth="$5"
+
+    local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
+    repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort)
+
+    echo $repos
+    run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$user" "$dir"
+}
+
 gh_clone_or_pull_repo() {
     local gh="$1"
     local org="$2"
