@@ -2,7 +2,7 @@
 
 main() {
 
-    locsl repos="\
+    local repos="\
   	$HOME \
 	$HOME/.repos/langs/plenv \
 	$HOME/.repos/langs/plenv/plugins/perl-build \
