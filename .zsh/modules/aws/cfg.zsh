@@ -108,8 +108,6 @@ aws_clear() {
 
 aws_setup() {
 
-    return
-
     local profile
     for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do
 	local account=$(echo $profile | cut -d'-' -f 1)
