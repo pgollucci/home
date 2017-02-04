@@ -1,7 +1,7 @@
 zshr() {
   local cache=$ZDOTDIR/.zcache
-  autoload -U compinit zrecompile
-  compinit -d "$cache/zcomp-$HOST"
+  autoload -U zrecompile
+  autoload -Uz compinit && compinit -C -d ~/.zcompdump
 
   local f
   for f in ~/.zshrc "$cache/zcomp-$HOST"; do
