@@ -10,8 +10,9 @@ main() {
 
     sudo rm -rf /usr/local /Library/Caches/Homebrew /opt/homebrew-cask ~/Applications
 
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    yes | ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
+    export PATH=/usr/local/bin:${PATH}
     brew doctor
     brew update
 
