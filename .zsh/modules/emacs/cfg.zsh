@@ -6,7 +6,12 @@ __setup() {
 
 emacs_wrapper() {
 
-  /usr/local/bin/emacsclient --alternate-editor '' --create-frame "$@"
+    local pid=$(ps -ef |grep "[E]macs-" | awk '{print $2}')
+    if [ -z "${pid}" ]; then
+        /Applications/Emacs.app/Contents/MacOS/Emacs --daemon "$@" &
+    else
+        /Applications/Emacs.app/Contents/MacOS/bin/emacsclient --alternate-editor '' --create-frame "$@"
+    fi
 }
 
 __setup
