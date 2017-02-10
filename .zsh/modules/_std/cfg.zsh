@@ -102,6 +102,7 @@ __setup() {
     alias tarx='tar -xvzof'
     alias tart='tar -tvzf'
 
+    cd_make_aliases "$HOME/dev/repos/gh/$USER"
 }
 
 slen() {
