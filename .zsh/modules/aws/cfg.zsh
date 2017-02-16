@@ -29,15 +29,6 @@ aws_sts_prompt_info() {
     fi
 }
 
-_clear() {
-  unalias aws
-  unset AWS_DEFAULT_PROFILE
-  unset AWS_DEFAULT_REGION
-  unset AWS_ENV
-  unset AWS_VPC
-  unset ENV_LEVEL
-}
-
 aws_env_level() {
 
     export ENV_LEVEL=$1
@@ -108,6 +99,11 @@ aws_clear() {
 
 aws_setup() {
 
+    local func
+    for func in $(typeset -f |awk '/^[a-z_0-9]+ \(\)/ { print $1 }' |grep awsa_); do
+	unset $func
+    done
+
     local profile
     for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do
 	local account=$(echo $profile | cut -d'-' -f 1)
@@ -118,12 +114,17 @@ aws_setup() {
 
 aws_sts() {
 
-    ~/bin/sts.py --provider jc --nicks "aws-p6,aws-p6me,aws-p6ldar,aws-p6c1,aws-p6is" --login $JC_EMAIL
+    local _save_aws_default_profile=$AWS_DEFAULT_PROFILE
+    unset AWS_DEFAULT_PROFILE
+
+    ~/bin/sts.py --provider jc --nicks "aws-p6" --login $JC_EMAIL
     ~/bin/sts_map.py p6
 
     aws_setup
 
     grep "^\[" ~/.aws/credentials
+
+    AWS_DEFAULT_PROFILE=$_save_aws_default_profile
 }
 
 __setup() {
