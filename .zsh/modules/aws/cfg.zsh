@@ -41,37 +41,10 @@ aws_env() {
 }
 
 aws_profile() {
-    local role="$1"
-
-    export AWS_DEFAULT_PROFILE=$role
-}
-
-aws_region() {
-    local region="$1"
-
-    export AWS_DEFAULT_REGION=$region
-}
-
-_shortcut() {
-    local profile="$1"
-    local region="$2"
-    local env="$3"
-    local type="$4"
-
-    aws_profile "$profile"
-    aws_region "$region"
-    aws_env "$env"
-}
-
-aws_sts_expire() {
-
-    touch -r ~/README.md ~/.aws/credentials
-}
-
-aws_profile() {
     local profile="$1"
 
     export AWS_DEFAULT_PROFILE=$profile
+    export AWS_PROFILE=$AWS_DEFAULT_PROFILE  # terraform
 }
 
 aws_region() {
@@ -83,33 +56,32 @@ aws_region() {
 aws_shortcut() {
     local profile="$1"
     local region="$2"
+    local env="$3"
+    local type="$4"
 
     aws_profile "$profile"
     aws_region "$region"
+    aws_env "$env"
 }
 
 aws_clear() {
   alias aws && unalias aws
   unset AWS_DEFAULT_PROFILE
+  unset AWS_PROFILE
   unset AWS_DEFAULT_REGION
   unset AWS_ENV
   unset AWS_VPC
   unset ENV_LEVEL
 }
 
-aws_setup() {
+aws_show() {
 
-    local func
-    for func in $(typeset -f |awk '/^[a-z_0-9]+ \(\)/ { print $1 }' |grep awsa_); do
-	unset $func
-    done
+    env |grep ^AWS_
+}
 
-    local profile
-    for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do
-	local account=$(echo $profile | cut -d'-' -f 1)
+aws_sts_expire() {
 
-	eval "awsa_${account}() { aws_shortcut \"$profile\" \"us-east-1\" }"
-    done
+    touch -r ~/README.md ~/.aws/credentials
 }
 
 aws_sts() {
@@ -125,6 +97,21 @@ aws_sts() {
     grep "^\[" ~/.aws/credentials
 
     AWS_DEFAULT_PROFILE=$_save_aws_default_profile
+}
+
+aws_setup() {
+
+    local func
+    for func in $(typeset -f |awk '/^[a-z_0-9]+ \(\)/ { print $1 }' |grep awsa_); do
+	unset $func
+    done
+
+    local profile
+    for profile in $(awk '/^\[/ { print }' < ~/.aws/credentials | grep -v default | sed -e 's,[][],,g'); do
+	local account=$(echo $profile | cut -d'-' -f 1)
+
+	eval "awsa_${account}() { aws_shortcut \"$profile\" \"us-east-1\" \"env\" \"type\" }"
+    done
 }
 
 __setup() {
