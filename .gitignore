@@ -31,11 +31,14 @@
 .repos
 .rnd
 .serverauth.*
+.sqlite_history
 .ssh/dynamic
 .ssh/authorized_keys
+.ssh/authorized_keys.jcorig
 .ssh/id*
 .ssh/known_hosts
 .subversion/auth
+.terraform.d
 .vagrant.d
 .vim
 .viminfo
@@ -64,3 +67,4 @@ Public
 WorkDocs
 dev
 tmp
+
