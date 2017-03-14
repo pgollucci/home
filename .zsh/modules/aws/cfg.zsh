@@ -114,10 +114,17 @@ aws_setup() {
     done
 }
 
+aws_awless_setup() {
+
+  source <(awless completion zsh)
+}
+
 __setup() {
 
     alias sts='aws_sts'
 
     aws_setup
+
+    aws_awless_setup
 }
 __setup

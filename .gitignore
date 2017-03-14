@@ -3,6 +3,7 @@
 .Trash
 .Xauthority
 .account
+.awless
 .aws/config
 .aws/credentials
 .aws/map-*

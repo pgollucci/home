@@ -7,8 +7,11 @@ tap 'homebrew/science'
 tap 'homebrew/versions'
 tap 'homebrew/x11'
 
+tap 'wallix/awless'
+
 cask 'xquartz'
 
+brew 'awless'
 brew 'ack'
 brew 'ag'
 brew 'apple-gcc42'
