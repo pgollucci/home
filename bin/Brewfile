@@ -12,6 +12,7 @@ tap 'wallix/awless'
 cask 'xquartz'
 
 brew 'awless'
+brew 'aws-shell'
 brew 'ack'
 brew 'ag'
 brew 'apple-gcc42'

@@ -4,9 +4,11 @@
 .Xauthority
 .account
 .awless
+.aws/cli/alias
 .aws/config
 .aws/credentials
 .aws/map-*
+.aws/shell
 .berkshelf
 .bundle
 .cache
