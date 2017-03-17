@@ -31,10 +31,12 @@
 .repos
 .rnd
 .serverauth.*
+.sh_history
+.skipbuddy
 .sqlite_history
-.ssh/dynamic
 .ssh/authorized_keys
 .ssh/authorized_keys.jcorig
+.ssh/dynamic
 .ssh/id*
 .ssh/known_hosts
 .subversion/auth
@@ -48,10 +50,10 @@
 .zhistory
 .zplug
 .zprezto
-.zsh/local
 .zsh-update
-.zshrc.zwc
+.zsh/local
 .zsh_history
+.zshrc.zwc
 Applications
 Desktop
 Documents
@@ -67,4 +69,3 @@ Public
 WorkDocs
 dev
 tmp
-
