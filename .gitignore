@@ -6,7 +6,7 @@
 .awless
 .aws/cli/alias
 .aws/config
-.aws/credentials
+.aws/credentials*
 .aws/map-*
 .aws/shell
 .berkshelf
