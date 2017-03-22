@@ -220,6 +220,12 @@ aws_sts_unassume_role() {
     unset SOURCE_ENV_LEVEL
 }
 
+aws_org_su() {
+    local account_name="$1"
+
+    aws_sts_assume_role "${account_name}" "OrganizationAccountAccessRole"
+}
+
 aws_name_to_id() {
     local account_name="$1"
 
