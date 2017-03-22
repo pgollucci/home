@@ -117,7 +117,7 @@ def aws_roles_process(awsroles, config, assertion, filename):
         i += 1
 
         account_id = role_arn.split(':')[4]
-        role_name = role_arn.split('/')[1]
+        role_name = role_arn.split(':')[5]
 
         profile_name = account_id + "-" + role_name
 
