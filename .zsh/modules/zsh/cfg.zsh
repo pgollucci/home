@@ -5,7 +5,9 @@ zshr() {
 
   local f
   for f in ~/.zshrc "$cache/zcomp-$HOST"; do
-    zrecompile -p $f && command rm -f $f.zwc.old
+    if [ -r $f ]; then
+      zrecompile -p $f && command rm -f $f.zwc.old
+    fi
   done
 
   exec $SHELL -l
