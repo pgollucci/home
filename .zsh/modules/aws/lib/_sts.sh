@@ -62,13 +62,15 @@ aws_sts_refresh() {
 
 aws_sts_cred_write() {
     local file="$1"
-    local profile="$2"
-    local output="$3"
-    local region="$4"
-    local aws_access_key_id="$5"
-    local aws_secret_access_key="$6"
-    local aws_session_token="$7"
-    local expiration="$8"
+    local account_name="$2"
+    local role_name="$3"
+    local profile="$4"
+    local output="$5"
+    local region="$6"
+    local aws_access_key_id="$7"
+    local aws_secret_access_key="$8"
+    local aws_session_token="$9"
+    local expiration="${10}"
 
     cat << EOF > $file
 # $expiration
@@ -99,7 +101,7 @@ aws_sts_assume_role() {
     local aws_session_token=$(_util_json_key_2_value "SessionToken" "${json_file}")
     local expiration=$(_util_json_key_2_value "Expiration" "${json_file}")
 
-    aws_sts_cred_write "$AWS_CREDENTIAL_FILE-assumed" "$profile" "$output" "$region" "$aws_access_key_id" "$aws_secret_access_key" "$aws_session_token" "$expiration"
+    aws_sts_cred_write "$AWS_CREDENTIAL_FILE-assumed" "$account_name" "$role_name" "$profile" "$output" "$region" "$aws_access_key_id" "$aws_secret_access_key" "$aws_session_token" "$expiration"
 
     rm -f ${json_file}
 
