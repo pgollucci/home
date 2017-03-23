@@ -99,7 +99,7 @@ aws_sts_assume_role() {
     local aws_session_token=$(_util_json_key_2_value "SessionToken" "${json_file}")
     local expiration=$(_util_json_key_2_value "Expiration" "${json_file}")
 
-    aws_sts_cred_write "$AWS_CREDENTIAL_FILE-assumed" "$profile" "$region" "$output" "$aws_access_key_id" "$aws_secret_access_key" "$aws_session_token" "$expiration"
+    aws_sts_cred_write "$AWS_CREDENTIAL_FILE-assumed" "$profile" "$output" "$region" "$aws_access_key_id" "$aws_secret_access_key" "$aws_session_token" "$expiration"
 
     rm -f ${json_file}
 

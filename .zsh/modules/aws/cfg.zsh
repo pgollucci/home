@@ -9,6 +9,7 @@ __setup() {
     . ${___dir}/lib/_util.sh
     . ${___dir}/lib/_cfg.sh
     . ${___dir}/lib/_sts.sh
+    . ${___dir}/lib/_org.sh
     . ${___dir}/lib/_shortcuts.sh
 
     alias sts='aws_sts_refresh'
