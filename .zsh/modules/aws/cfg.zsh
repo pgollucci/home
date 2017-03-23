@@ -1,12 +1,15 @@
 __setup() {
 
+    AWS_ORG=p6
     AWS_CREDENTIAL_FILE=$HOME/.aws/credentials
-    AWS_ACCOUNT_MAP=$HOME/.aws/map-p6
+    AWS_ACCOUNT_MAP=$HOME/.aws/map-${AWS_ORG}
 
-    . ${___dir}/_util.sh
-    . ${___dir}/_cfg.sh
-    . ${___dir}/_sts.sh
-    . ${___dir}/_shortcuts.sh
+    ___MYDIR=${___dir}
+
+    . ${___dir}/lib/_util.sh
+    . ${___dir}/lib/_cfg.sh
+    . ${___dir}/lib/_sts.sh
+    . ${___dir}/lib/_shortcuts.sh
 
     alias sts='aws_sts_refresh'
 
