@@ -4,7 +4,7 @@ __setup() {
     AWS_CREDENTIAL_FILE=$HOME/.aws/credentials
     AWS_ACCOUNT_MAP=$HOME/.aws/map-${AWS_ORG}
 
-    ___MYDIR=${___dir}
+    path_if "${___dir}/bin"
 
     . ${___dir}/lib/_util.sh
     . ${___dir}/lib/_cfg.sh
