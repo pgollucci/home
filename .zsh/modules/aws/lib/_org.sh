@@ -2,7 +2,7 @@ aws_org_account_make() {
     local email="$1"
     local alias="$2"
 
-    aws_org_account_create "$email" "$alias"
+    local $account_id=$(aws_org_account_create "$email" "$alias")
 
     aws_org_run_as "$alias" "aws_iam_password_policy"
     aws_org_run_as "$alias" "aws_iam_signin_link $alias"
@@ -28,7 +28,9 @@ aws_org_account_create() {
 
     rm -rf $dir
 
-    echo $car
+    local account_id=$(aws --output text organizations list-accounts --query 'Accounts[].[Id, Name]' | awk -v k=$alias '$2 ~ k { print $1 }')
+
+    echo $account_id
 }
 
 aws_org_account_wait_for() {
