@@ -4,7 +4,6 @@
 .Xauthority
 .account
 .awless
-.aws/cli/alias
 .aws/config
 .aws/credentials*
 .aws/map-*
