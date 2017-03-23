@@ -129,21 +129,44 @@ msg() {
     echo "$@"
 }
 
-log() {
-    echo "$@"
-}
+Log() { msg "$@" }
 
 error() {
     echo >2 "$@"
 }
 
+verbose() {
+    local level="$1"
+    shift
+
+    VERBOSE=${VERBOSE:-0}
+    [ $VERBOSE -ne 0 -a \( $level -gt $VERBOSE -o $level -eq $VERBOSE \) ] && echo "$@"
+}
+
 die() {
-    echo >2 "$@"
-    exit 1
+    local code="$1"
+    shift
+
+    echo "$@"
+    exit $code
 }
 
 debug() {
     [ -n "$DEBUG" ] || return
 
+    echo >&2 "$@"
+}
+
+header() {
+    local indent="$1"
+    shift
+
+    local i=0
+    while [ $i -lt $indent ]; do
+	echo "=\c"
+	i=$(($i+1))
+    done
+
+    echo "> \c"
     echo "$@"
 }
