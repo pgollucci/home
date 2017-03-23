@@ -22,7 +22,7 @@ aws_shortcut_set() {
     local env="$3"
     local type="$4"
 
-    aws_profile "$profile"
-    aws_region "$region"
-    aws_env "$env"
+    aws_cfg_profile "$profile"
+    aws_cfg_region "$region"
+    aws_cfg_env "$env"
 }

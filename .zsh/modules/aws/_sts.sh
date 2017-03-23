@@ -99,7 +99,7 @@ aws_sts_assume_role() {
     local aws_session_token=$(_util_json_key_2_value "SessionToken" "${json_file}")
     local expiration=$(_util_json_key_2_value "Expiration" "${json_file}")
 
-    aws_sts_cred_write "$AWS_CREDENTIAL_FILE-assumed" "$profile" "$refion" "$ouput" "$aws_access_key_id" "$aws_secret_access_key" "$aws_session_token" "$expiration"
+    aws_sts_cred_write "$AWS_CREDENTIAL_FILE-assumed" "$profile" "$region" "$output" "$aws_access_key_id" "$aws_secret_access_key" "$aws_session_token" "$expiration"
 
     rm -f ${json_file}
 
@@ -120,10 +120,10 @@ aws_sts_assume_role() {
 
 aws_sts_unassume_role() {
 
-    unlink $AWS_CREDENTIAL_FILE-assumed
+    unlink $AWS_CREDENTIAL_FILE
     cp $AWS_CREDENTIAL_FILE-orig $AWS_CREDENTIAL_FILE
     touch -r $AWS_CREDENTIAL_FILE-orig $AWS_CREDENTIAL_FILE
-    rm -f $AWS_CREDENTIAL_FILE-orig
+    rm -f $AWS_CREDENTIAL_FILE-orig $AWS_CREDENTIAL_FILE-assumed
 
     export AWS_DEFAULT_PROFILE=$AWS_SOURCE_DEFAULT_PROFILE
     export AWS_PROFILE=$AWS_SOURCE_PROFILE
