@@ -32,20 +32,20 @@ aws_org_account_create() {
 }
 
 aws_org_account_wait_for() {
-  local car="$1"
+    local car="$1"
 
-  [ -n "${DRY_RUN}" ] && return
+    [ -n "${DRY_RUN}" ] && return
 
-  local i=1
-  while [ : ]; do
-      local status=$(aws --output text organizations describe-create-account-status --create-account-request-id car-0be354c0100811e78db450d5029d06f1 --query "CreateAccountStatus.State")
+    local i=1
+    while [ : ]; do
+	local status=$(aws --output text organizations describe-create-account-status --create-account-request-id car-0be354c0100811e78db450d5029d06f1 --query "CreateAccountStatus.State")
 
-      [ x"$status" = x"ACTIVE" ] && break
-      [ x"$status" = x"FAILED" ] && exit 15
+	[ x"$status" = x"ACTIVE" ] && break
+	[ x"$status" = x"FAILED" ] && exit 15
 
-      log "Waiting for ${name}: $i seconds"
-      i=$(doubling_backoff_retry $i)
-  done
+	log "Waiting for ${name}: $i seconds"
+	i=$(doubling_backoff_retry $i)
+    done
 }
 
 aws_org_run_as() {
