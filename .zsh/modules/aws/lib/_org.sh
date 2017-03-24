@@ -1,8 +1,17 @@
 aws_org_account_make() {
     local email="$1"
     local alias="$2"
+    local provider="$3"
+    local role_path="$4"
+    local policy_arn="${5:-arn:aws:iam::aws:policy/AdministratorAccess}"
 
-    local $account_id=$(aws_org_account_create "$email" "$alias")
+    local dir=$(mktemp -d -t tmp.org)
+
+    local role_name=$(basename $role_path)
+    local role_parent=$(dirname $role_path)
+
+#    local account_id=$(aws_org_account_create "$email" "$alias")
+local account_id=$(_util_account_name_to_id "$alias")
 
     aws_org_run_as "$alias" "aws_iam_password_policy"
     aws_org_run_as "$alias" "aws_iam_signin_link $alias"
@@ -10,8 +19,16 @@ aws_org_account_make() {
     #    aws_org_run_as "$alias" "root_key_delete.py --login $email"
     #    aws_org_run_as "$alias" "root_mfa_enable.py --login $email"
 
-    aws_org_run_as "$alias" "aws_iam_idp_create file:///path-1 JumpCloud"
-    aws_org_run_as "$alias" "aws_iam_role_create file:///path-2 /SSO/ SSO_Admin arn:aws:iam::aws:policy/AdministratorAccess"
+    local subject="/C=US/ST=MD/L=Upper Marlboro/O=${AWS_ORG}/OU=Technology/CN=${account_id}"
+    local saml_file=$(jc_app_create "$account_id" "2048" "1095" "${subject}" "${AWS_ORG}" "$role_path" "$provider" "$JC_EMAIL" "$dir")
+
+    local trust_file="$dir/trust.json"
+    aws_sts_iam_trust_write "$dir" "$trust_file" "$account_id" "$provider"
+
+    aws_org_run_as "$alias" "aws_iam_idp_create file://$saml_file"
+    aws_org_run_as "$alias" "aws_iam_role_create file://$trust_file /$role_parent/ $role_name $policy_arn"
+
+    rm -rf $dir
 }
 
 aws_org_account_create() {

@@ -147,3 +147,30 @@ aws_sts_org_su() {
 
     aws_sts_assume_role "${account_name}" "OrganizationAccountAccessRole"
 }
+
+aws_sts_iam_trust_write() {
+    local dir="$1"
+    local file="$2"
+    local account_id="$3"
+    local provider="$4"
+
+    cat <<EOF > $file
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "sts:AssumeRoleWithSAML",
+      "Principal": {
+	"Federated": "arn:aws:iam::${account_id}:saml-provider/${provider}"
+      },
+      "Condition": {
+	"StringEquals": {
+	  "SAML:aud": "https://signin.aws.amazon.com/saml"
+	}
+      }
+    }
+  ]
+}
+EOF
+}

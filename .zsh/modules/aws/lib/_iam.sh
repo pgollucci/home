@@ -1,18 +1,25 @@
 aws_iam_role_create() {
     local json="$1"
-    local path="$2"
+    local role_path="$2"
     local name="$3"
     local policy_arn="$4"
 
-    aws iam create-role --path $path --role-name $name --assume-role-policy-document $json
+    aws iam detach-role-policy --role-name $name --policy-arn $policy_arn
+    aws iam delete-role --role-name $name
+
+    aws iam create-role --path $role_path --role-name $name --assume-role-policy-document $json
     aws iam attach-role-policy --role-name $name --policy-arn $policy_arn
 }
 
 aws_iam_idp_create() {
-    local json="$1"
-    local name="$2"
+    local xml_path="$1"
 
-    aws iam create-saml-provider --saml-metadata-document $json --name $name
+    local name=$(basename $xml_path | cut -d'-' -f 3 | sed -e 's,.xml$,,')
+
+    local saml_provider_arn=$(aws --output text iam list-saml-providers --query "SAMLProviderList[].Arn")
+
+    aws iam delete-saml-provider --saml-provider-arn $saml_provider_arn
+    aws iam create-saml-provider --saml-metadata-document $xml_path --name $name
 }
 
 aws_iam_password_policy() {
