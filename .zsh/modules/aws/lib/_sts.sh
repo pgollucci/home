@@ -50,7 +50,8 @@ aws_sts_refresh() {
     aws_cfg_clear
     rm -f $AWS_CREDENTIAL_FILE
 
-    sts.py --provider jc --nicks "aws-${AWS_ORG}" --login $JC_EMAIL
+    local nicks=$(_util_nicks "${AWS_ORG}")
+    sts.py --provider jc --nicks "${nicks}" --login $JC_EMAIL
     sts_map.py ${AWS_ORG}
 
     aws_setup

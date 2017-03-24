@@ -23,3 +23,9 @@ _util_json_value_2_key() {
 
     awk -v k=$key '$2 ~ k { print $1 }' < $file | sed -e 's/[",:]//g'
 }
+
+_util_nicks() {
+    local org="$1"
+
+    awk -v k=$1 '$2 ~ k { print $2 }' < $AWS_ACCOUNT_MAP | sed -e 's,["],,g' | xargs | sed -e 's, ,,g' -e "s,$org,aws-$org,g"
+}
