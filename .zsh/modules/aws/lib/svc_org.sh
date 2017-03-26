@@ -20,7 +20,7 @@ aws_org_account_make() {
     # configure: iam account signin link
     aws_org_run_as "$account_alias" "aws_iam_signin_link $account_alias"
 
-    # configure: sts disable all but us-east-1 (should 'activate' the ones needed')
+    # configure: sts disable all (should 'activate' the ones needed)
     # aws_org_run_as "$account_alias" "aws_sts_regions_disable $account_email"
 
     # configure: delete all root ACCESS_KEYS

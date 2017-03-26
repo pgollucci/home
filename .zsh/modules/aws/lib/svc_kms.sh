@@ -3,10 +3,13 @@ aws_kms_key_make() {
     local key_description="$2"
     local key_alias="$3"
 
-    local key_policy=$(aws_iam_template_process "iam/kms.json" "ACCOUNT_ID=$account_id,KEY_ADMIN_PRINCIPALS=$key_admin_principals,KEY_USER_PRINCIPALS=$key_user_principals")
+    local key_admin_principals="arn:aws:iam::${account_id}:role/SSO/SSO_Admin"
+    local key_user_principals="arn:aws:iam::${account_id}:role/SSO/SSO_Admin"
 
-    aws_kms_key_create "$key_description" "$key_policy"
-    aws_kms_key_alias "$key_alias"
+    local key_policy=$(aws_iam_template_process "iam/kms" "ACCOUNT_ID=$account_id" "KEY_ADMIN_PRINCIPALS=$key_admin_principals" "KEY_USER_PRINCIPALS=$key_user_principals")
+
+    local key_id=$(aws_kms_key_create "$key_description" "$key_policy")
+    aws_kms_key_alias "$key_alias" "$key_id"
 }
 
 aws_kms_key_create() {
