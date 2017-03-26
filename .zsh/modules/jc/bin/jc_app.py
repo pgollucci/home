@@ -81,11 +81,11 @@ def add_application(browser, args):
 
     idp_url = browser.find_element_by_xpath("/html/body/aside/div/div[2]/div/div[2]/div[2]/div/div/input")
     idp_url.clear()
-    idp_url.send_keys("aws-{}".format(args["--account_name"]))
+    idp_url.send_keys("aws-{}".format(args["--account_alias"]))
 
     display_label = browser.find_element_by_xpath("/html/body/aside/div/div[2]/div/div[2]/div[3]/div/div/input")
     display_label.clear()
-    display_label.send_keys("AWS {}".format(args["--account_name"]))
+    display_label.send_keys("AWS {}".format(args["--account_alias"]))
 
     # save
     browser.find_element_by_xpath("/html/body/aside/div/div[3]/button").click()
@@ -134,7 +134,7 @@ def account_ord(args):
 
     i = 2
     for key in sorted(inv_map):
-        if key == args["--account_name"]:
+        if key == args["--account_alias"]:
             return i
 
         i += 1
@@ -143,7 +143,7 @@ def main(args):
     """
     """
 
-    args["--account_name"] = aws_account_id_to_name(args)
+    args["--account_alias"] = aws_account_id_to_name(args)
     args["--pos"] = account_ord(args)
 
     browser = login(args)
@@ -152,6 +152,8 @@ def main(args):
     add_application(browser, args)
 
     download_saml_metadata_xml(browser, args)
+
+    print("~/Downloads/{}-aws-metadata.xml".format(args["--provider"]))
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, options_first=True, version="0.0.1")

@@ -1,3 +1,20 @@
+# ZSH initialization man zsh(1)
+#
+# if ZDOTDIR is unset HOME is used
+# /etc is install specific
+#
+# /etc/zshenv
+# ZDOTDIR/.zshenv
+# if login
+#   /etc/zprofile
+#   $ZDOTDIR/.zprofile
+# if interactive
+#      /etc/zshrc
+#      $ZDOTDIR/.zshrc (me)
+# if login
+#   /etc/zlogin
+#   $ZDOTDIR/.zlogin
+
 __load() {
 
     local DEBUG=""
@@ -9,6 +26,7 @@ __load() {
     ZPLUG_HOME=$ZPLUG_ROOT
 
     . $ZSH_DIR/lib/util.zsh
+    . $ZSH_DIR/modules/_util/cfg.zsh
 
     local theme="default"
 

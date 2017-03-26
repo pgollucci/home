@@ -27,7 +27,7 @@ jenv_version() {
 		echo "$ver"
 	    fi
 	else
-	    echo "system:$(java -version 2>&1|awk '/Environment/{print}' | cut -d' ' -f 2,6- |sed -e 's,),,')"
+	    echo "sys:$(java -version 2>&1|awk '/Environment/{print}' | cut -d' ' -f 2,6- |sed -e 's,),,')"
 	fi
     else
 	echo off

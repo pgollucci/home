@@ -11,7 +11,11 @@ __setup() {
 
 goenv_prompt_line() {
 
-    echo "${magenta}goenv: [$(goenv_version)]${norm}"
+    local v_string=$(goenv_version)
+
+    if [ -n "$v_string" ]; then
+	echo "${magenta}goenv: [$v_string]${norm}"
+    fi
 }
 
 goenv_version() {
@@ -23,7 +27,7 @@ goenv_version() {
 	    echo "$ver"
 	fi
     else
-	echo "system:$(go version |awk '{print $3}' |sed -e 's,go,,')"
+	echo "sys:$(go version |awk '{print $3}' |sed -e 's,go,,')"
     fi
 }
 

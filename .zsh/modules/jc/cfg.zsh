@@ -6,24 +6,31 @@ __setup() {
 }
 
 jc_app_create() {
-    local account_id="$1"
-    local bits="$2"
-    local days="$3"
-    local subject="$4"
-    local org="$5"
-    local role_path="$6"
-    local provider="$7"
-    local login="$8"
-    local dir="$9"
+    local org="$1"
+    local account_id="$2"
+    local cert_subject="$3"
+    local cert_bits="$4"
+    local cert_exp="$5"
+    local saml_provider="$6"
+    local saml_provider_email="$7"
+    local role_full_path="$8"
 
-    openssl genrsa -out $dir/${account_id}.key $bits 2>/dev/null
-    openssl req -new -x509 -key $dir/${account_id}.key -out $dir/${account_id}.crt -days $days -subj $subject 2>/dev/null
+    local app="aws"
 
-    jc_app.py --key $dir/${account_id}.key --crt $dir/${account_id}.crt --org ${org} --account_id ${account_id} --role_path ${role_path} --provider $provider --login $login
+    local dir=$(transient_create "tmp.jc")
 
-    mv ~/Downloads/${provider}-aws-metadata.xml $dir/${account_id}-aws-${provider}.xml
+    local key_file="$dir/${account_id}.key"
+    openssl_genrsa  "$key_file" "$cert_bits"
 
-    echo $dir/${account_id}-aws-${provider}.xml
+    local crt_file="$dir/${account_id}.crt"
+    openssl_req_509 "$key_file" "$crt_file" "$cert_exp" "$cert_subject"
+
+    local $saml_file=$(jc_app.py --key $key_file --crt $crt_file --org $org --account_id $account_id --role_path $role_full_path --provider $saml_provider --login $saml_provider_email)
+
+    local dst_saml_file=$dir/${account_id}-${app}-${saml_provider}.xml
+    mv_file "$saml_file" "$dst_saml_file"
+
+    echo $dst_saml_file
 }
 
 __setup

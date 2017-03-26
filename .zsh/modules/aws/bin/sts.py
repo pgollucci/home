@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
-"""Usage: sts.py --provider=<provider> --nicks=<nicks> --login=<login>
+"""Usage: sts.py --provider=<provider> --nicks=<nicks> --login=<login> --region=<region> --outputformat=<outputformat>
 
 Get STS tokens via provider from AWS for login @ nick account
 
 Options:
-  --provider=<provider>           jc|gc|ad
+  --provider=<provider>           jc|gc|adfs
   --nicks=<nicks>                 nicks
   --login=<login>                 your login
+  --region=<region>               aws default region for tokens retrieved
+  --outputformat=<outputformat>   aws default format json|table|text
 
-Only provider jc is implimented atm.
-PingSSO or AD FS may follow if I'm bored.
+Only provider jc is implimented atm. PingSSO and/or AD FS may follow.
 
 """
 from docopt import docopt
@@ -103,14 +104,10 @@ def config_load(filename):
 
     return config
 
-def aws_roles_process(awsroles, config, assertion, filename):
+def aws_roles_process(awsroles, config, assertion, filename, region, outputformat):
     """
     """
-
-    region = 'us-east-1'
-    outputformat = 'json'
-
-    i=0
+    i = 0
     for awsrole in awsroles:
         role_arn = awsroles[i].split(',')[0]
         principal_arn = awsroles[i].split(',')[1]
@@ -147,6 +144,7 @@ def main(args):
     filename = os.path.expanduser("~") + '/.aws/credentials'
 
     password = getpass.getpass()
+
     nicks = args['--nicks']
     headers = { 'User-agent': 'ua' }
 
@@ -163,7 +161,7 @@ def main(args):
         assertion = saml_assertion_get(nick, headers, data)
         awsroles = awsroles_get(assertion)
         config = config_load(filename)
-        aws_roles_process(awsroles, config, assertion, filename)
+        aws_roles_process(awsroles, config, assertion, filename, args["--region"], args["--outputformat"])
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, options_first=True, version="0.0.1")

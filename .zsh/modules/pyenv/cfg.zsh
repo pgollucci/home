@@ -21,10 +21,10 @@ pyenv_version() {
 	if [ x"$ver" != x"system" ]; then
 	    echo $ver
 	else
-	    echo "system:$(python -V 2>&1 | cut -f 2 -d ' ')"
+	    echo "sys:$(python -V 2>&1 | cut -f 2 -d ' ')"
 	fi
     else
-	echo "system:$(python -V 2>&1 | cut -f 2 -d ' ')"
+	echo "sys:$(python -V 2>&1 | cut -f 2 -d ' ')"
     fi
 }
 

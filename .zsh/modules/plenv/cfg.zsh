@@ -21,10 +21,10 @@ plenv_version() {
 	if [ x"$ver" != x"system" ]; then
 	    echo $ver
 	else
-	    echo "system:$(perl -v 2>&1 | awk '/\(v5/ { print $9 }')"
+	    echo "sys:$(perl -v 2>&1 | awk '/\(v5/ { print $9 }' | sed -e 's,[\)\(v],,g')"
 	fi
     else
-	echo "system:$(perl -v 2>&1 | awk '/\(v5/ { print $9 }')"
+	echo "sys:$(perl -v 2>&1 | awk '/\(v5/ { print $9 }' | sed -e 's,[\)\(v],,g')"
     fi
 }
 

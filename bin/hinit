@@ -1,130 +1,134 @@
 #!/bin/sh -ex
 
-#### Options
-Clean=
-Dry=-n
-Help=0
-Private=0
+main() {
 
-while getopts cDhp o; do
-  case "$o" in
-    c) Clean="--delete" ;;
-    D) Dry="" ;;
-    h) echo "hinit [-chp]"; exit 0 ;;
-    p) Private=1 ;;
-  esac
-done
+    #### Options
+    Clean=
+    Dry=-n
+    Help=0
+    Private=0
 
-shift $(( OPTIND - 1 ));
+    while getopts cDhp o; do
+	case "$o" in
+	    c) Clean="--delete" ;;
+	    D) Dry="" ;;
+	    h) echo "hinit [-chp]"; exit 0 ;;
+	    p) Private=1 ;;
+	esac
+    done
 
-OS=$(uname -s)
-USER=${1:-pgollucci}
-group=$USER
-THOME=/tmp/$USER
-SUDO=sudo
+    shift $(( OPTIND - 1 ));
 
-case $OS in
-  *CYGWIN*)
-    SUDO=
-    HOME=/home/$USER
-    ;;
-  Darwin)
-    HOME=/Users/$USER
-    group=staff
-    ;;
-  **)
-    HOME=/home/$USER
-    ;;
-esac
+    OS=$(uname -s)
+    USER=${1:-pgollucci}
+    group=$USER
+    THOME=/tmp/$USER
+    SUDO=sudo
 
+    case $OS in
+	*CYGWIN*)
+	    SUDO=
+	    HOME=/home/$USER
+	    ;;
+	Darwin)
+	    HOME=/Users/$USER
+	    group=staff
+	    ;;
+	**)
+	    HOME=/home/$USER
+	    ;;
+    esac
 
-#### Main Setup
-echo "Creating Staging Area"
-$SUDO rm -rf $THOME
-$SUDO mkdir $THOME
-$SUDO chown $USER $THOME
+    #### Main Setup
+    echo "Creating Staging Area"
+    $SUDO rm -rf $THOME
+    $SUDO mkdir $THOME
+    $SUDO chown $USER $THOME
 
-echo "Cloning Repos"
-git clone -q https://github.com/pgollucci/home.git          $THOME
-git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/emacs
-git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
+    echo "Cloning Repos"
+    git clone -q https://github.com/pgollucci/home.git          $THOME
+    git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/emacs
+    git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
 
-mkdir $THOME/.zcache
-mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
+    mkdir $THOME/.zcache
+    mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
 
-# ruby
-git clone -q https://github.com/postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
-git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
-mkdir -p $THOME/.repos/langs/rbenv/plugins
-git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
+    # ruby
+    git clone -q https://github.com/postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
+    git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
+    mkdir -p $THOME/.repos/langs/rbenv/plugins
+    git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
 
-# perl
-git clone -q https://github.com/tokuhirom/plenv.git            $THOME/.repos/langs/plenv
-mkdir -p $THOME/.repos/langs/plenv/plugins
-git clone -q https://github.com/tokuhirom/Perl-Build.git       $THOME/.repos/langs/plenv/plugins/perl-build
+    # perl
+    git clone -q https://github.com/tokuhirom/plenv.git         $THOME/.repos/langs/plenv
+    mkdir -p $THOME/.repos/langs/plenv/plugins
+    git clone -q https://github.com/tokuhirom/Perl-Build.git    $THOME/.repos/langs/plenv/plugins/perl-build
 
-# python
-git clone -q https://github.com/yyuu/pyenv.git                 $THOME/.repos/langs/pyenv
+    # python
+    git clone -q https://github.com/yyuu/pyenv.git              $THOME/.repos/langs/pyenv
 
-# go
-git clone -q https://github.com/wfarr/goenv.git                $THOME/.repos/langs/goenv
+    # go
+    git clone -q https://github.com/wfarr/goenv.git             $THOME/.repos/langs/goenv
 
-# jenv
-git clone -q https://github.com/gcuisinier/jenv.git            $THOME/.repos/langs/jenv
+    # jenv
+    git clone -q https://github.com/gcuisinier/jenv.git         $THOME/.repos/langs/jenv
 
-# zplug
-git clone -q https://github.com/b4b4r07/zplug.git              $THOME/.repos/zsh/zplug
+    # zplug
+    git clone -q https://github.com/b4b4r07/zplug.git           $THOME/.repos/zsh/zplug
 
-# zprezto
-git clone -q https://github.com/sorin-ionescu/prezto.git       $THOME/.repos/zsh/zprezto
+    # zprezto
+    git clone -q https://github.com/sorin-ionescu/prezto.git    $THOME/.repos/zsh/zprezto
 
-echo "Transfering"
-$SUDO rsync \
-  -atz $Dry $Clean \
-  --exclude Applications \
-  --exclude Desktop \
-  --exclude Documents \
-  --exclude Downloads \
-  --exclude Dropbox \
-  --exclude Google\ Drive \
-  --exclude OneDrive\* \
-  --exclude Library \
-  --exclude Movies \
-  --exclude Music \
-  --exclude Pictures \
-  --exclude Public \
-  --exclude dev \
-  --exclude tmp \
-  --exclude .ssh/dynamic \
-  --exclude .Trash \
-  $THOME/ $HOME/
+    echo "Transfering"
+    $SUDO rsync \
+	  -atz $Dry $Clean \
+	  --exclude Applications \
+	  --exclude Desktop \
+	  --exclude Documents \
+	  --exclude Downloads \
+	  --exclude Dropbox \
+	  --exclude Google\ Drive \
+	  --exclude OneDrive\* \
+	  --exclude Library \
+	  --exclude Movies \
+	  --exclude Music \
+	  --exclude Pictures \
+	  --exclude Public \
+	  --exclude dev \
+	  --exclude tmp \
+	  --exclude .ssh/dynamic \
+	  --exclude .Trash \
+	  $THOME/ $HOME/
 
-# symklink
-(cd $HOME ; ln -s .repos/emacs .emacs.d)
-(cd $HOME/.emacs.d/defuns ; ln -s $HOME/.repos/vendor/magnars/.emacs.d/defuns/* .)
+    # symklink
+    (cd $HOME ; ln -s .repos/emacs .emacs.d)
+    (cd $HOME/.emacs.d/defuns ; ln -s $HOME/.repos/vendor/magnars/.emacs.d/defuns/* .)
 
-#### Private Repo
-echo "Private bits"
-( cd $HOME ; git clone -q https://github.com/pgollucci/home-private.git $HOME/.private )
-if [ $Private -eq 1 ]; then
-  (
-    cd $HOME/.ssh
-    ln -s $HOME/.private/ssh/2/id* .
-    chmod 600 $HOME/.private/ssh/2/id*
-  )
+    #### Private Repo
+    echo "Private bits"
+    ( cd $HOME ; git clone -q https://github.com/pgollucci/home-private.git $HOME/.private )
+    if [ $Private -eq 1 ]; then
+	(
+	    cd $HOME/.ssh
+	    ln -s $HOME/.private/ssh/2/id* .
+	    chmod 600 $HOME/.private/ssh/2/id*
+	)
 
-  mkdir $HOME/.aws
-  (cd $HOME/.aws ; ln -s .private/aws/map-p6 .)
-fi
+	mkdir $HOME/.aws
+	(cd $HOME/.aws ; ln -s .private/aws/map-p6 .)
+    fi
 
-echo "SSH Pub Keys"
-cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
+    echo "SSH Pub Keys"
+    cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
 
-if [ $Private -ne 1 ]; then
-  rm -rf $HOME/.private
-fi
+    if [ $Private -ne 1 ]; then
+	rm -rf $HOME/.private
+    fi
 
-echo "Set Owners"
-$SUDO chown -Rh $USER:$group $HOME
+    echo "Set Owners"
+    $SUDO chown -Rh $USER:$group $HOME
 
-echo "Done"
+    echo "Done"
+}
+
+main "$@"

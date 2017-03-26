@@ -1,11 +1,11 @@
 zprezto_load() {
 
-    . $HOME/.repos/zsh/zprezto/init.zsh
+    load_file "$HOME/.repos/zsh/zprezto/init.zsh"
 }
 
 zplug_load() {
 
-    . $HOME/.repos/zsh/zplug/init.zsh
+    load_file "$HOME/.repos/zsh/zplug/init.zsh"
 
     zprezto_load
 }
@@ -30,7 +30,9 @@ module_load() { # args: module_dir
 
     export ___dir=$module_dir
     if [ -d $module_dir ]; then
-	. $module_dir/cfg.zsh
+        debug "=====> $module_dir/cfg.zsh"
+	load_file "$module_dir/cfg.zsh"
+        debug "<===== $module_dir/cfg.zsh"
     fi
     unset ___dir
 }
@@ -38,7 +40,7 @@ module_load() { # args: module_dir
 theme_load() { # args: theme_dir
     local theme_dir="$1"
 
-    . $theme_dir/cfg.zsh
+    load_file "$theme_dir/cfg.zsh"
 }
 
 run_time_prompt() {
@@ -103,28 +105,6 @@ completions_load() { # completions_dir
     done
 }
 
-init_cap() {
-    local str="$1"
-
-    echo $str | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1'
-}
-
-run_parallel() {
-    local i="$1"
-    local parallel="$2"
-    local things="$3"
-    shift 3
-    local cmd="$1"
-    shift 1
-
-    local thing
-    for thing in $(echo $things); do
-	((i=i%parallel)); ((i++==0)) && wait
-	echo "$cmd $@ '$thing'"
-	local rc="$($cmd $@ "$thing")" &
-    done
-}
-
 msg() {
     echo "$@"
 }
@@ -143,18 +123,18 @@ verbose() {
     [ $VERBOSE -ne 0 -a \( $level -gt $VERBOSE -o $level -eq $VERBOSE \) ] && echo "$@"
 }
 
+debug() {
+    [ -n "$DEBUG" ] || return
+
+    echo >&2 "$@"
+}
+
 die() {
     local code="$1"
     shift
 
     echo "$@"
     exit $code
-}
-
-debug() {
-    [ -n "$DEBUG" ] || return
-
-    echo >&2 "$@"
 }
 
 header() {

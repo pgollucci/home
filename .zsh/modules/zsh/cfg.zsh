@@ -18,9 +18,9 @@ __setup() {
   alias zshe="$EDITOR ~/.zshrc"
   alias ee="$EDITOR ~/.emacs.d/init.el"
 
-  . ${___dir}/colors.zsh
-  . ${___dir}/history.zsh
-  . ${___dir}/sudo.zsh
+  load_file "${___dir}/colors.zsh"
+  load_file "${___dir}/history.zsh"
+  load_file "${___dir}/sudo.zsh"
 }
 
 __setup

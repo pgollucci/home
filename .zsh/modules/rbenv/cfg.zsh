@@ -21,10 +21,10 @@ rbenv_version() {
 	if [ x"$ver" != x"system" ]; then
 	    echo $ver
 	else
-	    echo "system:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
+	    echo "sys:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
 	fi
     else
-	echo "system:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
+	echo "sys:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
     fi
 }
 

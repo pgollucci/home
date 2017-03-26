@@ -1,21 +1,28 @@
 __setup() {
 
     AWS_ORG=p6
-    AWS_CREDENTIAL_FILE=$HOME/.aws/credentials
-    AWS_ACCOUNT_MAP=$HOME/.aws/map-${AWS_ORG}
+
+    AWS_DIR=$HOME/.aws
+    AWS_ACCOUNT_MAP=$AWS_DIR/map-$AWS_ORG
+    AWS_CREDENTIAL_FILE=$AWS_DIR/credentials
+    AWS_ASSUMED_CREDENTIAL_FILE=$AWS_CREDENTIAL_FILE-assumed
+    AWS_SOURCE_CREDENTIAL_FILE=$AWS_CREDENTIAL_FILE-source
 
     path_if "${___dir}/bin"
 
-    . ${___dir}/lib/_util.sh
-    . ${___dir}/lib/_cfg.sh
-    . ${___dir}/lib/_sts.sh
-    . ${___dir}/lib/_iam.sh
-    . ${___dir}/lib/_org.sh
-    . ${___dir}/lib/_shortcuts.sh
+    load_file "${___dir}/lib/util.sh"
+
+    load_file "${___dir}/lib/_cfg.sh"
+    load_file "${___dir}/lib/_shortcuts.sh"
+
+    local service
+    for service in ${___dir}/lib/svc_*.sh; do
+	load_file "$service"
+    done
 
     alias sts='aws_sts_refresh'
 
-    aws_setup
+    aws_shortcuts
 }
 
 aws_prompt_line() {
@@ -27,12 +34,6 @@ aws_prompt_line() {
   [ -n "$aws" ] && echo "${magenta}aws:${norm}$aws"
   [ -n "$aws_source" ] && echo "${magenta}aws:${norm}$aws_source"
   [ -n "$sts" ] && echo "${magenta}sts:${norm}$sts"
-}
-
-aws_setup() {
-
-    aws_shortcuts_unset
-    aws_shortcuts_set
 }
 
 __setup

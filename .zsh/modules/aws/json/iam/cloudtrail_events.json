@@ -1,0 +1,14 @@
+[
+    {
+        "ReadWriteType": "All",
+        "IncludeManagementEvents": "true",
+        "DataResources": [
+            {
+                "Type": "AWS::S3::Object",
+                "Values": [
+                    "S3_ARNS"
+                ]
+            }
+        ]
+    }
+]
