@@ -14,6 +14,13 @@ git_prompt_line() {
     fi
 }
 
+git_checkpoint() {
+
+    git commit -am "checkpoint"
+    git push -u
+}
+
+
 git_repo_get() {
 
     git remote show origin -n 2>/dev/null | awk '/Fetch URL/{ print $3 }' | sed -e 's,.*/,,' -e 's,.git,,'
