@@ -111,7 +111,7 @@ json_value_2_key() {
 	file="< $file"
     fi
 
-    awk -v k=$key '$2 ~ k { print $1 }' < $file | sed -e 's/[",:]//g'
+    awk -v k=$key '$2 ~ k { print $1 }' $file | sed -e 's/[",:]//g'
 }
 
 uri_parse_name() {
