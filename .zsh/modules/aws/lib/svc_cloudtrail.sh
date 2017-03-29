@@ -2,35 +2,43 @@ aws_cloudtrail_trail_make() {
     local org="$1"
     local account_id="$2"
     local trail_full_path="$3"
-    local trail_bucket="$4"
-    local trail_topic_name="$5"
-    local trail_kms_alias="$6"
-    local trail_kms_desc="$7"
-    local trail_logs_group_name="$8"
-    local trail_data_events_s3_arns="$9"
+    local trail_description="$4"
+    local trail_bucket="$5"
+    local trail_topic_name="$6"
+    local trail_kms_alias="$7"
+    local trail_kms_desc="$8"
+    local trail_logs_group_name="$9"
+    local trail_data_events_s3_arns="${10}"
 
-    aws_s3_mb "$trail_bucket"
-    aws_s3_cloudtrail_policy_attach "$trail_bucket" "$account_id"
+#    aws_s3_mb "$trail_bucket"
+#    aws_s3_cloudtrail_policy_attach "$trail_bucket" "$account_id"
 
-    aws_sns_topic_create "$trail_topic_name"
+#    aws_sns_topic_create "$trail_topic_name"
 
-    local trail_kms_key_id=$(aws_kms_key_make "$account_id" "$trail_kms_desc" "$trail_kms_alias")
+#    local trail_kms_key_id=$(aws_kms_key_make "$account_id" "$trail_kms_desc" "$trail_kms_alias")
+local trail_kms_key_id="6e0af6d5-fa1d-44b3-a80c-0e1abcfadfd7"
 
-    local cloudwatch_logs_group_arn=$(aws_cloudwatch_logs_group_make "$trail_logs_group_name")
+#    local cloudwatch_logs_group_arn=$(aws_cloudwatch_logs_group_make "$trail_logs_group_name")
+local cloudwatch_logs_group_arn="arn:aws:logs:us-east-1:091434912807:log-group:p6is-cloudtrail:*"
 
-    local trail_logs_group_arn="arn:aws:logs::${account_id}:log-group:${trail_logs_group_name}:log-stream:${account_id}_CloudTrail_*"
-    local cloudwatch_logs_role_arn=$(aws_cloudtrail_trail_iam "$trail_full_path" "$trail_description" "$trail_logs_group_arn" "$account_id")
-return
+#    local trail_logs_group_arn="arn:aws:logs::${account_id}:log-group:${trail_logs_group_name}:log-stream:${account_id}_CloudTrail_*"
+#    local cloudwatch_logs_role_arn=$(aws_cloudtrail_trail_iam "$trail_full_path" "$trail_description" "$trail_logs_group_arn" "$account_id")
+local cloudwatch_logs_role_arn="arn:aws:iam::091434912807:role/CloudTrail/p6is-1490747908"
 
     aws_cloudtrail_create "$trail_full_path" "$trail_bucket"
 
     aws_cloudtrail_include_global_events "$trail_full_path"
-    aws_cloudtrail_is_multi_region "$trail_full_path"
-    aws_cloudtrail_enable_log_file_validation "$trail_full_path"
-    aws_cloudtrail_data_events "$trail_full_path" "$trail_data_events_s3_arns"
-    aws_cloudtrail_kms_encrypt "$trail_full_path" "$trail_kms_key_id"
 
+    aws_cloudtrail_is_multi_region "$trail_full_path"
+
+    aws_cloudtrail_enable_log_file_validation "$trail_full_path"
+
+    aws_cloudtrail_data_events "$trail_full_path" "$trail_data_events_s3_arns"
+
+#    aws_cloudtrail_kms_encrypt "$trail_full_path" "$trail_kms_key_id"
+set -x
     aws_cloudtrail_2_sns "$trail_full_path" "$trail_topic_name"
+return
     aws_cloudtrail_2_cloudwatch "$trail_full_path" "$cloudwatch_logs_group_arn" "$cloudwatch_logs_role_arn"
 
     aws_cloudtrail_logging_start "$trail_full_path"
@@ -43,15 +51,16 @@ aws_cloudtrail_trail_iam() {
     local account_id="$4"
 
     local assume_role_policy_document=$(aws_iam_policy_service_write "cloudtrail")
-    aws_iam_role_create "$trail_full_path" "$assume_role_policy_document"
-return
+    local cloudwatch_logs_role_arn=$(aws_iam_role_create "$trail_full_path" "$assume_role_policy_document")
+
     local cloudtrail_policy_document=$(aws_iam_policy_cloudtrail_write "$trail_logs_group_arn")
     local cloudtrail_policy_arn=$(aws_iam_policy_create "$trail_full_path" "$trail_description" "$cloudtrail_policy_document")
     aws_iam_policy_to_role "$trail_full_path" "$cloudtrail_policy_arn"
+
+    echo $cloudwatch_logs_role_arn
 }
 
 aws_cloudtrail_create() {
-set -x
     local trail_full_path="$1"
     local trail_bucket="$2"
 
@@ -65,7 +74,7 @@ aws_cloudtrail_include_global_events() {
 
     local trail_name=$(uri_parse_name "$trail_full_path")
 
-    aws cloudtrail update-trail --name $trail_name --include-global-service-events true
+    aws cloudtrail update-trail --name $trail_name --include-global-service-events
 }
 
 aws_cloudtrail_data_events() {
@@ -128,7 +137,7 @@ aws_cloudtrail_kms_encrypt() {
 
     local trail_name=$(uri_parse_name "$trail_full_path")
 
-    aws cloudtrail update-trail --name trail_name --kms-key-id $trail_kms_key_id
+    aws cloudtrail update-trail --name $trail_name --kms-key-id $trail_kms_key_id
 }
 
 aws_cloudtrail_event_selector_write() {

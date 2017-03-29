@@ -1,7 +1,7 @@
 [
     {
         "ReadWriteType": "All",
-        "IncludeManagementEvents": "true",
+        "IncludeManagementEvents": true,
         "DataResources": [
             {
                 "Type": "AWS::S3::Object",

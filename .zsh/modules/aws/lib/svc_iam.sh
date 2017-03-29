@@ -14,7 +14,7 @@ aws_iam_role_create() {
     local role_path=$(uri_parse_path "$role_full_path")
     local role_name=$(uri_parse_name "$role_full_path")
 
-    _aws_iam_role_create "$role_path" "$role_name" "$assume_role_policy_document"
+    _aws_iam_role_create "$role_path/" "$role_name" "$assume_role_policy_document"
 }
 
 _aws_iam_role_create() {
@@ -22,11 +22,7 @@ _aws_iam_role_create() {
     local role_name="$2"
     local assume_role_policy_document="$3"
 
-    local policy_file=$(to_file "$assume_role_policy_document")
-
-    aws iam create-role --path $role_path --role-name $role_name --assume-role-policy-document file://$policy_file
-
-    transient_delete "$policy_file"
+    aws --output text iam create-role --path $role_path --role-name $role_name --assume-role-policy-document $assume_role_policy_document --query "Role.Arn"
 }
 
 aws_iam_idp_create() {
@@ -73,11 +69,7 @@ aws_iam_policy_create() {
     local policy_path=$(uri_parse_path "$policy_full_path")
     local policy_name=$(uri_parse_name "$policy_full_path")
 
-    local policy_file=$(to_file "$policy_document")
-
-    aws iam create-policy --path $policy_path --policy-name $policy_name --description $policy_description --policy-document file://$policy_file
-
-    transient_delete "$policy_file"
+    aws --output text iam create-policy --path $policy_path/ --policy-name $policy_name --description $policy_description --policy-document $policy_document --query "Policy.Arn"
 }
 
 aws_iam_template_process() { # GLOBAL

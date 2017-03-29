@@ -10,6 +10,8 @@ aws_kms_key_make() {
 
     local key_id=$(aws_kms_key_create "$key_description" "$key_policy")
     aws_kms_key_alias "$key_alias" "$key_id"
+
+    echo $key_id
 }
 
 aws_kms_key_create() {
