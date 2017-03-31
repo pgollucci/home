@@ -81,9 +81,6 @@ __setup() {
     alias duh='du -h'
     alias history='fc -l 1'
 
-    alias sha1="openssl dgst -sha1"
-    alias sha2="openssl dgst -sha256"
-    alias b64="openssl enc -base64"
     alias 256color="export TERM=xterm-256color"
     alias prettyjson="python -mjson.tool"
 

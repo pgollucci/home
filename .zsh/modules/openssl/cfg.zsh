@@ -13,3 +13,12 @@ openssl_genrsa() {
 
     openssl genrsa -out $key_file $cert_bits
 }
+
+__setup() {
+
+    alias sha1="openssl dgst -sha1"
+    alias sha2="openssl dgst -sha256"
+    alias b64="openssl enc -base64"
+}
+
+__setup
