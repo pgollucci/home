@@ -13,6 +13,7 @@
 .cache
 .chef.d
 .config
+.cpan
 .cups
 .dropbox
 .emacs.d
@@ -67,4 +68,5 @@ Pictures
 Public
 WorkDocs
 dev
+perl5
 tmp
