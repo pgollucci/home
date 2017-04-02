@@ -1,0 +1,7 @@
+aws_clouddirectory_directory_get() {
+    local directory-arn="$1"
+    shift 1
+
+    log_and_run aws clouddirectory  --directory-arn $directory_arn "@"
+
+}

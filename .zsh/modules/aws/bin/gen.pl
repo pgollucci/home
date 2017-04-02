@@ -10,8 +10,6 @@ use Carp;
 ## CPAN
 
 ## Globals
-use FindBin qw($Bin);
-use lib "$Bin/../dev/lib/perl5";
 
 ## SDK
 use P6::CLI ();
