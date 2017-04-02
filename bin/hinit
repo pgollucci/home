@@ -95,6 +95,7 @@ main() {
 	  --exclude Pictures \
 	  --exclude Public \
 	  --exclude dev \
+	  --exclude perl5 \
 	  --exclude tmp \
 	  --exclude .ssh/dynamic \
 	  --exclude .Trash \
