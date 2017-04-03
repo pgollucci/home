@@ -1,5 +1,7 @@
 __setup() {
 
+    export PERL5LIB="$ZSH_DIR/modules/aws/lib/perl5:${PERL5LIB}"
+
     AWS_ORG=p6
 
     AWS_DIR=$HOME/.aws

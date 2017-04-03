@@ -15,8 +15,10 @@ zshr() {
 
 __setup() {
 
-  alias zshe="$EDITOR ~/.zshrc"
+  alias ae="$EDITOR ~/.zsh/modules/aws/lib/perl5/P6/AWS/SGen.pm"
+  alias pe="$EDITOR ~/.zsh/modules/_util/lib/perl5/P6/Util.pm"
   alias ee="$EDITOR ~/.emacs.d/init.el"
+  alias ze="$EDITOR ~/.zshrc"
 
   load_file "${___dir}/colors.zsh"
   load_file "${___dir}/history.zsh"

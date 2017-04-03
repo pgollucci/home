@@ -1,3 +1,10 @@
+__setup() {
+
+    PERL5LIB=
+    export PERL5LIB="$ZSH_DIR/modules/_util/lib/perl5:${PERL5LIB}"
+}
+__setup
+
 init_cap() {
     local str="$1"
 
