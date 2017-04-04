@@ -1,0 +1,10 @@
+aws_${service}_${cmd_api_func}() {
+[% FOREACH arg = required_args %]
+    local $arg.var="\$$loop.count"
+[% END %]
+[% IF scount > 0 %]
+    shift $scount
+[% END %]
+
+    $log_type aws $service $cmd [% FOREACH arg = required_args %]--$arg.name \$$arg.var [% END %]"\$@"
+}

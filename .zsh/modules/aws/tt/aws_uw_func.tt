@@ -1,0 +1,13 @@
+[% FOREACH flag = flag_args %]
+aws_${service}_${flag.func}() {
+    [% FOREACH arg = required_args %]
+    local $arg.var="\$$loop.count"
+    [% END %]
+[% IF scount > 0 %]
+    shift $scount
+[% END %]
+
+    cond_log_and_run aws $service $cmd [% FOREACH arg = required_args %]--$arg.name \$$arg.var [% END %]--${flag.name} "\$@"
+}
+
+[% END %]
