@@ -205,14 +205,20 @@ sub shell_file {
   my $self = shift;
   my %args = @_;
 
-  "$args{outputdir}/api/" . $self->service() . "/" . $self->cmd_api_func() . ".sh";
+  my $sdir = $self->service();
+  $sdir =~ s/-/_/g;
+
+  "$args{outputdir}/api/$sdir/" . $self->cmd_api_func() . ".sh";
 }
 
 sub uw_shell_file {
   my $self = shift;
   my %args = @_;
 
-  "$args{outputdir}/uw/" . $self->service() . "/" . $self->cmd_api_func() . ".sh";
+  my $sdir = $self->service();
+  $sdir =~ s/-/_/g;
+
+  "$args{outputdir}/uw/$sdir/" . $self->cmd_api_func() . ".sh";
 }
 
 1;

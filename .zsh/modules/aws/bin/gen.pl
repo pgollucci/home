@@ -61,8 +61,9 @@ gen.pl - AWS Shell Generator
 =head1 SYNOPSIS
 
 gen.pl --outputdir=<dir> [--service=<service>] [--cmd=<cmd>]
-
-gen.pl	[--debug] [--verbose [1-4]] [--no-execute] [--version] [--help]
+	[--debug] [--verbose [1-4]] [--no-execute]
+gen.pl --version
+gen.pl --help
 
  Options:
     --outputdir        output results to <dir>
