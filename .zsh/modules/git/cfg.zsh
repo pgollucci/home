@@ -23,7 +23,7 @@ git_checkpoint() {
 
 git_repo_get() {
 
-    git remote show origin -n 2>/dev/null | awk '/Fetch URL/{ print $3 }' | sed -e 's,.*/,,' -e 's,.git,,'
+    git remote show origin -n 2>/dev/null | awk '/Fetch URL/{ print $3 }' | cut -d / -f 4,5 | sed -e 's,\.git$,,'
 }
 
 git_branch_get() {
