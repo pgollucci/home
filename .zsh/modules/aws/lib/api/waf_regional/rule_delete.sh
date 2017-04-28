@@ -1,4 +1,4 @@
-aws_waf-regional_rule_delete() {
+aws_waf_regional_rule_delete() {
     local rule_id="$1"
     local change_token="$2"
     shift 2

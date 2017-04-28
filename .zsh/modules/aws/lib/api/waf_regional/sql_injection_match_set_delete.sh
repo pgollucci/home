@@ -1,4 +1,4 @@
-aws_waf-regional_sql_injection_match_set_delete() {
+aws_waf_regional_sql_injection_match_set_delete() {
     local sql_injection_match_set_id="$1"
     local change_token="$2"
     shift 2

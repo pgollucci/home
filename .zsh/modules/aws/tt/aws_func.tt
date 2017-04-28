@@ -1,4 +1,4 @@
-aws_${service}_${cmd_api_func}() {
+aws_${shell_service}_${cmd_api_func}() {
 [% FOREACH arg = required_args %]
     local $arg.var="\$$loop.count"
 [% END %]

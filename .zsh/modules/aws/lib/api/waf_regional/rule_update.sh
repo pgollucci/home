@@ -1,4 +1,4 @@
-aws_waf-regional_rule_update() {
+aws_waf_regional_rule_update() {
     local rule_id="$1"
     local change_token="$2"
     local updates="$3"

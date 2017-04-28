@@ -1,4 +1,4 @@
-aws_waf-regional_ip_set_get() {
+aws_waf_regional_ip_set_get() {
     local ip_set_id="$1"
     shift 1
 

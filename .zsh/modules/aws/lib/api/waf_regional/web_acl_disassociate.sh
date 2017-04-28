@@ -1,4 +1,4 @@
-aws_waf-regional_web_acl_disassociate() {
+aws_waf_regional_web_acl_disassociate() {
     local resource_arn="$1"
     shift 1
 

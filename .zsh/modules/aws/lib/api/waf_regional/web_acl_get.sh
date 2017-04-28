@@ -1,4 +1,4 @@
-aws_waf-regional_web_acl_get() {
+aws_waf_regional_web_acl_get() {
     local web_acl_id="$1"
     shift 1
 

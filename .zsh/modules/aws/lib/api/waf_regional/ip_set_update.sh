@@ -1,4 +1,4 @@
-aws_waf-regional_ip_set_update() {
+aws_waf_regional_ip_set_update() {
     local ip_set_id="$1"
     local change_token="$2"
     local updates="$3"

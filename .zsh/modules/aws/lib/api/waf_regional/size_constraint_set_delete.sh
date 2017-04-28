@@ -1,4 +1,4 @@
-aws_waf-regional_size_constraint_set_delete() {
+aws_waf_regional_size_constraint_set_delete() {
     local size_constraint_set_id="$1"
     local change_token="$2"
     shift 2

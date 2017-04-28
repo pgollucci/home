@@ -1,4 +1,4 @@
-aws_waf-regional_web_acl_create() {
+aws_waf_regional_web_acl_create() {
     local name="$1"
     local metric_name="$2"
     local default_action="$3"

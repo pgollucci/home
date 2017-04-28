@@ -1,4 +1,4 @@
-aws_waf-regional_change_token_status_get() {
+aws_waf_regional_change_token_status_get() {
     local change_token="$1"
     shift 1
 

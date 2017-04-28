@@ -1,4 +1,4 @@
-aws_waf-regional_size_constraint_set_get() {
+aws_waf_regional_size_constraint_set_get() {
     local size_constraint_set_id="$1"
     shift 1
 

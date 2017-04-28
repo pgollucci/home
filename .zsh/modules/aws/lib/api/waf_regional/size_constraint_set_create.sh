@@ -1,4 +1,4 @@
-aws_waf-regional_size_constraint_set_create() {
+aws_waf_regional_size_constraint_set_create() {
     local name="$1"
     local change_token="$2"
     shift 2

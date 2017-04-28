@@ -1,4 +1,4 @@
-aws_waf-regional_web_acl_delete() {
+aws_waf_regional_web_acl_delete() {
     local web_acl_id="$1"
     local change_token="$2"
     shift 2

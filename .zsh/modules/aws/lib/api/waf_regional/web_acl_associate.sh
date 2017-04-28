@@ -1,4 +1,4 @@
-aws_waf-regional_web_acl_associate() {
+aws_waf_regional_web_acl_associate() {
     local web_acl_id="$1"
     local resource_arn="$2"
     shift 2

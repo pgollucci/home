@@ -1,4 +1,4 @@
-aws_waf-regional_sampled_requests_get() {
+aws_waf_regional_sampled_requests_get() {
     local web_acl_id="$1"
     local rule_id="$2"
     local time_window="$3"

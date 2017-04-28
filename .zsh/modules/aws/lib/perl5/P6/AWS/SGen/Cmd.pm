@@ -177,8 +177,11 @@ sub code {
   my $self = shift;
   my %args = @_;
 
+  my $data = $self->_data();
+  $data->{shell_service} = $self->shell_service();
+
   my $rv1 = P6::Template->render(
-				 $self->_data(),
+				 $data,
 				 %args,
 				 paths  => $self->tmpl_paths(),
 				 ifile  => $self->tmpl(),
@@ -186,14 +189,23 @@ sub code {
 			       );
 
   my $rv2 = P6::Template->render(
-				 $self->_data(),
+				 $data,
 				 %args,
 				 paths  => $self->tmpl_paths(),
 				 ifile  => $self->uwtmpl(),
 				 output => $self->uw_shell_file(%args),
 			       ) if $self->cmd() =~ /update/;
 
-  return $rv1 && $rv2;
+  $rv1 && $rv2;
+}
+
+sub shell_service() {
+  my $self = shift;
+
+  my $service = $self->service();
+  $service =~ s/-/_/g;
+
+  $service;
 }
 
 sub tmpl_paths { "$ENV{HOME}/dev/tt" }
@@ -205,20 +217,14 @@ sub shell_file {
   my $self = shift;
   my %args = @_;
 
-  my $sdir = $self->service();
-  $sdir =~ s/-/_/g;
-
-  "$args{outputdir}/api/$sdir/" . $self->cmd_api_func() . ".sh";
+  "$args{outputdir}/api/" . $self->shell_service() . "/" . $self->cmd_api_func() . ".sh";
 }
 
 sub uw_shell_file {
   my $self = shift;
   my %args = @_;
 
-  my $sdir = $self->service();
-  $sdir =~ s/-/_/g;
-
-  "$args{outputdir}/uw/$sdir/" . $self->cmd_api_func() . ".sh";
+  "$args{outputdir}/uw/" . $self->shell_service() . "/" . $self->cmd_api_func() . ".sh";
 }
 
 1;

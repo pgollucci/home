@@ -1,5 +1,5 @@
 [% FOREACH flag = flag_args %]
-aws_${service}_${flag.func}() {
+aws_${shell_service}_${flag.func}() {
     [% FOREACH arg = required_args %]
     local $arg.var="\$$loop.count"
     [% END %]

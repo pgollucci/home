@@ -1,4 +1,4 @@
-aws_waf-regional_rule_get() {
+aws_waf_regional_rule_get() {
     local rule_id="$1"
     shift 1
 

@@ -1,4 +1,4 @@
-aws_waf-regional_sql_injection_match_set_get() {
+aws_waf_regional_sql_injection_match_set_get() {
     local sql_injection_match_set_id="$1"
     shift 1
 

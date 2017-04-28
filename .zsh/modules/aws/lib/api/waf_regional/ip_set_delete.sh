@@ -1,4 +1,4 @@
-aws_waf-regional_ip_set_delete() {
+aws_waf_regional_ip_set_delete() {
     local ip_set_id="$1"
     local change_token="$2"
     shift 2
