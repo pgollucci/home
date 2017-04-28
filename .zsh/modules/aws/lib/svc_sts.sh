@@ -25,7 +25,9 @@ aws_sts_prompt_info() { # GLOBAL
     local now=$(now)
     local diff=$(($now-$mtime))
 
-    if [ $diff -gt 3600 ]; then
+    if [ $diff -gt 7200 ]; then
+        echo ""
+    elif [ $diff -gt 3600 ]; then
 	echo "   [${red}$diff${norm}s] \c"
     elif [ $diff -gt 3500 ]; then
 	echo "   [${cyan}$diff${norm}s] \c"
