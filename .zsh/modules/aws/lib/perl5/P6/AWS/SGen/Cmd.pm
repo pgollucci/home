@@ -217,14 +217,14 @@ sub shell_file {
   my $self = shift;
   my %args = @_;
 
-  "$args{outputdir}/api/" . $self->shell_service() . "/" . $self->cmd_api_func() . ".sh";
+  "$args{outputdir}/sh/api/" . $self->shell_service() . "/" . $self->cmd_api_func() . ".sh";
 }
 
 sub uw_shell_file {
   my $self = shift;
   my %args = @_;
 
-  "$args{outputdir}/uw/" . $self->shell_service() . "/" . $self->cmd_api_func() . ".sh";
+  "$args{outputdir}/sh/uw/" . $self->shell_service() . "/" . $self->cmd_api_func() . ".sh";
 }
 
 1;
