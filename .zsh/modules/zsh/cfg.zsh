@@ -13,6 +13,17 @@ zshr() {
   exec $SHELL -l
 }
 
+zoff() {
+
+    rm -f ~/.zshrc*
+    exec $SHELL -l
+}
+
+zon() {
+
+    (cd ~ ; git checkout .zshrc)
+}
+
 __setup() {
 
   alias ae="$EDITOR ~/.zsh/modules/aws/lib/perl5/P6/AWS/SGen.pm"
