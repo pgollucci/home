@@ -17,10 +17,13 @@ __setup() {
     load_file "${___dir}/lib/_cfg.sh"
     load_file "${___dir}/lib/_shortcuts.sh"
 
+    load_file "${___dir}/lib/sh/util.sh"
+
     local service
     for service in ${___dir}/lib/svc_*.sh; do
 	load_file "$service"
     done
+
 
     alias sts='aws_sts_refresh'
 
