@@ -25,6 +25,7 @@ brew 'ctags-exuberant'
 brew 'gpg'
 brew 'git', args: ['without-completions']
 brew 'git-extras'
+brew 'git-lfs'
 brew 'subversion'
 brew 'hub'
 brew 'htop-osx'
