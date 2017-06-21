@@ -122,7 +122,7 @@ sub display {
 
   foreach my $ip_perm (sort @{$scalar->{IpPermissionsEgress}}) {
     foreach my $ip_range (sort @{$ip_perm->{IpRanges}}) {
-      print P6::Util::rprint(5, "IN");
+      print P6::Util::rprint(5, "OUT");
       print P6::Util::rprint(7, $ip_perm->{IpProtocol} eq -1 ? 'ALL' : $ip_perm->{IpProtocol});
 
       if ($ip_perm->{IpProtocol} eq -1 || ($ip_perm->{FromPort} == 0 && $ip_perm->{ToPort} == 65535)) {
