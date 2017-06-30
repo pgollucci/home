@@ -9,14 +9,14 @@ Arguments:
   mapper               name relative to ~/.aws/map-<mapper>
 
 Options:
-  -d --debug=LEVEL     debug mode LEVEL 1...9
+  -d --debug=LEVEL     debug mode LEVEL 1...9 [default: 0]
   -h --help            display help
   -v --verbose         verbose mode
 
 """
 from docopt import docopt
 
-import ConfigParser
+import configparser
 
 import json
 import re
@@ -62,7 +62,7 @@ def remap(filename, table):
     if not isfile(filename):
         return
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(filename)
 
     for section in config.sections():
@@ -92,6 +92,6 @@ def main(args):
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, options_first=True, version="0.0.1")
-    if arguments["--debug"] > 1:
+    if int(arguments["--debug"]) > 1:
         print(arguments)
     sys.exit(main(arguments))

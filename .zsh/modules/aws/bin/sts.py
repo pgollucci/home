@@ -16,7 +16,7 @@ Only provider jc is implimented atm. PingSSO and/or AD FS may follow.
 """
 from docopt import docopt
 
-import ConfigParser
+import configparser
 
 import base64
 import boto3
@@ -44,7 +44,7 @@ def saml_assertion_get(nick, headers, data):
     r1 = session.get(idpentryurl, verify=sslverification, headers=headers)
 
     # Decode the response and extract the _xsrf token!
-    soup = BeautifulSoup(r1.text.decode('utf8'), "html.parser")
+    soup = BeautifulSoup(r1.text, "html.parser")
     for tag in soup.find_all('input'):
         if tag.get('name') == '_xsrf':
             data["_xsrf"] = tag.get('value')
@@ -58,7 +58,7 @@ def saml_assertion_get(nick, headers, data):
     )
 
     # Decode the response and extract the SAML assertion
-    soup = BeautifulSoup(r2.text.decode('utf8'), "html.parser")
+    soup = BeautifulSoup(r2.text, "html.parser")
     assertion = ''
 
     # Look for the SAMLResponse attribute of the input tag (determined by
@@ -99,7 +99,7 @@ def config_load(filename):
     """
     """
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read(filename)
 
     return config
