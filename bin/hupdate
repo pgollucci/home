@@ -24,6 +24,7 @@ main() {
     done
 
     if [ -z "$SECOND" ]; then
+	echo "=========> SECOND=1"
         SECOND=1 $HOME/bin/hupdate
     fi
 }
