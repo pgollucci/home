@@ -1,7 +1,8 @@
 #!/bin/sh
 
+cpan -T Log::Log4perl
 cpan -T CPAN
-cpan -T Template
-cpan -T LWP::UserAgent
-cpan -T JSON
-capn -T MIME::Lite
+cpan -T Template \
+     LWP::UserAgent \
+     JSON \
+     MIME::Lite
