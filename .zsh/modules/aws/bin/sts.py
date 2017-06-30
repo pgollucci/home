@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Usage: sts.py --provider=<provider> --nicks=<nicks> --login=<login> --region=<region> --outputformat=<outputformat>
+"""Usage: sts.py --provider=<provider> --nicks=<nicks> --login=<login> --region=<region> --outputformat=<outputformat> [-dv] | -h
 
 Get STS tokens via provider from AWS for login @ nick account
 
@@ -10,6 +10,9 @@ Options:
   --login=<login>                 your login
   --region=<region>               aws default region for tokens retrieved
   --outputformat=<outputformat>   aws default format json|table|text
+  -d --debug=LEVEL                debug mode LEVEL 1...9 [default: 0]
+  -h --help                       display help
+  -v --verbose                    verbose mode
 
 Only provider jc is implimented atm. PingSSO and/or AD FS may follow.
 
@@ -165,4 +168,6 @@ def main(args):
 
 if __name__ == '__main__':
     arguments = docopt(__doc__, options_first=True, version="0.0.1")
+    if int(arguments["--debug"]) > 1:
+        print(arguments)
     sys.exit(main(arguments))
