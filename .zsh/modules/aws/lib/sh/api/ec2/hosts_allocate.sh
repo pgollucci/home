@@ -1,8 +1,8 @@
 aws_ec2_hosts_allocate() {
-    local instance_type="$1"
-    local quantity="$2"
-    local availability_zone="$3"
+    local availability_zone="$1"
+    local instance_type="$2"
+    local quantity="$3"
     shift 3
 
-    cond_log_and_run aws ec2 allocate-hosts --instance-type $instance_type --quantity $quantity --availability-zone $availability_zone "$@"
+    cond_log_and_run aws ec2 allocate-hosts --availability-zone $availability_zone --instance-type $instance_type --quantity $quantity "$@"
 }
