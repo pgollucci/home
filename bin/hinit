@@ -1,4 +1,17 @@
-#!/bin/sh -ex
+#!/bin/sh -e
+
+usage() {
+
+    echo "hinit [-cDhp]"
+    echo <<END_U
+-c        Clean:   delete files no longer in git or known excludes (rsync --delete) , Default SAVE FILES
+-D        Dry:     do not overwrite HOME (rsync -n), Default OVERWRITE
+-h        Help:    display this message
+-p        Private: install private things too (never on remote computer)
+END_U
+
+    exit 0
+}
 
 main() {
 
@@ -12,7 +25,7 @@ main() {
 	case "$o" in
 	    c) Clean="--delete" ;;
 	    D) Dry="" ;;
-	    h) echo "hinit [-chp]"; exit 0 ;;
+	    h) usage ;;
 	    p) Private=1 ;;
 	esac
     done
@@ -20,7 +33,7 @@ main() {
     shift $(( OPTIND - 1 ));
 
     OS=$(uname -s)
-    USER=${1:-pgollucci}
+    USER=${1:-$USER}
     group=$USER
     THOME=/tmp/$USER
     SUDO=sudo
@@ -50,33 +63,34 @@ main() {
     git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/emacs
     git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
 
+    echo "Dirs"
     mkdir $THOME/.zcache
     mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
 
-    # ruby
+    echo "Ruby"
     git clone -q https://github.com/postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
     git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
     mkdir -p $THOME/.repos/langs/rbenv/plugins
     git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
 
-    # perl
+    echo "Perl"
     git clone -q https://github.com/tokuhirom/plenv.git         $THOME/.repos/langs/plenv
     mkdir -p $THOME/.repos/langs/plenv/plugins
     git clone -q https://github.com/tokuhirom/Perl-Build.git    $THOME/.repos/langs/plenv/plugins/perl-build
 
-    # python
+    echo "Python"
     git clone -q https://github.com/yyuu/pyenv.git              $THOME/.repos/langs/pyenv
 
-    # go
+    echo "Go"
     git clone -q https://github.com/wfarr/goenv.git             $THOME/.repos/langs/goenv
 
-    # jenv
+    echo "Java"
     git clone -q https://github.com/gcuisinier/jenv.git         $THOME/.repos/langs/jenv
 
-    # zplug
+    echo "zplug"
     git clone -q https://github.com/b4b4r07/zplug.git           $THOME/.repos/zsh/zplug
 
-    # zprezto
+    echo "zpresto"
     git clone -q https://github.com/sorin-ionescu/prezto.git    $THOME/.repos/zsh/zprezto
 
     echo "Transfering"
