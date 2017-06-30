@@ -1,3 +1,4 @@
 #!/bin/sh
 
-pip install -q -r $HOME/bin/requirements.txt
+pip install boto3
+pip install docopt

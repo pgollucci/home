@@ -1,5 +1,7 @@
 #!/bin/sh
 
-for mod in CPAN Template LWP::UserAgent JSON MIME::Lite; do
-  cpan -T $mod
-done
+cpan -T CPAN
+cpan -T Template
+cpan -T LWP::UserAgent
+cpan -T JSON
+capn -T MIME::Lite
