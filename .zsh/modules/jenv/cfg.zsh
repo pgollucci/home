@@ -13,7 +13,7 @@ __setup() {
 
 jenv_prompt_line() {
 
-    echo "${magenta}jenv: [$(jenv_version)]${norm}"
+    echo "${magenta}j:$(jenv_version)${norm}"
 }
 
 jenv_version() {

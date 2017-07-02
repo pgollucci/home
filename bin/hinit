@@ -92,6 +92,9 @@ main() {
     mkdir -p $THOME/.repos/langs/Renv/plugins
     git clone -q https://github.com/viking/R-build.git          $THOME/.repos/langs/Renv/plugins/R-build
 
+    echo "Scala"
+    git clone -q https://github.com/scalaenv/scalaenv.git       $THOME/.repos/langs/scala
+
     echo "zplug"
     git clone -q https://github.com/b4b4r07/zplug.git           $THOME/.repos/zsh/zplug
 

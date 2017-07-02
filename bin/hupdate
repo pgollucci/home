@@ -3,7 +3,7 @@
 main() {
 
     local repos="\
-  	$HOME \
+	$HOME \
 	$HOME/.repos/langs/plenv \
 	$HOME/.repos/langs/plenv/plugins/perl-build \
 	$HOME/.repos/langs/pyenv \
@@ -13,6 +13,7 @@ main() {
 	$HOME/.repos/langs/goenv \
 	$HOME/.repos/langs/jenv \
 	$HOME/.repos/langs/Renv \
+	$HOME/.repos/langs/scalaenv \
 	$HOME/.repos/zsh/zplug \
 	$HOME/.repos/zsh/zprezto \
 	$HOME/.repos/emacs \
@@ -20,13 +21,13 @@ main() {
 
     local repo
     for repo in $repos; do
-        echo "=====> $repo"
-        (cd ${repo} ; git pull)
+	echo "=====> $repo"
+	(cd ${repo} ; git pull)
     done
 
     if [ -z "$SECOND" ]; then
 	echo "=========> SECOND=1"
-        SECOND=1 $HOME/bin/hupdate
+	SECOND=1 $HOME/bin/hupdate
     fi
 }
 

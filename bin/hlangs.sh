@@ -28,6 +28,9 @@ install_envs() {
     echo "R:"
     Renv install 3.4.0
 
+    echo "Scala:"
+    scalaenv install scala-2.12.2
+
     (
 	cd /Library/Java/JavaVirtualMachines
 	for d in $(ls -d *); do
@@ -41,6 +44,7 @@ install_envs() {
     goenv global 1.8.3
     jenv global 1.9-ea
     Renv global 3.4.0
+    scalaenv global 2.12.2
 }
 
 uninstall_envs() {
@@ -48,7 +52,7 @@ uninstall_envs() {
     local lang
     local ver
 
-    for lang in pyenv rbenv goenv plenv jenv Renv; do
+    for lang in pyenv rbenv goenv plenv jenv Renv scalaenv; do
 	local flag_f
 	case $lang in
 	    rbenv|pyenv|plenv) flag_f="-f" ;;

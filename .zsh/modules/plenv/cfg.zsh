@@ -11,7 +11,7 @@ __setup() {
 
 plenv_prompt_line() {
 
-    echo "${magenta}plenv: [$(plenv_version)]${norm}"
+    echo "${magenta}pl:$(plenv_version)${norm}"
 }
 
 plenv_version() {

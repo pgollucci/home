@@ -11,7 +11,7 @@ __setup() {
 
 pyenv_prompt_line() {
 
-    echo "${magenta}pyenv: [$(pyenv_version)]${norm}"
+    echo "${magenta}py:$(pyenv_version)${norm}"
 }
 
 pyenv_version() {

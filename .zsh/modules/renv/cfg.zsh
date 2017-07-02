@@ -11,7 +11,7 @@ __setup() {
 
 Renv_prompt_line() {
 
-    echo "${magenta}Renv: [$(Renv_version)]${norm}"
+    echo "${magenta}R:$(Renv_version)${norm}"
 }
 
 Renv_version() {

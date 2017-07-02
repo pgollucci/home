@@ -14,11 +14,12 @@ goenv_prompt_line() {
     local v_string=$(goenv_version)
 
     if [ -n "$v_string" ]; then
-	echo "${magenta}goenv: [$v_string]${norm}"
+	echo "${magenta}go:$v_string${norm}"
     fi
 }
 
 goenv_version() {
+
     if [ $HAS_GOENV ]; then
 	if [ -n "$GOENV_VERSION" ]; then
 	    echo "$GOENV_VERSION"
