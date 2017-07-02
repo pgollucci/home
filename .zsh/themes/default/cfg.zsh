@@ -20,7 +20,7 @@ langs_prompt_line() {
     local output=""
 
     local lang
-    for lang in pyenv rbenv plenv goenv jenv; do
+    for lang in pyenv rbenv plenv goenv jenv Renv; do
 	local lenv="$(${lang}_prompt_line)"
 	output="$output $lenv"
     done

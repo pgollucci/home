@@ -25,6 +25,9 @@ install_envs() {
     brew cask install java
     brew cask install jav9-beta
 
+    echo "R:"
+    Renv install 3.4.0
+
     (
 	cd /Library/Java/JavaVirtualMachines
 	for d in $(ls -d *); do
@@ -37,6 +40,7 @@ install_envs() {
     plenv global 5.26.0
     goenv global 1.8.3
     jenv global 1.9-ea
+    Renv global 3.4.0
 }
 
 uninstall_envs() {
@@ -44,7 +48,7 @@ uninstall_envs() {
     local lang
     local ver
 
-    for lang in pyenv rbenv goenv plenv jenv; do
+    for lang in pyenv rbenv goenv plenv jenv Renv; do
 	local flag_f
 	case $lang in
 	    rbenv|pyenv|plenv) flag_f="-f" ;;

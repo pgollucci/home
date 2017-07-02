@@ -12,6 +12,7 @@ main() {
 	$HOME/.repos/langs/ruby-install \
 	$HOME/.repos/langs/goenv \
 	$HOME/.repos/langs/jenv \
+	$HOME/.repos/langs/Renv \
 	$HOME/.repos/zsh/zplug \
 	$HOME/.repos/zsh/zprezto \
 	$HOME/.repos/emacs \

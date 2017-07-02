@@ -87,6 +87,11 @@ main() {
     echo "Java"
     git clone -q https://github.com/gcuisinier/jenv.git         $THOME/.repos/langs/jenv
 
+    echo "R"
+    git clone -q https://github.com/viking/Renv.git             $THOME/.repos/langs/Renv
+    mkdir -p $THOME/.repos/langs/Renv/plugins
+    git clone -q https://github.com/viking/R-build.git          $THOME/.repos/langs/Renv/plugins/R-build
+
     echo "zplug"
     git clone -q https://github.com/b4b4r07/zplug.git           $THOME/.repos/zsh/zplug
 
