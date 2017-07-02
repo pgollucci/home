@@ -55,10 +55,6 @@ default_path() {
     path_if /sbin
 }
 
-pgs() {
-    find . -type f | xargs perl -pi -e "s,$1,$2,g"
-}
-
 __setup() {
 
     default_path
@@ -100,40 +96,6 @@ __setup() {
     alias tart='tar -tvzf'
 
     cd_make_aliases "$HOME/dev/repos/gh/$USER"
-}
-
-slen() {
-  local s="$1"
-
-  perl -le "print length '$s'"
-}
-
-path() {
-
-  env | grep -i path | cut -f 2 -d= | perl -F: -MData::Dumper -lane 'print Dumper \@F' | sed -e "s/[',]//g" | egrep -v '\]|\[' | grep /
-}
-
-xclean() {
-    find . \( -type f -o -type l \)  -a \
-	 \( \
-	    -name ".DS_Store" -o \
-	    -name "*.bak" -o \
-	    -name "*~" -o \
-	    -name ".\#*" -o \
-	    -name "\#*" -o \
-	    -name "*.rej" -o \
-	    -name "svn-commit.*" -o \
-	    -name "*.orig" -o \
-	    -name "*-i" -o \
-	    -name "*.tmp" -o \
-	    -name "=~+*" \
-	\) \
-	-print -exec rm -f "{}" \;
-}
-
-mkpasswd() {
-  cat /dev/urandom | env LC_CTYPE=C tr -dc a-zA-Z0-9 | head -c $1
-  echo
 }
 
 __setup
