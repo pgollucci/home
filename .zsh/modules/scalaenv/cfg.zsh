@@ -18,7 +18,11 @@ scalaenv_version() {
 
     if [ $HAS_SCALAENV ]; then
 	local ver=$(scalaenv version-name |sed -e 's,scala-,,')
-	echo $ver
+	if [ x"$ver" != x"system" ]; then
+	    echo $ver
+	else
+	    echo
+	fi
     fi
 }
 

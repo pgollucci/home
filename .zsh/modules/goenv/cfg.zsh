@@ -12,10 +12,7 @@ __setup() {
 goenv_prompt_line() {
 
     local v_string=$(goenv_version)
-
-    if [ -n "$v_string" ]; then
-	echo "${magenta}go:$v_string${norm}"
-    fi
+    echo "${magenta}go:$v_string${norm}"
 }
 
 goenv_version() {
