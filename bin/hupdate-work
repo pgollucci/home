@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+main() {
+
+    local repos=$(grep clone $HOME/bin/hinit | grep THOME | sed -e "s,.*\$THOME,/$HOME,g" -e 's,^/,,' | grep -v ^$HOME$)
+
+    for repo in $repos; do
+	echo "=====> $repo"
+	(cd ${repo} ; git pull)
+    done
+}
+
+main "$@"

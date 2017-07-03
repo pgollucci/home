@@ -6,19 +6,14 @@ update() {
     git pull
     git stash pop
 
-    local repos=$(grep clone $HOME/bin/hinit | grep THOME | sed -e 's,.*$THOME/,,g')
-
-    for repo in $repos; do
-	echo "=====> $repo"
-	(cd ${repo} ; git pull)
-    done
+    hupdate-work
 }
 
 main() {
 
     (
 	cd $HOME
-	update()
+	update
     )
 }
 

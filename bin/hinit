@@ -69,7 +69,7 @@ main() {
     git clone -q https://github.com/pgollucci/home.git          $THOME
 
     echo "emacs"
-    git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/vendor/pgolluci/emacs
+    git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/vendor/pgollucci/emacs
     git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
 
     echo "Ruby"
