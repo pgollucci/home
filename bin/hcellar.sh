@@ -30,7 +30,7 @@ main() {
 
     brew tap homebrew/bundle
 
-    brew bundle --file=$HOME/bin/
+    brew bundle --file=$HOME/bin/Brewfile
     brew prune
 }
 

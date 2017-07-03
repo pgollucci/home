@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 pip install virtualenv
 pyenv rehash

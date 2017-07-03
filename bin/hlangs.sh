@@ -21,9 +21,9 @@ install_envs() {
 
     echo "java:"
     brew cask install java6
-    brew cask install java7
+#    brew cask install java7
     brew cask install java
-    brew cask install jav9-beta
+#    brew cask install java9-beta
 
     echo "R:"
     Renv install 3.4.0
@@ -41,13 +41,13 @@ install_envs() {
 	done
     )
 
-    rbenv global 2.4.1
     pyenv global 3.6.1
+    rbenv global 2.4.1
     plenv global 5.26.0
     goenv global 1.8.3
-    jenv global 1.9-ea
+    jenv global 1.8.0.74
     Renv global 3.4.0
-    scalaenv global 2.12.2
+    scalaenv global scala-2.12.2
     luaenv global 5.3.3
 }
 

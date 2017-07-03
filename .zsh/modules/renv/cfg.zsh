@@ -21,10 +21,10 @@ Renv_version() {
 	if [ x"$ver" != x"system" ]; then
 	    echo $ver
 	else
-	    echo "sys:$(R --version | head -1 |awk '{print $3}')"
+	    echo "sys:"
 	fi
     else
-	echo "sys:$(R --version | head -1 |awk '{print $3}')"
+	echo "sys:"
     fi
 }
 

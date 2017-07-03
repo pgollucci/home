@@ -1,4 +1,5 @@
 __setup() {
+    JENV_MANUAL=1
 
     if [ -n "$JENV_MANUAL" ]; then
 	export JENV_ROOT=$HOME/.repos/langs/jenv
