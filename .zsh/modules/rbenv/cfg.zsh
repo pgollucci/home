@@ -1,4 +1,7 @@
 __setup() {
+
+    [ -n "DISALBLE_ENVS" ] && return
+
     export RBENV_ROOT=$HOME/.repos/langs/rbenv
     path_if $RBENV_ROOT/bin
 

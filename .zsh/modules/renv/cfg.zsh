@@ -1,5 +1,7 @@
 __setup() {
 
+    [ -n "DISALBLE_ENVS" ] && return
+
     export RENV_ROOT=$HOME/.repos/langs/Renv
     path_if $RENV_ROOT/bin
 

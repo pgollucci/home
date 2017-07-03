@@ -1,5 +1,7 @@
 __setup() {
 
+    [ -n "DISALBLE_ENVS" ] && return
+
     export VIRTUAL_ENV_DISABLE_PROMPT=1
 
     export PYENV_ROOT=$HOME/.repos/langs/pyenv

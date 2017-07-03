@@ -17,8 +17,9 @@
 
 __load() {
 
-    local DEBUG=""
-    [ -n "$DEBUG" ] && set -x
+    local DEBUG=1
+    local DISABLE_ENVS=1
+    [ -n "$DEBUG" -a $DEBUG -gt 1 ] && set -x
 
     ZDOTDIR=$HOME
     ZSH_DIR=$ZDOTDIR/.zsh

@@ -1,5 +1,7 @@
 __setup() {
 
+    [ -n "DISALBLE_ENVS" ] && return
+
     export GOENV_ROOT=$HOME/.repos/langs/goenv
     path_if $GOENV_ROOT/bin
 
