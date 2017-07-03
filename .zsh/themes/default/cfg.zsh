@@ -12,8 +12,22 @@ theme_setup() {
 
 my_prompt_lines() {
 
-    echo "std langs proxy git aws %local% rv dir blank"
+    echo "std langs proxy vcs aws %local% rv dir blank"
 }
+
+vcs_prompt_line() {
+
+    local output=""
+
+    local lang
+    for lang in git svn; do
+	local lenv="$(${lang}_prompt_line)"
+	output="$output $lenv"
+    done
+
+    echo $output | sed -e 's,^ *,,'
+}
+
 
 langs_prompt_line() {
 
