@@ -10,19 +10,13 @@ __setup() {
     if [ -x $PYENV_ROOT/bin/pyenv ]; then
       export HAS_PYENV=1
       eval "$(pyenv init - zsh)"
+      eval "$(pyenv virtualenv-init - zsh)"
     fi
 }
 
 pyenv_prompt_line() {
 
-    echo "${magenta}py:$(pyenv_version)$(virtualenv_name)${norm}"
-}
-
-virtualenv_name() {
-
-    if [ -n "$VIRTUAL_ENV" ]; then
-	echo "($(basename $VIRTUAL_ENV))"
-    fi
+    echo "${magenta}py:$(pyenv_version)${norm}"
 }
 
 pyenv_version() {

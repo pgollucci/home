@@ -84,6 +84,7 @@ main() {
 
     echo "Python"
     git clone -q https://github.com/yyuu/pyenv.git              $THOME/.repos/langs/pyenv
+    git clone -q https://github.com/pyenv/pyenv-virtualenv.git  $THOME/.repos/langs/pyenv/plugins/pyenv-virtualenv
 
     echo "Go"
     git clone -q https://github.com/wfarr/goenv.git             $THOME/.repos/langs/goenv
