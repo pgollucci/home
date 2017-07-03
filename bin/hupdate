@@ -1,34 +1,25 @@
 #!/bin/sh -e
 
-main() {
+update() {
 
-    local repos="\
-	$HOME \
-	$HOME/.repos/langs/plenv \
-	$HOME/.repos/langs/plenv/plugins/perl-build \
-	$HOME/.repos/langs/pyenv \
-	$HOME/.repos/langs/rbenv \
-	$HOME/.repos/langs/rbenv/plugins/ruby-build \
-	$HOME/.repos/langs/ruby-install \
-	$HOME/.repos/langs/goenv \
-	$HOME/.repos/langs/jenv \
-	$HOME/.repos/langs/Renv \
-	$HOME/.repos/langs/scalaenv \
-	$HOME/.repos/zsh/zplug \
-	$HOME/.repos/zsh/zprezto \
-	$HOME/.repos/emacs \
-"
+    git stash save hupdate
+    git pull
+    git stash pop
 
-    local repo
+    local repos=$(grep clone $HOME/bin/hinit | grep THOME | sed -e 's,.*$THOME/,,g')
+
     for repo in $repos; do
 	echo "=====> $repo"
 	(cd ${repo} ; git pull)
     done
+}
 
-    if [ -z "$SECOND" ]; then
-	echo "=========> SECOND=1"
-	SECOND=1 $HOME/bin/hupdate
-    fi
+main() {
+
+    (
+	cd $HOME
+	update()
+    )
 }
 
 main "$@"

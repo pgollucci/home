@@ -58,17 +58,21 @@ main() {
     $SUDO mkdir $THOME
     $SUDO chown $USER $THOME
 
-    echo "Cloning Repos"
-    git clone -q https://github.com/pgollucci/home.git          $THOME
-    git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/emacs
-    git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
-
     echo "Dirs"
     mkdir $THOME/.zcache
     mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
+    mkdir -p $THOME/vendor/{pgollucci,magnars}
+
+    echo "Cloning Repos"
+
+    echo "home"
+    git clone -q https://github.com/pgollucci/home.git          $THOME
+
+    echo "emacs"
+    git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/vendor/pgolluci/emacs
+    git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
 
     echo "Ruby"
-    git clone -q https://github.com/postmodern/ruby-install.git $THOME/.repos/langs/ruby-install
     git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
     mkdir -p $THOME/.repos/langs/rbenv/plugins
     git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
@@ -94,6 +98,11 @@ main() {
 
     echo "Scala"
     git clone -q https://github.com/scalaenv/scalaenv.git       $THOME/.repos/langs/scala
+
+    echo "Lua"
+    git clone -q https://github.com/cehoffman/luaenv.git        $THOME/.repos/langs/luaenv
+    mkdir -p $THOME/.repos/langs/luaenv/plugins
+    git clone -q https://github.com/cehoffman/lua-build.git     $THOME/.repos/langs/luaenv/plugins/lua-build
 
     echo "zplug"
     git clone -q https://github.com/b4b4r07/zplug.git           $THOME/.repos/zsh/zplug
@@ -124,7 +133,7 @@ main() {
 	  $THOME/ $HOME/
 
     # symklink
-    (cd $HOME ; ln -s .repos/emacs .emacs.d)
+    (cd $HOME ; ln -s .repos/vendor/pgollucci/emacs .emacs.d)
     (cd $HOME/.emacs.d/defuns ; ln -s $HOME/.repos/vendor/magnars/.emacs.d/defuns/* .)
 
     #### Private Repo
