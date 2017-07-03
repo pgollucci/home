@@ -1,5 +1,7 @@
 __setup() {
 
+    export VIRTUAL_ENV_DISABLE_PROMPT=1
+
     export PYENV_ROOT=$HOME/.repos/langs/pyenv
     path_if $PYENV_ROOT/bin
 
@@ -7,11 +9,22 @@ __setup() {
       export HAS_PYENV=1
       eval "$(pyenv init - zsh)"
     fi
+
+    if [ -e $HOME/.repos/langs/pyenv/venvs/home/bin/activate ]; then
+	. $HOME/.repos/langs/pyenv/venvs/home/bin/activate
+    fi
 }
 
 pyenv_prompt_line() {
 
-    echo "${magenta}py:$(pyenv_version)${norm}"
+    echo "${magenta}py:$(pyenv_version)$(virtualenv_name)${norm}"
+}
+
+virtualenv_name() {
+
+    if [ -n "$VIRTUAL_ENV" ]; then
+	echo "($(basename $VIRTUAL_ENV))"
+    fi
 }
 
 pyenv_version() {

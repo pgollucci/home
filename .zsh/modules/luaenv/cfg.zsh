@@ -20,11 +20,7 @@ luaenv_version() {
 	local ver=$(luaenv version-name)
 	if [ x"$ver" != x"system" ]; then
 	    echo $ver
-	else
-	    echo "sys:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
 	fi
-    else
-	echo "sys:$(ruby -v 2>&1 | cut -f 2 -d ' ')"
     fi
 }
 
