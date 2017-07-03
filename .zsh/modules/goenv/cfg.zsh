@@ -27,7 +27,7 @@ goenv_version() {
 	    echo "$ver"
 	fi
     else
-	echo "sys:$(go version |awk '{print $3}' |sed -e 's,go,,')"
+	echo "sys:"
     fi
 }
 
