@@ -11,10 +11,6 @@ __setup() {
       export HAS_PYENV=1
       eval "$(pyenv init - zsh)"
     fi
-
-    if [ -e $HOME/.repos/langs/pyenv/venvs/home/bin/activate ]; then
-	. $HOME/.repos/langs/pyenv/venvs/home/bin/activate
-    fi
 }
 
 pyenv_prompt_line() {
