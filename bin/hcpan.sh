@@ -6,3 +6,5 @@ cpan -T Template \
      LWP::UserAgent \
      JSON \
      MIME::Lite
+
+plenv rehash
