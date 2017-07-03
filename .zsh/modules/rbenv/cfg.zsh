@@ -1,5 +1,4 @@
 __setup() {
-return
     export RBENV_ROOT=$HOME/.repos/langs/rbenv
     path_if $RBENV_ROOT/bin
 
