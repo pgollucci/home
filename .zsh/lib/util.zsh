@@ -12,7 +12,7 @@ zplug_load() {
 
 zplug_run() {
 
-    zplug install
+#    zplug install
     zplug load
 }
 
@@ -30,9 +30,9 @@ module_load() { # args: module_dir
 
     export ___dir=$module_dir
     if [ -d $module_dir ]; then
-        debug "=====> $module_dir/cfg.zsh"
+	debug "=====> $module_dir/cfg.zsh"
 	load_file "$module_dir/cfg.zsh"
-        debug "<===== $module_dir/cfg.zsh"
+	debug "<===== $module_dir/cfg.zsh"
     fi
     unset ___dir
 }

@@ -12,7 +12,7 @@ theme_setup() {
 
 my_prompt_lines() {
 
-    echo "std langs proxy vcs aws %local% rv dir blank"
+    echo "std langs proxy vcs aws %local% dir blank"
 }
 
 vcs_prompt_line() {

@@ -6,7 +6,7 @@ blank_prompt_line() {
 
 rv_prompt_line() {
 
-    echo "rv=[%?]"
+    echo "rv=%?"
 }
 
 dir_prompt_line() {
@@ -20,7 +20,7 @@ std_prompt_line() {
     local user="$blue%n$norm"
     local host="$yellow%M$norm"
 
-    echo "[$tty]$user@$host"
+    echo "[$tty]$user@$host rv=%?"
 }
 
 cd_make_aliases() { # args: dir

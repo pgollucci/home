@@ -26,7 +26,7 @@ aws_sts_prompt_info() { # GLOBAL
     local diff=$(($now-$mtime))
 
     if [ $diff -gt 7200 ]; then
-        echo ""
+	echo ""
     elif [ $diff -gt 3600 ]; then
 	echo "   [${red}$diff${norm}s] \c"
     elif [ $diff -gt 3500 ]; then
@@ -47,7 +47,7 @@ aws_sts_expire() { # GLOBAL
 
 aws_sts_refresh() { # GLOBAL
 
-    local _save_aws_default_profile=$AWS_DEFAULT_PROFILE
+    aws_cfg_save
 
     aws_cfg_clear
     rm_file "$AWS_CREDENTIAL_FILE"
@@ -60,7 +60,7 @@ aws_sts_refresh() { # GLOBAL
 
     aws_sts_profiles_list "$AWS_CREDENTIAL_FILE"
 
-    aws_cfg_profile "$_save_aws_default_profile"
+    aws_cfg_restore
 }
 
 aws_sts_profiles_list() {
