@@ -1,6 +1,6 @@
 __setup() {
 
-    [ -n "DISALBLE_ENVS" ] && return
+    [ -n "$DISABLE_ENVS" ] && return
 
     export JENV_ROOT=$HOME/.repos/langs/jenv
     path_if $JENV_ROOT/bin

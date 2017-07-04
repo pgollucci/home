@@ -1,6 +1,6 @@
 __setup() {
 
-    [ -n "DISALBLE_ENVS" ] && return
+    [ -n "$DISABLE_ENVS" ] && return
 
     export VIRTUAL_ENV_DISABLE_PROMPT=1
 

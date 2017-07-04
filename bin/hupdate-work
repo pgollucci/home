@@ -4,9 +4,16 @@ main() {
 
     local repos=$(grep clone $HOME/bin/hinit | grep THOME | sed -e "s,.*\$THOME,/$HOME,g" -e 's,^/,,' | grep -v ^$HOME$)
 
+    local repo
     for repo in $repos; do
 	echo "=====> $repo"
-	(cd ${repo} ; git pull)
+	if [ -d $repo ]; then
+	    (cd $repo ; git pull)
+	else
+	    local r=$(echo $repo | sed -e "s,$HOME,,")
+	    local c=$(grep $r $HOME/bin/hinit | sed -e 's,THOME,HOME,g')
+	    eval "$c"
+	fi
     done
 }
 

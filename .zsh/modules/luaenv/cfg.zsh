@@ -1,6 +1,6 @@
 __setup() {
 
-    [ -n "DISALBLE_ENVS" ] && return
+    [ -n "$DISABLE_ENVS" ] && return
 
     export LUAENV_ROOT=$HOME/.repos/langs/luaenv
     path_if $LUAENV_ROOT/bin

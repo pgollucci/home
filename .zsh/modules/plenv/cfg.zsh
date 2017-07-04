@@ -1,6 +1,6 @@
 __setup() {
 
-    [ -n "DISALBLE_ENVS" ] && return
+    [ -n "$DISABLE_ENVS" ] && return
 
     export PLENV_ROOT=$HOME/.repos/langs/plenv
     path_if $PLENV_ROOT/bin

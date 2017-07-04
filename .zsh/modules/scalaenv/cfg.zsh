@@ -1,6 +1,6 @@
 __setup() {
 
-    [ -n "DISALBLE_ENVS" ] && return
+    [ -n "$DISABLE_ENVS" ] && return
 
     export SCALAENV_ROOT=$HOME/.repos/langs/scala
     path_if $SCALAENV_ROOT/bin

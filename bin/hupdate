@@ -1,10 +1,18 @@
-#!/bin/sh -e
+#!/bin/sh
 
 update() {
 
-    git stash save hupdate
+    local stashed=0
+    if git status | grep -q [a-z]; then
+        git stash save hupdate
+        stashed=1
+    fi
+
     git pull
-    git stash pop
+
+    if [ $stashed -eq 1 ]; then
+        git stash pop -q
+    fi
 
     hupdate-work
 }
