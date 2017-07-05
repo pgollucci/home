@@ -1,30 +1,30 @@
-#!/usr/bin/env zsh -x
+#!/bin/sh
 
 usage() {
-    echo "p6-ssh-background args"
+    echo "p6-ssh-background type host [aws_profile]"
     exit 0
 }
 
 set_color_name() {
-    local HOST=$1
-    local HEX_FG=$2
-    local HEX_BG=$3
-    local OPACITY=$4
+    local host=$1
+    local hex_fg=$2
+    local hex_bg=$3
+    local opacity=$4
 
-    local FG_R=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
-    local FG_G=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
-    local FG_B=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
-    local BG_R=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
-    local BG_G=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
-    local BG_B=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
+    local fg_r=`echo $hex_fg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$1 * 257)}'`
+    local fg_g=`echo $hex_fg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$2 * 257)}'`
+    local fg_b=`echo $hex_fg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$3 * 257)}'`
+    local bg_r=`echo $hex_bg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$1 * 257)}'`
+    local bg_g=`echo $hex_bg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$2 * 257)}'`
+    local bg_b=`echo $hex_bg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$3 * 257)}'`
 
     /usr/bin/osascript <<EOF
 tell application "iTerm"
    tell current session of current window
-      set name to "$HOST"
-      set foreground color to {$FG_R, $FG_G, $FG_B}
-      set background color to {$BG_R, $BG_G, $BG_B}
-      set transparency to "$OPACITY"
+      set name to "$host"
+      set foreground color to {$fg_r, $fg_g, $fg_b}
+      set background color to {$bg_r, $bg_g, $bg_b}
+      set transparency to "$opacity"
    end tell
 end tell
 EOF
@@ -37,11 +37,11 @@ colors_load() {
     yellow="dedb86"
     green="1c6928"
     dgreen="064a10"
-    dblue="1a2261"
-    blue="054cf2"
     cyan="3beaf6"
-    purple="973bcc"
+    blue="054cf2"
+    dblue="1a2261"
     lpurple="eb5bd5"
+    purple="973bcc"
     pink="f213d5"
     lsalmon3="cd8162"
     brown="542323"
@@ -68,9 +68,36 @@ bg_for_host() {
     cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $2 }'
 }
 
+ssh_do() {
+    local host="$1"
+
+    ssh $host
+}
+
+aws_do() {
+    local tag="$1"
+    local profile="$2"
+
+    # tokens
+    GLOBAL_aws_sts_refresh
+
+    # env/act
+    awsa_${profile}
+
+    # lookup
+    local instance_id=$(aws_ec2_instance_id_from_name_tag "$tag")
+    local ip=$(aws_ec2_private_ip "$instance_id")
+    local ami_name=$(aws_ami_name_from_instance_id "$instance_id")
+    local user=$(aws_user_from_ami_name "$ami_name")
+
+    # do
+    ssh $user@$ip
+}
+
 main() {
     local type="$1"
     local host="$2"
+    local aws_profile="$3" # optional
 
     local t_host=$(normalize "${host}")
 
@@ -89,7 +116,11 @@ main() {
 
     set_color_name "$t_host" "$fg" "$bg" "$opacity"
     case $type in
-	ssh) ssh $host ;;
+	ssh)     ssh_do    "$host" ;;
+#	aws)     aws_do    "$host" "$aws_profile" ;;
+#	rdbm)    db_do     "$host" ;;
+#	dbm)     dbm_do    "$host" ;;
+#	tunnel)  tunnel_do "$host" ;;
     esac
     set_color_name "$t_host" "$white" "$black" "$opacity"
 }
