@@ -24,8 +24,7 @@ __setup() {
 	load_file "$service"
     done
 
-
-    alias sts='aws_sts_refresh'
+    alias sts='GLOBAL_aws_sts_refresh'
 
     aws_shortcuts
 }

@@ -1,5 +1,6 @@
 __setup() {
 
+    export DAAS_JC_EMAIL=pgollucci@p6m7g8.com
     export JC_EMAIL=pgollucci@p6m7g8.com
 
     path_if "${___dir}/bin"

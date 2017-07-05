@@ -45,20 +45,29 @@ aws_sts_expire() { # GLOBAL
     time_ma_set "~/README.md" "$AWS_CREDENTIAL_FILE"
 }
 
+GLOBAL_aws_sts_refresh() {
+
+    aws_sts_refresh "$AWS_CREDENTIAL_FILE" "$AWS_ACCOUNT_MAP" "$AWS_ORG" "$DAAS_JC_EMAIL"
+}
+
 aws_sts_refresh() { # GLOBAL
+    local cred_file="$1"
+    local map_file="$2"
+    local org="$3"
+    local daas_login="$4"
 
     aws_cfg_save
 
     aws_cfg_clear
-    rm_file "$AWS_CREDENTIAL_FILE"
+    rm_file "$cred_file"
 
-    local nicks=$(aws_util_nicks "$AWS_ORG" "$AWS_ACCOUNT_MAP")
-    aws_sts_jc_refresh "$nicks" "$JC_EMAIL"
-    aws_sts_map "$AWS_ORG"
+    local nicks=$(aws_util_nicks "$org" "$map_file")
+    aws_sts_jc_refresh "$nicks" "$daas_login"
+    aws_sts_map "$org"
 
     aws_shortcuts
 
-    aws_sts_profiles_list "$AWS_CREDENTIAL_FILE"
+    aws_sts_profiles_list "$cred_file"
 
     aws_cfg_restore
 }
