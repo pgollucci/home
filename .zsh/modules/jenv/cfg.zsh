@@ -6,8 +6,8 @@ __setup() {
     path_if $JENV_ROOT/bin
 
     if [ -x $JENV_ROOT/bin/jenv ]; then
-        export HAS_JENV=1
-        eval "$(jenv init - )"
+	export HAS_JENV=1
+	eval "$(jenv init - )"
     fi
 }
 
@@ -18,16 +18,8 @@ jenv_prompt_line() {
 
 jenv_version() {
 
-    if [ $HAS_JENV ]; then
-        if [ -n "$JENV_VERSION" ]; then
-	    echo "$JENV_VERSION"
-        else
-	    local ver=$(jenv version | awk '{print $1}')
-	    echo "$ver"
-        fi
-    else
-        echo "sys:$(java -version 2>&1|awk '/Environment/{print}' | cut -d' ' -f 2,6- |sed -e 's,),,')"
-    fi
+    env_version "j"
 }
+
 
 __setup

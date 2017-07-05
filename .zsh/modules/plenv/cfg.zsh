@@ -18,16 +18,7 @@ plenv_prompt_line() {
 
 plenv_version() {
 
-    if [ $HAS_PLENV ]; then
-	local ver=$(plenv version-name)
-	if [ x"$ver" != x"system" ]; then
-	    echo $ver
-	else
-	    echo "sys:$(perl -v 2>&1 | awk '/\(v5/ { print $9 }' | sed -e 's,[\)\(v],,g')"
-	fi
-    else
-	echo "sys:$(perl -v 2>&1 | awk '/\(v5/ { print $9 }' | sed -e 's,[\)\(v],,g')"
-    fi
+    env_version "pl"
 }
 
 __setup

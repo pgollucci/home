@@ -98,7 +98,7 @@ main() {
     git clone -q https://github.com/viking/R-build.git          $THOME/.repos/langs/Renv/plugins/R-build
 
     echo "Scala"
-    git clone -q https://github.com/scalaenv/scalaenv.git       $THOME/.repos/langs/scala
+    git clone -q https://github.com/scalaenv/scalaenv.git       $THOME/.repos/langs/scalaenv
 
     echo "Lua"
     git clone -q https://github.com/cehoffman/luaenv.git        $THOME/.repos/langs/luaenv

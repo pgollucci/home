@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export SCALAENV_ROOT=$HOME/.repos/langs/scala
+    export SCALAENV_ROOT=$HOME/.repos/langs/scalaenv
     path_if $SCALAENV_ROOT/bin
 
     if [ -x $SCALAENV_ROOT/bin/scalaenv ]; then
@@ -18,14 +18,7 @@ scalaenv_prompt_line() {
 
 scalaenv_version() {
 
-    if [ $HAS_SCALAENV ]; then
-	local ver=$(scalaenv version-name |sed -e 's,scala-,,')
-	if [ x"$ver" != x"system" ]; then
-	    echo $ver
-	else
-	    echo
-	fi
-    fi
+    env_version "scala"
 }
 
 __setup

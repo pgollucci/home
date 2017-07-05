@@ -18,16 +18,7 @@ Renv_prompt_line() {
 
 Renv_version() {
 
-    if [ $HAS_RENV ]; then
-	local ver=$(Renv version-name)
-	if [ x"$ver" != x"system" ]; then
-	    echo $ver
-	else
-	    echo "sys:"
-	fi
-    else
-	echo "sys:"
-    fi
+    env_version "R"
 }
 
 __setup

@@ -56,16 +56,16 @@ uninstall_envs() {
     local lang
     local ver
 
-    for lang in pyenv rbenv goenv plenv jenv Renv scalaenv luaenv; do
+    for lang in luaenv; do
 	local flag_f
 	case $lang in
-	    rbenv|pyenv|plenv) flag_f="-f" ;;
+	    rbenv|pyenv|plenv|luaenv) flag_f="-f" ;;
 	    *) flag_f="" ;;
 	esac
 
 	local flag_bare
 	case $lang in
-	    rbenv|pyenv|plenv) flag_bare="--bare" ;;
+	    rbenv|pyenv|plenv|luaenv|scalaenv) flag_bare="--bare" ;;
 	    *) flag_bare="" ;;
 	esac
 
@@ -76,9 +76,18 @@ uninstall_envs() {
 	esac
 
 	for ver in $($lang versions $flag_bare | awk '/[0-9]/{print $1}' | grep -v '^\*$'); do
-	    [ x"$ver" = x"*" ] && continue
-	    $lang $action $flag_f $ver
-	    rm -f $HOME/.repos/langs/$lang/version
+	    case $lang in
+		scalaenv)
+		    # XXX: no remove/uninstall
+		    rm -f $HOME/.repos/langs/$lang/version
+		    rm -rf $HOME/.repos/langs/$lang/versions/$ver
+		    ;;
+		*)
+		    [ x"$ver" = x"*" ] && continue
+		    $lang $action $flag_f $ver
+		    rm -f $HOME/.repos/langs/$lang/version
+		    ;;
+	    esac
 	done
     done
 }

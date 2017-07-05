@@ -269,3 +269,63 @@ token_args_from_list() {
 
     echo $args | sed -e 's,\^$,,'
 }
+
+env_version() {
+    local prefix="$1"
+
+    local cmd="${prefix}env"
+    local ver
+
+    if command -v $cmd > /dev/null; then
+	case $prefix in
+	    go)
+		ver="$($cmd version 2>/dev/null)"
+		[ -n "$ver" ] || ver=system
+		;;
+	    *) ver="$($cmd version-name 2>/dev/null)" ;;
+	esac
+
+	local v=$(echo $ver | sed -e "s,$prefix,," -e 's,^-,,')
+
+	if [ x"$v" = x"system" ]; then
+	    system_version "$prefix"
+	else
+	    echo "${red}$v${magenta}"
+	fi
+    else
+	system_version "$prefix"
+    fi
+}
+
+system_version() {
+    local prefix="$1"
+
+    local rcmd
+    case $prefix in
+	py)    rcmd=python ;;
+	rb)    rcmd=ruby   ;;
+	pl)    rcmd=perl   ;;
+	go)    rcmd=go     ;;
+	j)     rcmd=java   ;;
+	R)     rcmd=R      ;;
+	scala) rcmd=scala  ;;
+	lua)   rcmd=lua    ;;
+    esac
+
+    if command -v $rcmd > /dev/null; then
+	local ver
+	case $prefix in
+	    py)    ver=$($rcmd -V 2>&1 | awk '{print $2}') ;;
+	    rb)    ver=$($rcmd -v | awk '{print $2}')      ;;
+	    pl)    ver=$($rcmd -v | sed -e 's,.*(,,' -e 's,).*,,' | grep ^v5 | sed -e 's,^v,,') ;;
+	    go)    ver=$($rcmd version | awk '{print $3}' | sed -e 's,^go,,') ;;
+	    j)     ver=$($rcmd -version 2>&1 | grep Environment | sed -e 's,.*(build ,,' -e 's,).*,,') ;;
+	    R)     ver=$($rcmd --version | awk '/ version / { print $3}') ;;
+	    scala) ver=$($rcmd -nc -version 2>&1 | awk '{print $5}') ;;
+	    lua)   ver=$($rcmd -v | awk '{print $2}') ;;
+	esac
+	echo "${cyan}sys@$ver${magenta}"
+    else
+	echo "${norm}no${magenta}"
+    fi
+}

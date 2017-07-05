@@ -1,23 +1,26 @@
-#!/bin/sh
+#!/usr/bin/env zsh -x
 
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+usage() {
+    echo "p6-ssh-background args"
+    exit 0
+}
 
 set_color_name() {
-  local HOST=$1
-  local HEX_FG=$2
-  local HEX_BG=$3
-  local OPACITY=$4
+    local HOST=$1
+    local HEX_FG=$2
+    local HEX_BG=$3
+    local OPACITY=$4
 
-  local FG_R=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
-  local FG_G=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
-  local FG_B=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
-  local BG_R=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
-  local BG_G=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
-  local BG_B=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
+    local FG_R=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
+    local FG_G=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
+    local FG_B=`echo $HEX_FG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
+    local BG_R=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
+    local BG_G=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
+    local BG_B=`echo $HEX_BG | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
 
-  /usr/bin/osascript <<EOF
+    /usr/bin/osascript <<EOF
 tell application "iTerm"
-   tell current session of current terminal
+   tell current session of current window
       set name to "$HOST"
       set foreground color to {$FG_R, $FG_G, $FG_B}
       set background color to {$BG_R, $BG_G, $BG_B}
@@ -27,68 +30,68 @@ end tell
 EOF
 }
 
-## colors
 colors_load() {
-  red="fa053e"
-  orange="fa6b05"
-  yellow="dedb86"
-  green="1c6928"
-  dgreen="064a10"
-  dblue="1a2261"
-  blue="054cf2"
-  cyan="3beaf6"
-  purple="973bcc"
-  lpurple="eb5bd5"
-  pink="f213d5"
-  lsalmon3="cd8162"
-  brown="542323"
-  black="000000"
-  white="ffffff"
 
-  ## opacities
-  opaque=0.0
-}
-
-hosts_load() {
-  # fbsd
-  freefall_fg=$black; freefall_bg=$white
-  hub_fg=$purple;     hub_bg=$white
-  crush_fg=$blue;     crush_bg=$white
-  kpasswd_fg=$lpurple; kpasswd_bg=$black
-
-  # asf
-  minotaur_fg=$dgreen; minotaur_bg=$black
-
-  # p6
-  web_fg=$dblue; web_bg=$white
-  irc_fg=$white; irc_bg=$black
-  pkg_fg=$black; pkg_bg=$lsalmon3
-  nfs_fg=$white; nfs_bg=$dblue
-  fs_fg=$white;  fs_bg=$dblue
+    red="fa053e"
+    orange="fa6b05"
+    yellow="dedb86"
+    green="1c6928"
+    dgreen="064a10"
+    dblue="1a2261"
+    blue="054cf2"
+    cyan="3beaf6"
+    purple="973bcc"
+    lpurple="eb5bd5"
+    pink="f213d5"
+    lsalmon3="cd8162"
+    brown="542323"
+    black="000000"
+    white="ffffff"
+    opacity="0.0"
 }
 
 normalize() {
-  case $1 in
-    *)
-     host=$1
-     Thost=$(echo $host |sed -e 's,\..*,,' -e 's,\.,_,g')
-     ;;
-  esac
+    local host="$1"
+
+    echo $host | sed -e 's,\..*,,' -e 's,\.,_,g'
 }
 
-color_magic() {
-  eval fg=\$${Thost}_fg
-  eval bg=\$${Thost}_bg
+fg_for_host() {
+    local host="$1"
+
+    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $3 }'
 }
 
-do_it() {
-  set_color_name $host $fg $bg $opaque
-  ssh $ssh_args $host
-  set_color_name $host $white $black 0.0
+bg_for_host() {
+    local host="$1"
+
+    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $2 }'
 }
 
-colors_load
-hosts_load
-normalize $1
-color_magic
-do_it
+main() {
+    local type="$1"
+    local host="$2"
+
+    local t_host=$(normalize "${host}")
+
+    colors_load
+
+    local fg=$(fg_for_host "$t_host")
+    local bg=$(bg_for_host "$t_host")
+
+    eval fg=\$$fg
+    eval bg=\$$bg
+
+    if [ -z "$fg" -o -z "$bg" ]; then
+	echo "$host not found"
+	return
+    fi
+
+    set_color_name "$t_host" "$fg" "$bg" "$opacity"
+    case $type in
+	ssh) ssh $host ;;
+    esac
+    set_color_name "$t_host" "$white" "$black" "$opacity"
+}
+
+main "$@"

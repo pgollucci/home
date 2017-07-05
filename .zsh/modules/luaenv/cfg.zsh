@@ -18,12 +18,7 @@ luaenv_prompt_line() {
 
 luaenv_version() {
 
-    if [ $HAS_LUAENV ]; then
-	local ver=$(luaenv version-name)
-	if [ x"$ver" != x"system" ]; then
-	    echo $ver
-	fi
-    fi
+    env_version "lua"
 }
 
 __setup

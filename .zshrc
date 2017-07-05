@@ -18,7 +18,7 @@
 __load() {
 
     local DEBUG=1
-    local DISABLE_ENVS=""
+    local DISABLE_ENVS=
     [ -n "$DEBUG" -a $DEBUG -gt 1 ] && set -x
 
     ZDOTDIR=$HOME
