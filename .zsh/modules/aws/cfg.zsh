@@ -10,6 +10,8 @@ __setup() {
     AWS_ASSUMED_CREDENTIAL_FILE=$AWS_CREDENTIAL_FILE-assumed
     AWS_SOURCE_CREDENTIAL_FILE=$AWS_CREDENTIAL_FILE-source
 
+    AWS_ROLE_SESSION_NAME=p6cli
+
     path_if "${___dir}/bin"
 
     load_file "${___dir}/lib/util.sh"

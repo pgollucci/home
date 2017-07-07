@@ -50,7 +50,7 @@ GLOBAL_aws_sts_refresh() {
     aws_sts_refresh "$AWS_CREDENTIAL_FILE" "$AWS_ACCOUNT_MAP" "$AWS_ORG" "$DAAS_JC_EMAIL"
 }
 
-aws_sts_refresh() { # GLOBAL
+aws_sts_refresh() {
     local cred_file="$1"
     local map_file="$2"
     local org="$3"
@@ -190,18 +190,28 @@ aws_sts_role_unassume() { # GLOBAL
     aws_cfg_source_clear
 }
 
-aws_sts_org_su() { # GLOBAL
+GLOBAL_aws_sts_org_su() {
     local account_alias="$1"
     local region="$2"
     local output="$3"
-    local role_full_path="${4:-OrganizationAccountAccessRole}"
+    local role_full_path="$4"
+
+    aws_sts_org_su "$account_alias" "$region" "$output" "$AWS_ACCOUNT_MAP" "$role_full_path" "$AWS_ROLE_SESSION_NAME"
+}
+
+aws_sts_org_su() {
+    local account_alias="$1"
+    local region="$2"
+    local output="$3"
+    local map_file="$4"
+    local role_full_path="$5"
+    local role_session_name="$6"
 
     local role_handle="role/${role_full_path}"
     local profile="${account_alias}+${role_handle}"
 
-    local account_id=$(aws_util_account_alias_to_id "$account_alias" "$AWS_ACCOUNT_MAP")
+    local account_id=$(aws_util_account_alias_to_id "$account_alias" "$map_file")
     local role_arn="arn:aws:iam::${account_id}:${role_handle}"
-    local role_session_name="p6cli"
 
     aws_sts_role_assume "$profile" "$region" "$output" "$role_arn" "$role_session_name"
 }
