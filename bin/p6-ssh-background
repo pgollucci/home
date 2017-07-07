@@ -11,12 +11,12 @@ set_color_name() {
     local hex_bg=$3
     local opacity=$4
 
-    local fg_r=`echo $hex_fg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$1 * 257)}'`
-    local fg_g=`echo $hex_fg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$2 * 257)}'`
-    local fg_b=`echo $hex_fg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$3 * 257)}'`
-    local bg_r=`echo $hex_bg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$1 * 257)}'`
-    local bg_g=`echo $hex_bg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$2 * 257)}'`
-    local bg_b=`echo $hex_bg | sed 's/../0x&,/g' | awk -f "," '{printf("%d",$3 * 257)}'`
+    local fg_r=`echo $hex_fg | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
+    local fg_g=`echo $hex_fg | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
+    local fg_b=`echo $hex_fg | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
+    local bg_r=`echo $hex_bg | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$1 * 257)}'`
+    local bg_g=`echo $hex_bg | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$2 * 257)}'`
+    local bg_b=`echo $hex_bg | sed 's/../0x&,/g' | awk -F "," '{printf("%d",$3 * 257)}'`
 
     /usr/bin/osascript <<EOF
 tell application "iTerm"
