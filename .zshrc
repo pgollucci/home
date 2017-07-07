@@ -17,7 +17,7 @@
 
 __load() {
 
-    local DEBUG=1
+    local DEBUG=
     local DISABLE_ENVS=
     [ -n "$DEBUG" -a $DEBUG -gt 1 ] && set -x
 
