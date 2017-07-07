@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env zsh -li
 
 usage() {
+
     echo "p6-ssh-background type host [aws_profile]"
     exit 0
 }
@@ -76,22 +77,35 @@ ssh_do() {
 
 aws_do() {
     local tag="$1"
-    local profile="$2"
+    local type="$2"
+    local profile="$3"
+
+    [ -n $profile ] && awsa_${profile}
+    # env/act
 
     # tokens
-    GLOBAL_aws_sts_refresh
-
-    # env/act
-    awsa_${profile}
+    local expired=$(GLOBAL_aws_sts_expired)
+    [ $expired = 1 ] && GLOBAL_aws_sts_refresh
 
     # lookup
     local instance_id=$(aws_ec2_instance_id_from_name_tag "$tag")
-    local ip=$(aws_ec2_private_ip "$instance_id")
-    local ami_name=$(aws_ami_name_from_instance_id "$instance_id")
-    local user=$(aws_user_from_ami_name "$ami_name")
+    local ami_name=$(aws_ec2_ami_name_from_instance_id "$instance_id")
+    local host
+    if [ x"$type" = x"pub" ]; then
+	host=$tag
+    else
+	host=$(aws_ec2_private_ip "$instance_id")
+    fi
+
+    local user=$(aws_ec2_user_from_ami_name "$ami_name")
 
     # do
-    ssh $user@$ip
+    if [ -n $login ]; then
+	# ~/.ssh/config or $USER default
+	ssh -o ConnectTimeout=1 $host
+    else
+	ssh -o ConnectTimeout=1 $user@$host
+    fi
 }
 
 main() {
@@ -116,8 +130,9 @@ main() {
 
     set_color_name "$t_host" "$fg" "$bg" "$opacity"
     case $type in
-	ssh)     ssh_do    "$host" ;;
-#	aws)     aws_do    "$host" "$aws_profile" ;;
+	ssh)      ssh_do    "$host" ;;
+	aws-pub)  aws_do    "$host" "pub" "$aws_profile" ;;
+	aws-priv) aws_do    "$host" "priv" "$aws_profile" ;;
 #	rdbm)    db_do     "$host" ;;
 #	dbm)     dbm_do    "$host" ;;
 #	tunnel)  tunnel_do "$host" ;;

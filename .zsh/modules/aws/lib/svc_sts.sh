@@ -45,6 +45,27 @@ aws_sts_expire() { # GLOBAL
     time_ma_set "~/README.md" "$AWS_CREDENTIAL_FILE"
 }
 
+GLOBAL_aws_sts_expired() {
+
+    aws_sts_expired "$AWS_CREDENTIAL_FILE"
+}
+
+aws_sts_expired() { # GLOBAL
+    local creds="$1"
+
+    [ -e $creds ] || return
+
+    local mtime=$(mtime "$creds")
+    local now=$(now)
+    local diff=$(($now-$mtime))
+
+    if [ $diff -gt 3600 ]; then
+	echo 1
+    else
+	echo 0
+    fi
+}
+
 GLOBAL_aws_sts_refresh() {
 
     aws_sts_refresh "$AWS_CREDENTIAL_FILE" "$AWS_ACCOUNT_MAP" "$AWS_ORG" "$DAAS_JC_EMAIL"

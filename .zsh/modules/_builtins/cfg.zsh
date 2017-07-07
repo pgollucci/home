@@ -1,8 +1,9 @@
 __setup() {
-    
+
     autoload -U colors && colors
 
-    zmods=(attr \
+    zmods=(\
+#	   attr \
 	       cap \
 	       clone \
 	       compctl \
@@ -11,8 +12,8 @@ __setup() {
 	       computil \
 	       curses \
 	       datetime \
-	       #	db/gdbm \ 
-               deltochar \
+	       #	db/gdbm \
+	       deltochar \
 	       #	example \
 	       files \
 	       langinfo \
@@ -27,8 +28,8 @@ __setup() {
 	       net/socket \
 	       stat \
 	       system \
-               net/tcp \
-               termcap \
+	       net/tcp \
+	       termcap \
 	       terminfo \
 	       zftp \
 	       zle \

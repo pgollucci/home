@@ -12,7 +12,7 @@ zplug_load() {
 
 zplug_run() {
 
-    zplug install
+#    zplug install
     zplug load
 }
 
