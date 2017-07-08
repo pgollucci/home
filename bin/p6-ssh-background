@@ -3,10 +3,11 @@
 usage() {
 
     echo "p6-ssh-background type host [aws_profile]"
+
     exit 0
 }
 
-set_color_name() {
+set_theme() {
     local host=$1
     local hex_fg=$2
     local hex_bg=$3
@@ -31,24 +32,27 @@ end tell
 EOF
 }
 
-colors_load() {
+name_to_rgb() {
+    local name="$1"
 
-    red="fa053e"
-    orange="fa6b05"
-    yellow="dedb86"
-    green="1c6928"
-    dgreen="064a10"
-    cyan="3beaf6"
-    blue="054cf2"
-    dblue="1a2261"
-    lpurple="eb5bd5"
-    purple="973bcc"
-    pink="f213d5"
-    lsalmon3="cd8162"
-    brown="542323"
-    black="000000"
-    white="ffffff"
-    opacity="0.0"
+    case $name in
+	red)      echo "fa053e" ;;
+	orange)   echo "fa6b05" ;;
+	yellow)   echo "dedb86" ;;
+	green)    echo "1c6928" ;;
+	dgreen)   echo "064a10" ;;
+	cyan)     echo "3beaf6" ;;
+	blue)     echo "054cf2" ;;
+	dblue)    echo "1a2261" ;;
+	lpurple)  echo "eb5bd5" ;;
+	purple)   echo "973bcc" ;;
+	pink)     echo "f213d5" ;;
+	lsalmon3) echo "cd8162" ;;
+	brown)    echo "542323" ;;
+	black)    echo "000000" ;;
+	white)    echo "ffffff" ;;
+	opacity)  echo "0.0" ;;
+    esac
 }
 
 normalize() {
@@ -69,6 +73,18 @@ bg_for_host() {
     cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $2 }'
 }
 
+db_engine_for_host() {
+    local host="$1"
+
+    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $4 }'
+}
+
+db_user_for_host() {
+    local host="$1"
+
+    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $5 }'
+}
+
 ssh_do() {
     local host="$1"
 
@@ -80,12 +96,12 @@ aws_do() {
     local type="$2"
     local profile="$3"
 
-    [ -n $profile ] && awsa_${profile}
+    [ -n "$profile" ] && awsa_${profile}
     # env/act
 
     # tokens
     local expired=$(GLOBAL_aws_sts_expired)
-    [ $expired = 1 ] && GLOBAL_aws_sts_refresh
+    [ x"$expired" = x"1" ] && GLOBAL_aws_sts_refresh
 
     # lookup
     local instance_id=$(aws_ec2_instance_id_from_name_tag "$tag")
@@ -100,12 +116,27 @@ aws_do() {
     local user=$(aws_ec2_user_from_ami_name "$ami_name")
 
     # do
-    if [ -n $login ]; then
+    if [ -z "$user" ]; then
 	# ~/.ssh/config or $USER default
 	ssh -o ConnectTimeout=1 $host
     else
-	ssh -o ConnectTimeout=1 $user@$host
+	case $user in
+	    lanadmin|admin) ;;
+	    *) ssh -o ConnectTimeout=1 $user@$host ;;
+	esac
     fi
+}
+
+db_do() {
+    local host="$1"
+    local t_host="$2"
+
+    local engine=$(db_engine_for_host "$t_host")
+    local user=$(db_user_for_host "$t_host")
+
+    case $engine in
+	mysql) mysql --i-am-a-dummy -u $user -h $host ;;
+    esac
 }
 
 main() {
@@ -113,31 +144,26 @@ main() {
     local host="$2"
     local aws_profile="$3" # optional
 
-    local t_host=$(normalize "${host}")
+    local opacity=$(name_to_rgb "opacity")
+    local black=$(name_to_rgb "black")
+    local white=$(name_to_rgb "white")
 
-    colors_load
+    local t_host=$(normalize "$host")
+    local host_fg=$(fg_for_host "$t_host")
+    local host_bg=$(bg_for_host "$t_host")
 
-    local fg=$(fg_for_host "$t_host")
-    local bg=$(bg_for_host "$t_host")
+    local fg=$(name_to_rgb "$host_fg")
+    local bg=$(name_to_rgb "$host_bg")
 
-    eval fg=\$$fg
-    eval bg=\$$bg
-
-    if [ -z "$fg" -o -z "$bg" ]; then
-	echo "$host not found"
-	return
-    fi
-
-    set_color_name "$t_host" "$fg" "$bg" "$opacity"
+    set_theme "$host" "$fg" "$bg" "$opacity"
     case $type in
 	ssh)      ssh_do    "$host" ;;
 	aws-pub)  aws_do    "$host" "pub" "$aws_profile" ;;
 	aws-priv) aws_do    "$host" "priv" "$aws_profile" ;;
-#	rdbm)    db_do     "$host" ;;
-#	dbm)     dbm_do    "$host" ;;
+	db)       db_do     "$host" "$t_host" ;;
 #	tunnel)  tunnel_do "$host" ;;
     esac
-    set_color_name "$t_host" "$white" "$black" "$opacity"
+    set_theme "localhost" "$white" "$black" "$opacity"
 }
 
 main "$@"
