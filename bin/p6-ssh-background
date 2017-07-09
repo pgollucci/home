@@ -64,25 +64,25 @@ normalize() {
 fg_for_host() {
     local host="$1"
 
-    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $3 }'
+    cat $HOME/.hosts | awk -v k=$host 'tolower($1) ~ tolower(k) { print $3 }'
 }
 
 bg_for_host() {
     local host="$1"
 
-    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $2 }'
+    cat $HOME/.hosts | awk -v k=$host 'tolower($1) ~ tolower(k) { print $2 }'
 }
 
 db_engine_for_host() {
     local host="$1"
 
-    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $4 }'
+    cat $HOME/.hosts | awk -v k=$host 'tolower($1) ~ tolower(k) { print $4 }'
 }
 
 db_user_for_host() {
     local host="$1"
 
-    cat $HOME/.hosts | awk -v k=$host '$1 ~ k { print $5 }'
+    cat $HOME/.hosts | awk -v k=$host 'tolower($1) ~ tolower(k) { print $5 }'
 }
 
 ssh_do() {
@@ -115,14 +115,21 @@ aws_do() {
 
     local user=$(aws_ec2_user_from_ami_name "$ami_name")
 
+    local key_name=$(aws_ec2_key_name "$instance_id")
+    local i_flag=
+    local key_dir=$HOME/.ssh/dynamic
+    if [ -n "$key_name" -a -r "$key_dir/$key_name" ]; then
+	i_flag="-i $key_dir/$key_name"
+    fi
+
     # do
     if [ -z "$user" ]; then
 	# ~/.ssh/config or $USER default
-	ssh -o ConnectTimeout=1 $host
+	eval "ssh $i_flag -o ConnectTimeout=1 $host"
     else
 	case $user in
 	    lanadmin|admin) ;;
-	    *) ssh -o ConnectTimeout=1 $user@$host ;;
+	    *) eval "ssh $i_flag -o ConnectTimeout=1 $user@$host" ;;
 	esac
     fi
 }
@@ -163,7 +170,7 @@ main() {
 	db)       db_do     "$host" "$t_host" ;;
 #	tunnel)  tunnel_do "$host" ;;
     esac
-    set_theme "localhost" "$white" "$black" "$opacity"
+   set_theme "localhost" "$white" "$black" "$opacity"
 }
 
 main "$@"

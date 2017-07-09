@@ -26,7 +26,7 @@ aws_ec2_instance_id_from_name_tag() {
   local name="$1"
 
   aws --output text ec2 \
-      describe-instances --filters Name=tag:Name,Values="$name" \
+      describe-instances --filters Name=tag:Name,Values="*$name*" \
       --query 'Reservations[].Instances[].[LaunchTime,InstanceId]' | \
       sort -n | awk '{ print $2 }' | tail -1
 }
@@ -70,8 +70,10 @@ aws_ec2_user_from_ami_name() {
     case $ami_name in
 	*WIN*)     user=lanadmin ;;
 	*RHEL*)    user=ec2-user ;;
+	*qubole*|*AmazonLinux*) user=ec2-user ;;
 	*Ubuntu*)  user=ubuntu   ;;
 	*core*)    user=core     ;;
+
     esac
 
     echo $user

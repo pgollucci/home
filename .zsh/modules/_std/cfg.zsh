@@ -95,6 +95,8 @@ __setup() {
     alias tarx='tar -xvzof'
     alias tart='tar -tvzf'
 
+    alias -g me="| grep $USER"
+
     cd_make_aliases "$HOME/dev/repos/gh/$USER"
 }
 
