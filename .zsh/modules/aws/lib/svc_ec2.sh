@@ -128,3 +128,17 @@ aws_ec2_console_output() {
 
   aws --output text ec2 get-console-output --instance-id $instance_id
 }
+
+aws_ec2_terminate_instance_with_name_tag() {
+    local $tag="$1"
+
+    local instance_id=$(aws_ec2_instance_id_from_name_tag "$tag")
+
+    aws_ec2_instance_terminate "$instance_id"
+}
+
+aws_ec2_instance_terminate() {
+    local instance_id="$1"
+
+    cond_run aws ec2 terminate-instances --instance-id $instance_id
+}
