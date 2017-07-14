@@ -42,7 +42,7 @@ aws_sts_expire() { # GLOBAL
 	aws_sts_role_unassume
     fi
 
-    time_ma_set "~/README.md" "$AWS_CREDENTIAL_FILE"
+    time_ma_set "$HOME/README.md" "$AWS_CREDENTIAL_FILE"
 }
 
 GLOBAL_aws_sts_expired() {
