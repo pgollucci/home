@@ -2,7 +2,7 @@
 
 usage() {
 
-    echo "p6-ssh-background type host [aws_profile]"
+    echo "p6-ssh-background type host [aws_profile_func]"
 
     exit 0
 }
@@ -96,8 +96,8 @@ aws_do() {
     local type="$2"
     local profile="$3"
 
-    [ -n "$profile" ] && awsa_${profile}
     # env/act
+    [ -n "$profile" ] && eval "${profile}"
 
     # tokens
     local expired=$(GLOBAL_aws_sts_expired)
