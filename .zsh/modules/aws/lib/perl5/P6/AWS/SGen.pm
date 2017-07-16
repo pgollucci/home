@@ -42,6 +42,8 @@ sub generate {
       $cmd->code(%args);
     }
   }
+
+  P6::Util::execute("aws --version > $args{outputdir}/sh/version.sh 2>&1");
 }
 
 1;
