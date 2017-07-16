@@ -38,7 +38,11 @@ path_if() {
     local dir=$1
 
     if [ -d $dir ]; then
-	PATH="${PATH}:$dir"
+	if [ -n "$PATH" ]; then
+	    PATH="${PATH}:$dir"
+	else
+	    PATH=$dir
+	fi
     fi
 }
 
@@ -58,6 +62,7 @@ default_path() {
 __setup() {
 
     default_path
+    cd_make_aliases "$HOME/dev/repos/gh/$USER"
 
     zplug "zsh-users/zsh-syntax-highlighting"
     zplug "zsh-users/zsh-completions"

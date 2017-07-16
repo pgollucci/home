@@ -3,6 +3,7 @@ __setup() {
     PERL5LIB=
     export PERL5LIB="$ZSH_DIR/modules/_util/lib/perl5:${PERL5LIB}"
 }
+
 __setup
 
 path() {
@@ -11,6 +12,7 @@ path() {
 }
 
 pgs() {
+
     find . -type f | xargs perl -pi -e "s,$1,$2,g"
 }
 
@@ -21,6 +23,7 @@ pslen() {
 }
 
 xclean() {
+
     find . \( -type f -o -type l \)  -a \
 	 \( \
 	    -name ".DS_Store" -o \
@@ -179,6 +182,7 @@ mtime() {
 }
 
 now() {
+
     date "+%s"
 }
 
@@ -297,7 +301,7 @@ env_version() {
     fi
 }
 
-system_version() {
+envprefix_2_cmd() {
     local prefix="$1"
 
     local rcmd
@@ -311,6 +315,14 @@ system_version() {
 	scala) rcmd=scala  ;;
 	lua)   rcmd=lua    ;;
     esac
+
+    echo $rcmd
+}
+
+system_version() {
+    local prefix="$1"
+
+    local rcmd=$(envprefix_2_cmd "$prefix")
 
     if command -v $rcmd > /dev/null; then
 	local ver
@@ -329,3 +341,13 @@ system_version() {
 	echo "${norm}no${magenta}"
     fi
 }
+
+# nothing
+# system
+# envs w/ nothing
+# envs w/system and nothing
+# envs w/o system and set system
+# envs w/system and set system
+# envs w/o system and set
+# envs w/ system and set
+# envs w/ system and but not
