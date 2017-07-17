@@ -22,7 +22,7 @@ use P6::AWS::SGen::Cmd ();
 sub services {
     my %args = @_;
 
-    my ($rv, $services_str) = P6::Util::execute("aws help | awk '/o /{ print \$2 }' | tail -98 | xargs 2>/dev/null", { output => 1 } );
+    my ($rv, $services_str) = P6::Util::execute("aws help | awk '/o /{ print \$2 }' | tail -105 | xargs 2>/dev/null", { output => 1 } );
     my @services = grep { chomp ; 1 } split / /, $services_str;
 
     @services = grep { !/help|aws/ } @services;
