@@ -20,6 +20,7 @@
 .freerdp
 .gem
 .gnupg
+.hosts
 .htoprc
 .irssi/nicklistfifo
 .irssi/sasl.auth
@@ -29,6 +30,7 @@
 .oracle_jre_usage
 .private
 .python_history
+.python-version
 .repos
 .rnd
 .serverauth.*
