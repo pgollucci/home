@@ -5,6 +5,7 @@ pyenv local 3.6.2/envs/home
 
 pip install virtualenv
 pip install awscli
+pip install boto3
 pip install docopt
 pip install infi.docopt-completion
 pip install configparser
