@@ -62,7 +62,11 @@ default_path() {
 __setup() {
 
     default_path
-    cd_make_aliases "$HOME/dev/repos/gh/$USER"
+    local d
+    for d in $HOME/dev/repos/gh/*; do
+	cd_make_aliases "$d"
+    done
+    cd_make_aliases "$HOME/dev/repos/gh"
 
     zplug "zsh-users/zsh-syntax-highlighting"
     zplug "zsh-users/zsh-completions"
@@ -101,8 +105,6 @@ __setup() {
     alias tart='tar -tvzf'
 
     alias -g me="| grep $USER"
-
-    cd_make_aliases "$HOME/dev/repos/gh/$USER"
 }
 
 __setup

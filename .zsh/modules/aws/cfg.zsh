@@ -17,7 +17,7 @@ __setup() {
     load_file "${___dir}/lib/util.sh"
 
     load_file "${___dir}/lib/_cfg.sh"
-#    load_file "${___dir}/lib/_shortcuts.sh"
+    load_file "${___dir}/lib/_shortcuts.sh"
 
     load_file "${___dir}/lib/sh/util.sh"
 

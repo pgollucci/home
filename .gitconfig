@@ -1,7 +1,7 @@
 # core {{{
 [core]
     editor = /usr/bin/vim
-    excludesfile = /Users/npaolucci/.gitignore_global
+    excludesfile = /Users/pgolucci/.gitignore_global
     pager=cat
 
 #}}}
@@ -180,7 +180,7 @@
   cmd = emacsclient -c -a \"\"  --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\")\"
 
 [hub]
-	host = github.kdc.capitalone.com
+	host = github.com
 [credential]
 	helper = osxkeychain
 [filter "lfs"]

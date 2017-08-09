@@ -212,22 +212,27 @@ transient_delete() {
     rm -rf $(dirname $file)
 }
 
+cond_run() {
+
+    log_and_run "$*"
+}
+
 log_and_run() {
     local cmd="$1"
 
     if [ -n "${DRY_RUN}" ]; then
-	log "$cmd" | perl -p -e "s, , \\\\\n\t,g"
+	Log "$cmd" | perl -p -e "s, , \\\\\n\t,g"
     fi
-    eval $cmd
+    eval "$cmd"
 }
 
 cond_log_and_run() {
     local cmd="$*"
 
     if [ -n "${DRY_RUN}" ]; then
-	log "$cmd" | perl -p -e "s, , \\\\\n\t,g"
+	Log "$cmd" | perl -p -e "s, , \\\\\n\t,g"
     else
-	eval $cmd
+	eval "$cmd"
     fi
 }
 
