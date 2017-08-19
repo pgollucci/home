@@ -45,6 +45,24 @@ gh_list_all_orgs() {
     gh_paginate "${gh}/organizations" "$auth" | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
 }
 
+gh_list_org_repos() {
+    local gh_api="$1"
+    local org="$2"
+    local auth="$3"
+
+    local repos="$(gh_paginate "${gh_api}/orgs/${org}/repos" "$auth")"
+    echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort
+}
+
+gh_list_user_repos() {
+    local gh_api="$1"
+    local user="$2"
+    local auth="$3"
+
+    local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
+    echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort
+}
+
 gh_clone_org_repos() {
     local gh="$1"
     local gh_api="$2"
@@ -53,9 +71,7 @@ gh_clone_org_repos() {
     local auth="$5"
     local parallel="${6:-8}"
 
-    local repos="$(gh_paginate "${gh_api}/orgs/${org}/repos" "$auth")"
-
-    repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort)
+    local repos=$(gh_list_org_repos "$gh_api" "$org" "$auth")
 
     run_parallel "0" "$parallel" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
@@ -67,8 +83,7 @@ gh_clone_user_repos() {
     local dir="$4"
     local auth="$5"
 
-    local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
-    repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort)
+    local repos=$(gh_list_user_repos "$gh_api" "$user" "$auth")
 
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$user" "$dir"
 }
@@ -89,6 +104,49 @@ gh_clone_or_pull_repo() {
 	mkdir -p $dir/$org/$repo
 	(cd $dir/$org ; git clone -q --depth 1 ${gh}/${org}/${repo}.git > /dev/null)
     fi
+}
+
+gh_or_fp() {
+    local thing="$1"
+
+    if [[ ${thing} = /* ]]; then
+	GH_REPO=
+	GH=
+	GH_VER=
+    else
+	local org_proj=${thing%%%*}
+	GH_REPO=${org_proj}
+	GH="${GITHUB_URL}${org_proj}"
+	if [[ ${thing} = *%* ]]; then
+	    GH_VER=${thing##*%}
+	else
+	    GH_VER=master
+	fi
+    fi
+}
+
+gh_oauth_token_get() {
+    local gh_api="$1"
+    local user="$2"
+    local pass="$3"
+    local note="$4"
+
+    local output=$(curl -X POST -s -u ${user}:${pass} -d '{"scopes": ["repo", "user"], "note": "'${note}'"}' ${gh_api}/v3/authorizations  | egrep '"token"|"id"')
+
+    local id=$(echo $output | awk '{ print $2 }' | sed -e 's/[", ]//g')
+    local token=$(echo $output | awk '{ print $4 }' | sed -e 's/[", ]//g')
+
+    GH_TOKEN=$token
+    GH_TOKEN_ID=$id
+}
+
+gh_oauth_token_del() {
+    local gh_api="$1"
+    local user="$2"
+    local pass="$3"
+    local id="$4"
+
+    curl -X DELETE -s -u ${user}:${pass} ${gh_api}/v3/authorizations/$id
 }
 
 git_setup_dir() {
@@ -133,49 +191,6 @@ git_commit_file_to() {
 	git push
     ) > /dev/null
     rm -rf ${clone_dir}
-}
-
-gh_or_fp() {
-    local thing="$1"
-
-    if [[ ${thing} = /* ]]; then
-	GH_REPO=
-	GH=
-	GH_VER=
-    else
-	local org_proj=${thing%%%*}
-	GH_REPO=${org_proj}
-	GH="${GITHUB_URL}${org_proj}"
-	if [[ ${thing} = *%* ]]; then
-	    GH_VER=${thing##*%}
-	else
-	    GH_VER=master
-	fi
-    fi
-}
-
-gh_oauth_token_get() {
-    local gh_api="$1"
-    local user="$2"
-    local pass="$3"
-    local note="$4"
-
-    local output=$(curl -X POST -s -u ${user}:${pass} -d '{"scopes": ["repo", "user"], "note": "'${note}'"}' ${gh_api}/v3/authorizations  | egrep '"token"|"id"')
-
-    local id=$(echo $output | awk '{ print $2 }' | sed -e 's/[", ]//g')
-    local token=$(echo $output | awk '{ print $4 }' | sed -e 's/[", ]//g')
-
-    GH_TOKEN=$token
-    GH_TOKEN_ID=$id
-}
-
-gh_oauth_token_del() {
-    local gh_api="$1"
-    local user="$2"
-    local pass="$3"
-    local id="$4"
-
-    curl -X DELETE -s -u ${user}:${pass} ${gh_api}/v3/authorizations/$id
 }
 
 __setup
