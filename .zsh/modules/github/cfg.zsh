@@ -31,7 +31,6 @@ gh_paginate() {
 	fi
 
 	curl -i -s $(echo $auth) $next_url >> $file
-	break
     done
 
     cat $file
@@ -52,11 +51,13 @@ gh_clone_org_repos() {
     local org="$3"
     local dir="$4"
     local auth="$5"
+    local parallel="${6:-8}"
 
     local repos="$(gh_paginate "${gh_api}/orgs/${org}/repos" "$auth")"
+
     repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort)
 
-    run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
+    run_parallel "0" "$parallel" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
 
 gh_clone_user_repos() {
@@ -69,7 +70,6 @@ gh_clone_user_repos() {
     local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
     repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort)
 
-    echo $repos
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$user" "$dir"
 }
 
