@@ -3,7 +3,7 @@ __setup() {
     GITHUB_HOST=github.com
     GITHUB_URL=https://${GITHUB_HOST}
     GITHUB_API_HOST=api.${GITHUB_HOST}
-    GITHUB_API_URL=https://api.${GITHUB_HOST}
+    GITHUB_API_URL=https://${GITHUB_AP_HOST}
     GITHUB_API_VER=v3
 }
 
@@ -37,7 +37,7 @@ gh_paginate() {
     rm -f $dir
 }
 
-gh_list_all_orgs() {
+gh_api_orgs_list() {
     local gh="$1"
     local pass="$2"
     local auth="$3"
@@ -45,7 +45,7 @@ gh_list_all_orgs() {
     gh_paginate "${gh}/organizations" "$auth" | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
 }
 
-gh_list_org_repos() {
+gh_api_org_repos_list() {
     local gh_api="$1"
     local org="$2"
     local auth="$3"
@@ -54,7 +54,7 @@ gh_list_org_repos() {
     echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort
 }
 
-gh_list_user_repos() {
+gh_api_user_repos_list() {
     local gh_api="$1"
     local user="$2"
     local auth="$3"
@@ -63,7 +63,7 @@ gh_list_user_repos() {
     echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort
 }
 
-gh_clone_org_repos() {
+gh_api_org_repos_clone() {
     local gh="$1"
     local gh_api="$2"
     local org="$3"
@@ -71,24 +71,24 @@ gh_clone_org_repos() {
     local auth="$5"
     local parallel="${6:-8}"
 
-    local repos=$(gh_list_org_repos "$gh_api" "$org" "$auth")
+    local repos=$(gh_api_org_repos_list "$gh_api" "$org" "$auth")
 
     run_parallel "0" "$parallel" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
 
-gh_clone_user_repos() {
+gh_api_user_repos_clone() {
     local gh="$1"
     local gh_api="$2"
     local user="$3"
     local dir="$4"
     local auth="$5"
 
-    local repos=$(gh_list_user_repos "$gh_api" "$user" "$auth")
+    local repos=$(gh_api_user_repos_list  "$gh_api" "$user" "$auth")
 
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$user" "$dir"
 }
 
-gh_clone_or_pull_repo() {
+gh_api_repo_clone_or_pull() {
     local gh="$1"
     local org="$2"
     local dir="$3"
@@ -106,7 +106,7 @@ gh_clone_or_pull_repo() {
     fi
 }
 
-gh_or_fp() {
+gh_thing_parse() {
     local thing="$1"
 
     if [[ ${thing} = /* ]]; then
@@ -149,7 +149,7 @@ gh_oauth_token_del() {
     curl -X DELETE -s -u ${user}:${pass} ${gh_api}/v3/authorizations/$id
 }
 
-git_setup_dir() {
+git_repo_clone() {
     local uri="$1"
     local ver="$2"
     local repo="$3"
@@ -170,7 +170,7 @@ git_setup_dir() {
     echo ${dir}
 }
 
-git_commit_file_to() {
+git_file_commit_to() {
     [ -z "${TEST_MODE}" ] || return
 
     local repo="$1"
@@ -179,8 +179,8 @@ git_commit_file_to() {
     local file="$4"
     local msg="$5"
 
-    gh_or_fp "${repo}"
-    local clone_dir=$(git_setup_dir "${GH}" "" "${repo}")
+    gh_thing_parse "${repo}"
+    local clone_dir=$(git_repo_clone "${GH}" "" "${repo}")
 
     mkdir -p ${clone_dir}/${dir}
     cp ${original} ${clone_dir}/${dir}/${file}

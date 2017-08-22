@@ -59,14 +59,18 @@ default_path() {
     path_if /sbin
 }
 
+default_cd_aliases() {
+    
+    local d
+    for d in $HOME/dev/repos/gh $HOME/dev/repos/gh/*; do
+	cd_make_aliases "$d"
+    done
+}
+
 __setup() {
 
     default_path
-    local d
-    for d in $HOME/dev/repos/gh/*; do
-	cd_make_aliases "$d"
-    done
-    cd_make_aliases "$HOME/dev/repos/gh"
+    default_cd_aliases
 
     zplug "zsh-users/zsh-syntax-highlighting"
     zplug "zsh-users/zsh-completions"
