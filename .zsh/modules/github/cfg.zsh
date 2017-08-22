@@ -51,7 +51,7 @@ gh_api_org_repos_list() {
     local auth="$3"
 
     local repos="$(gh_paginate "${gh_api}/orgs/${org}/repos" "$auth")"
-    echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort
+    echo $repos | _gh_repos_extract "$org"
 }
 
 gh_api_user_repos_list() {
@@ -60,7 +60,13 @@ gh_api_user_repos_list() {
     local auth="$3"
 
     local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
-    echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort
+    echo $repos | _gh_repos_extract "$user"
+}
+
+_gh_repos_extract() {
+    local prefix="$1"
+
+    awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$prefix/,,g" | sort 
 }
 
 gh_api_org_repos_clone() {
