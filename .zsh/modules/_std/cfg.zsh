@@ -109,6 +109,7 @@ __setup() {
     alias tart='tar -tvzf'
 
     alias -g me="| grep $USER"
+    alias -g ng='| grep -v "\.git"'
 }
 
 __setup
