@@ -1,11 +1,7 @@
 tap 'caskroom/cask'
 tap 'caskroom/versions'
 
-tap 'homebrew/binary'
-tap 'homebrew/dupes'
 tap 'homebrew/science'
-tap 'homebrew/versions'
-tap 'homebrew/x11'
 
 tap 'wallix/awless'
 
