@@ -172,6 +172,8 @@
 
 [github]
 	ssl = true
+	user = 
+	password = 
 
 [merge]
   tool = ediff

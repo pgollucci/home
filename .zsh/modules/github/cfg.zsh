@@ -3,7 +3,7 @@ __setup() {
     GITHUB_HOST=github.com
     GITHUB_URL=https://${GITHUB_HOST}
     GITHUB_API_HOST=api.${GITHUB_HOST}
-    GITHUB_API_URL=https://api.${GITHUB_HOST}
+    GITHUB_API_URL=https://${GITHUB_AP_HOST}
     GITHUB_API_VER=v3
 }
 
@@ -31,14 +31,13 @@ gh_paginate() {
 	fi
 
 	curl -i -s $(echo $auth) $next_url >> $file
-	break
     done
 
     cat $file
     rm -f $dir
 }
 
-gh_list_all_orgs() {
+gh_api_orgs_list() {
     local gh="$1"
     local pass="$2"
     local auth="$3"
@@ -46,34 +45,56 @@ gh_list_all_orgs() {
     gh_paginate "${gh}/organizations" "$auth" | awk '/login/{ print $2 }' | sed -e 's/[",]//g' | sort
 }
 
-gh_clone_org_repos() {
+gh_api_org_repos_list() {
+    local gh_api="$1"
+    local org="$2"
+    local auth="$3"
+
+    local repos="$(gh_paginate "${gh_api}/orgs/${org}/repos" "$auth")"
+    echo $repos | _gh_repos_extract "$org"
+}
+
+gh_api_user_repos_list() {
+    local gh_api="$1"
+    local user="$2"
+    local auth="$3"
+
+    local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
+    echo $repos | _gh_repos_extract "$user"
+}
+
+_gh_repos_extract() {
+    local prefix="$1"
+
+    awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$prefix/,,g" | sort 
+}
+
+gh_api_org_repos_clone() {
     local gh="$1"
     local gh_api="$2"
     local org="$3"
     local dir="$4"
     local auth="$5"
+    local parallel="${6:-8}"
 
-    local repos="$(gh_paginate "${gh_api}/orgs/${org}/repos" "$auth")"
-    repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$org/,,g" | sort)
+    local repos=$(gh_api_org_repos_list "$gh_api" "$org" "$auth")
 
-    run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
+    run_parallel "0" "$parallel" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
 }
 
-gh_clone_user_repos() {
+gh_api_user_repos_clone() {
     local gh="$1"
     local gh_api="$2"
     local user="$3"
     local dir="$4"
     local auth="$5"
 
-    local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
-    repos=$(echo $repos | awk '/full_name/{ print $2 }' | sed -e 's/[",]//g' -e "s,$user/,,g" | sort)
+    local repos=$(gh_api_user_repos_list  "$gh_api" "$user" "$auth")
 
-    echo $repos
     run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$user" "$dir"
 }
 
-gh_clone_or_pull_repo() {
+gh_api_repo_clone_or_pull() {
     local gh="$1"
     local org="$2"
     local dir="$3"
@@ -91,51 +112,7 @@ gh_clone_or_pull_repo() {
     fi
 }
 
-git_setup_dir() {
-    local uri="$1"
-    local ver="$2"
-    local repo="$3"
-
-    local safe_repo=$(echo $repo | sed -e 's,/,_,g')
-
-    local prefix="${safe_repo}.XXX"
-
-    local dir=$(mktemp -d -t $prefix)
-    (
-	cd ${dir}
-	git clone -q ${uri} .
-	if [ -n "${ver}" ]; then
-	    git checkout -q ${ver}
-	fi
-    )
-
-    echo ${dir}
-}
-
-git_commit_file_to() {
-    [ -z "${TEST_MODE}" ] || return
-
-    local repo="$1"
-    local original="$2"
-    local dir="$3"
-    local file="$4"
-    local msg="$5"
-
-    gh_or_fp "${repo}"
-    local clone_dir=$(git_setup_dir "${GH}" "" "${repo}")
-
-    mkdir -p ${clone_dir}/${dir}
-    cp ${original} ${clone_dir}/${dir}/${file}
-    (
-	cd ${clone_dir}
-	git add ${dir}/${file}
-	git commit -m "${msg}"
-	git push
-    ) > /dev/null
-    rm -rf ${clone_dir}
-}
-
-gh_or_fp() {
+gh_thing_parse() {
     local thing="$1"
 
     if [[ ${thing} = /* ]]; then
@@ -176,6 +153,50 @@ gh_oauth_token_del() {
     local id="$4"
 
     curl -X DELETE -s -u ${user}:${pass} ${gh_api}/v3/authorizations/$id
+}
+
+git_repo_clone() {
+    local uri="$1"
+    local ver="$2"
+    local repo="$3"
+
+    local safe_repo=$(echo $repo | sed -e 's,/,_,g')
+
+    local prefix="${safe_repo}.XXX"
+
+    local dir=$(mktemp -d -t $prefix)
+    (
+	cd ${dir}
+	git clone -q ${uri} .
+	if [ -n "${ver}" ]; then
+	    git checkout -q ${ver}
+	fi
+    )
+
+    echo ${dir}
+}
+
+git_file_commit_to() {
+    [ -z "${TEST_MODE}" ] || return
+
+    local repo="$1"
+    local original="$2"
+    local dir="$3"
+    local file="$4"
+    local msg="$5"
+
+    gh_thing_parse "${repo}"
+    local clone_dir=$(git_repo_clone "${GH}" "" "${repo}")
+
+    mkdir -p ${clone_dir}/${dir}
+    cp ${original} ${clone_dir}/${dir}/${file}
+    (
+	cd ${clone_dir}
+	git add ${dir}/${file}
+	git commit -m "${msg}"
+	git push
+    ) > /dev/null
+    rm -rf ${clone_dir}
 }
 
 __setup
