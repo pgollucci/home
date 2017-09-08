@@ -13,23 +13,21 @@ install_envs() {
 
     echo "plenv:"
     plenv install 5.26.0
-    plenv install 5.27.1
+    plenv install 5.27.3
 
     echo "goenv:"
-    goenv install 1.7.6
     goenv install 1.8.3
+    goenv install 1.9
 
     echo "java:"
-    brew cask install java6
-#    brew cask install java7
     brew cask install java
-#    brew cask install java9-beta
+    brew cask install java9-beta
 
     echo "R:"
     Renv install 3.4.0
 
     echo "Scala:"
-    scalaenv install scala-2.12.2
+    scalaenv install scala-2.12.3
 
     echo "Lua"
     luaenv install 5.3.3
@@ -47,7 +45,7 @@ install_envs() {
     goenv global 1.8.3
     jenv global 1.8.0.74
     Renv global 3.4.0
-    scalaenv global scala-2.12.2
+    scalaenv global scala-2.12.3
     luaenv global 5.3.3
 }
 
