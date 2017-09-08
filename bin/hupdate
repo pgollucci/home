@@ -20,6 +20,7 @@ update() {
 main() {
 
     (
+        echo "=====> $HOME"
 	cd $HOME
 	update
     )
