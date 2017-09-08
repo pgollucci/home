@@ -116,6 +116,8 @@ aws_do() {
     local user=$(aws_ec2_user_from_ami_name "$ami_name")
 
     local key_name=$(aws_ec2_key_name "$instance_id")
+    key_name=$(echo $key_name | sed -e s",-$USER$,,")
+
     local i_flag=
     local key_dir=$HOME/.ssh/dynamic
     if [ -n "$key_name" -a -r "$key_dir/$key_name" ]; then
@@ -125,11 +127,17 @@ aws_do() {
     # do
     if [ -z "$user" ]; then
 	# ~/.ssh/config or $USER default
-	eval "ssh $i_flag -o ConnectTimeout=1 $host"
+	local cmd="ssh $i_flag -o ConnectTimeout=1 $host"
+        echo $cmd
+        eval $cmd
     else
 	case $user in
 	    lanadmin|admin) ;;
-	    *) eval "ssh $i_flag -o ConnectTimeout=1 $user@$host" ;;
+	    *) 
+		local cmd="ssh $i_flag -o ConnectTimeout=1 $user@$host"
+        	echo $cmd
+        	eval $cmd
+		;;
 	esac
     fi
 }

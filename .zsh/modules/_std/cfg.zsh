@@ -60,7 +60,7 @@ default_path() {
 }
 
 default_cd_aliases() {
-    
+
     local d
     for d in $HOME/dev/repos/gh $HOME/dev/repos/gh/*; do
 	cd_make_aliases "$d"
@@ -110,6 +110,7 @@ __setup() {
 
     alias -g me="| grep $USER"
     alias -g ng='| grep -v "\.git"'
+    alias -g n="| grep $NAME"
 }
 
 __setup
