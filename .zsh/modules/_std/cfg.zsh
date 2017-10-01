@@ -67,10 +67,17 @@ default_cd_aliases() {
     done
 }
 
+default_tmp_dir() {
+
+    export TMPDIR=/tmp
+}
+
 __setup() {
 
     default_path
     default_cd_aliases
+
+    default_tmp_dir
 
     zplug "zsh-users/zsh-syntax-highlighting"
     zplug "zsh-users/zsh-completions"
