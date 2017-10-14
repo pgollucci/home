@@ -16,6 +16,11 @@ zplug_run() {
     zplug load
 }
 
+zsh_git_prompt_load() {
+
+  load_file "$HOME/.repos/vendor/olivierverdier/zsh-git-prompt/zshrc.sh"
+}
+
 modules_load() { # args: modules_dir
     local modules_dir="$1"
 

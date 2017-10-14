@@ -1,5 +1,6 @@
 __setup() {
 
+    zsh_git_prompt_load
     alias g=git
 
     eval "$(hub alias -s)"
@@ -8,10 +9,15 @@ __setup() {
 
 git_prompt_line() {
 
-    local str="$(git_repo_get)($(git_branch_get)) $(git_short_sha_get)$(git_dirty_get)"
-    if [ x"$str" != x"() " ]; then
+    local str="$(git_repo_get) $(git_super_status) $(git_tremble)"
+    if [ x"$str" != x"  " ]; then
 	echo "${magenta}git:   [$str]${norm}"
     fi
+}
+
+git_tremble() {
+
+  git log --graph --pretty=format:'%Cred%h%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative -1 2>/dev/null
 }
 
 git_checkpoint() {
