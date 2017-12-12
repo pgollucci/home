@@ -3,9 +3,11 @@
 usage() {
 
     echo "hinit [-cDhp]"
+    echo "TEST: bin/hinit"
+    echo "RUN: bin/hinit -cD"
     echo <<END_U
 -c        Clean:   delete files no longer in git or known excludes (rsync --delete) , Default SAVE FILES
--D        Dry:     do not overwrite HOME (rsync -n), Default OVERWRITE
+-D        Dry:     overwrite HOME, Default DO NOT OVERWRITE (rsync -n)
 -h        Help:    display this message
 -p        Private: install private things too (never on remote computer)
 END_U
@@ -138,9 +140,9 @@ main() {
     (cd $HOME/.emacs.d/defuns ; ln -s $HOME/.repos/vendor/magnars/.emacs.d/defuns/* .)
 
     #### Private Repo
-    echo "Private bits"
-    ( cd $HOME ; git clone -q https://github.com/pgollucci/home-private.git $HOME/.private )
     if [ $Private -eq 1 ]; then
+        echo "Private bits"
+        ( cd $HOME ; git clone -q https://github.com/pgollucci/home-private.git $HOME/.private )
 	(
 	    cd $HOME/.ssh
 	    ln -s $HOME/.private/ssh/2/id* .
@@ -149,12 +151,10 @@ main() {
 
 	mkdir $HOME/.aws
 	(cd $HOME/.aws ; ln -s .private/aws/map-p6 .)
-    fi
 
-    echo "SSH Pub Keys"
-    cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
+        echo "SSH Pub Keys"
+        cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
 
-    if [ $Private -ne 1 ]; then
 	rm -rf $HOME/.private
     fi
 
