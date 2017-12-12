@@ -72,9 +72,6 @@ main() {
     git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/vendor/pgollucci/emacs
     git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
 
-    echo "zsh-git-prompt"
-    git clone -q https://github.com/olivierverdier/zsh-git-prompt.git $THOME/.repos/vendor/olivierverdier/zsh-git-prompt
-
     echo "Ruby"
     git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
     mkdir -p $THOME/.repos/langs/rbenv/plugins
