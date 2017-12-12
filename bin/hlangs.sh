@@ -3,17 +3,17 @@
 install_envs() {
 
     echo "python:"
-    pyenv install 2.7.13
-    pyenv install 3.6.2
+    pyenv install 2.7.14
+    pyenv install 3.6.3
     pyenv install 3.7-dev
 
     echo "ruby:"
-    rbenv install 2.4.1
+    rbenv install 2.4.2
     rbenv install 2.5.0-dev
 
     echo "plenv:"
-    plenv install 5.26.0
-    plenv install 5.27.3
+    plenv install 5.26.1
+    plenv install 5.27.6
 
     echo "goenv:"
     goenv install 1.8.3
