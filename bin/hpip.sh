@@ -1,8 +1,11 @@
 #!/bin/sh -x
 
 main() {
-    pyenv virtualenv 3.6.2 home
-    pyenv local 3.6.2/envs/home
+
+    . bin/.hvers
+
+    pyenv virtualenv $py_ver home
+    pyenv local $py_ver/envs/home
 
     pip install virtualenv
     pip install awscli

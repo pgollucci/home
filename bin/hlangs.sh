@@ -3,34 +3,34 @@
 install_envs() {
 
     echo "python:"
-    pyenv install 2.7.14
-    pyenv install 3.6.3
-    pyenv install 3.7-dev
+    pyenv install $py_ver_old
+    pyenv install $py_ver
+    pyenv install $py_ver_dev
 
     echo "ruby:"
-    rbenv install 2.4.2
-    rbenv install 2.5.0-dev
+    rbenv install $rb_ver
+    rbenv install $rb_ver_dev
 
     echo "plenv:"
-    plenv install 5.26.1
-    plenv install 5.27.6
+    plenv install $pl_ver
+    plenv install $pl_ver_dev
 
     echo "goenv:"
-    goenv install 1.8.3
-    goenv install 1.9
+    goenv install $go_ver
+    goenv install $go_ver_dev
 
     echo "java:"
-    brew cask install java
-    brew cask install java9-beta
+    brew cask install $java_ver
+    brew cask install $java_ver_dev
 
     echo "R:"
-    Renv install 3.4.0
+    Renv install $R_ver
 
     echo "Scala:"
-    scalaenv install scala-2.12.3
+    scalaenv install $scala_ver
 
     echo "Lua"
-    luaenv install 5.3.3
+    luaenv install $lua_ver
 
     (
 	cd /Library/Java/JavaVirtualMachines
@@ -39,14 +39,14 @@ install_envs() {
 	done
     )
 
-    pyenv global 3.6.2
-    rbenv global 2.4.1
-    plenv global 5.26.0
-    goenv global 1.8.3
-    jenv global 1.8.0.74
-    Renv global 3.4.0
-    scalaenv global scala-2.12.3
-    luaenv global 5.3.3
+    pyenv global $py_ver
+    rbenv global $rb_ver
+    plenv global $pl_ver
+    goenv global $go_ver
+    jenv global $java_ver
+    Renv global $R_ver
+    scalaenv global $scala_ver
+    luaenv global $lua_ver
 }
 
 uninstall_envs() {
@@ -90,9 +90,16 @@ uninstall_envs() {
     done
 }
 
-action="$1"
+main() {
+    local action="$1"
 
-case $action in
-    install) install_envs ;;
-    uninstall) uninstall_envs ;;
-esac
+    . bin/.hvers
+
+    case $action in
+	install) install_envs ;;
+	uninstall) uninstall_envs ;;
+    esac
+}
+
+main "$@"
+exit $?
