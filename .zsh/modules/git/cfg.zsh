@@ -1,6 +1,5 @@
 __setup() {
 
-    zsh_git_prompt_load
     alias g=git
 
     eval "$(hub alias -s)"

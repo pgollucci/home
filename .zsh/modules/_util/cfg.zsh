@@ -142,12 +142,10 @@ json_key_2_value() {
     local file="$2"
 
     if [ x"$file" = x"-" ]; then
-	file=""
+	awk -v k=$key '$1 ~ k { print $2 }' | sed -e 's/[",:]//g' | head -1
     else
-	file="< $file"
+	cat $file | awk -v k=$key '$1 ~ k { print $2 }' | sed -e 's/[",:]//g' | head -1
     fi
-
-    awk -v k=$key '$1 ~ k { print $2 }' $file | sed -e 's/[",:]//g' | head -1
 }
 
 json_value_2_key() {
@@ -155,12 +153,10 @@ json_value_2_key() {
     local file="$2"
 
     if [ x"$file" = x"-" ]; then
-	file=""
+	awk -v k=$key '$2 ~ k { print $1 }' | sed -e 's/[",:]//g'
     else
-	file="< $file"
+	cat $file | awk -v k=$key '$2 ~ k { print $1 }' | sed -e 's/[",:]//g'
     fi
-
-    awk -v k=$key '$2 ~ k { print $1 }' $file | sed -e 's/[",:]//g'
 }
 
 uri_parse_name() {
