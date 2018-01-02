@@ -182,7 +182,7 @@
   cmd = emacsclient -c -a \"\"  --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\")\"
 
 [hub]
-	host = github.com
+	host = github.kdc.capitalone.com
 [credential]
 	helper = osxkeychain
 [filter "lfs"]

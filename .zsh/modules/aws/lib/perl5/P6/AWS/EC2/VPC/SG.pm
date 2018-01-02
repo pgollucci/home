@@ -136,6 +136,8 @@ sub display {
       }
 
       print P6::Util::rprint(17, $ip_range->{CidrIp});
+      print " (COIN)" if $ip_range->{CidrIp} eq "10.0.0.0/8";
+      print " (VPN)"  if $ip_range->{CidrIp} eq "172.18.0.0/15" || $ip_range->{CidrIp} eq "172.28.0.0/16";
       print "\n";
     }
 
