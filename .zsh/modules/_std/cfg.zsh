@@ -82,8 +82,7 @@ __setup() {
     zplug "zsh-users/zsh-syntax-highlighting"
     zplug "zsh-users/zsh-completions"
 
-#    zplug "robbyrussell/oh-my-zsh", use:"lib/grep/*.zsh"
-#    zplug "robbyrussell/oh-my-zsh", use:"plugins/encode64/*.zsh"
+    zplug "plugins/encode64", from:oh-my-zsh
 
     alias '_'='sudo'
     alias rmrf='rm -rf'

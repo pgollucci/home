@@ -35,14 +35,16 @@ main() {
 
     yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
+    local OLD_PATH=$PATH
     export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
-    brew doctor
     brew update
 
     brew tap homebrew/bundle
 
     brew bundle --file=$HOME/bin/Brewfile
     brew prune
+    PATH=$OLD_PATH
+    export $PATH
 }
 
 main "$@"

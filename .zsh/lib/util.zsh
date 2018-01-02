@@ -12,13 +12,8 @@ zplug_load() {
 
 zplug_run() {
 
-#    zplug install
+    zplug install
     zplug load
-}
-
-zsh_git_prompt_load() {
-
-  load_file "$HOME/.repos/vendor/olivierverdier/zsh-git-prompt/zshrc.sh"
 }
 
 modules_load() { # args: modules_dir
