@@ -9,7 +9,7 @@ __setup() {
 git_prompt_line() {
 
     local str="$(git_repo_get)($(git_branch_get)): $(git_short_sha_get): $(git_tremble)"
-    if [ x"$str" != x"  " ]; then
+    if [ x"$str" != x"(): : " ]; then
 	echo "${magenta}git:   [$str]${norm}"
     fi
 }
