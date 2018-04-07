@@ -62,56 +62,65 @@ main() {
 
     echo "Dirs"
     mkdir $THOME/.zcache
-    mkdir -p $THOME/dev/repos/{gh,asf,fbsd}
-    mkdir -p $THOME/vendor/{pgollucci,magnars,olivierverdier}
+
+    # XXX: duplicated
+    P6_SRC_DIR=$THOME/dev/src
+    P6_SRC_GH_DIR=$P6_SRC_DIR/github.com
+    P6_SRC_ASF_DIR=$P6_SRC_DIR/apache.org
+    P6_SRC_FBSD_DIR=$P6_SRC_DIR/freebsd.org
+    P6_SRC_ME_DIR=$P6_SRC_GH_DIR/$USER
+
+    mkdir -p $P6_SRC_GH_DIR $P6_SRC_ASF_DIR $P6_SRC_FBSD_DIR $P6_SRC_ME_DIR
+    mkdir -p $P6_SRC_GH_DIR/rbenv/plugins
+    mkdir -p $P6_SRC_GH_DIR/plenv/plugins
+    mkdir -p $P6_SRC_GH_DIR/Renv/plugins
+    mkdir -p $P6_SRC_GH_DIR/luaenv/plugins
+
+    GH_URL=https://github.com
 
     echo "Cloning Repos"
 
     echo "home"
-    git clone -q https://github.com/pgollucci/home.git          $THOME
+    git clone -q $GH_URL/pgollucci/home.git          $THOME
 
     echo "emacs"
-    git clone -q https://github.com/pgollucci/emacs.git         $THOME/.repos/vendor/pgollucci/emacs
-    git clone -q https://github.com/magnars/.emacs.d.git        $THOME/.repos/vendor/magnars/.emacs.d
+    git clone -q $GH_URL/pgollucci/emacs.git         $P6_SRC_ME_DIR/emacs
+    git clone -q $GH_URL/magnars/.emacs.d.git        $P6_SRC_GH_DIR/magnars/.emacs.d
 
     echo "Ruby"
-    git clone -q https://github.com/sstephenson/rbenv.git       $THOME/.repos/langs/rbenv
-    mkdir -p $THOME/.repos/langs/rbenv/plugins
-    git clone -q https://github.com/sstephenson/ruby-build.git  $THOME/.repos/langs/rbenv/plugins/ruby-build
+    git clone -q $GH_URL/sstephenson/rbenv.git       $P6_SRC_GH_DIR/rbenv
+    git clone -q $GH_URL/sstephenson/ruby-build.git  $P6_SRC_GH_DIR/ruby-build
 
     echo "Perl"
-    git clone -q https://github.com/tokuhirom/plenv.git         $THOME/.repos/langs/plenv
-    mkdir -p $THOME/.repos/langs/plenv/plugins
-    git clone -q https://github.com/tokuhirom/Perl-Build.git    $THOME/.repos/langs/plenv/plugins/perl-build
+    git clone -q $GH_URL/tokuhirom/plenv.git         $P6_SRC_GH_DIR/plenv
+    git clone -q $GH_URL/tokuhirom/Perl-Build.git    $P6_SRC_GH_DIR/plenv/plugins/perl-build
 
     echo "Python"
-    git clone -q https://github.com/yyuu/pyenv.git              $THOME/.repos/langs/pyenv
-    git clone -q https://github.com/pyenv/pyenv-virtualenv.git  $THOME/.repos/langs/pyenv/plugins/pyenv-virtualenv
+    git clone -q $GH_URL/yyuu/pyenv.git              $P6_SRC_GH_DIR/pyenv
+    git clone -q $GH_URL/pyenv/pyenv-virtualenv.git  $P6_SRC_GH_DIR/pyenv-virtualenv
 
     echo "Go"
-    git clone -q https://github.com/wfarr/goenv.git             $THOME/.repos/langs/goenv
+    git clone -q $GH_URL/wfarr/goenv.git             $P6_SRC_GH_DIR/goenv
 
     echo "Java"
-    git clone -q https://github.com/gcuisinier/jenv.git         $THOME/.repos/langs/jenv
+    git clone -q $GH_URL/gcuisinier/jenv.git         $P6_SRC_GH_DIR/jenv
 
     echo "R"
-    git clone -q https://github.com/viking/Renv.git             $THOME/.repos/langs/Renv
-    mkdir -p $THOME/.repos/langs/Renv/plugins
-    git clone -q https://github.com/viking/R-build.git          $THOME/.repos/langs/Renv/plugins/R-build
+    git clone -q $GH_URL/viking/Renv.git             $P6_SRC_GH_DIR/Renv
+    git clone -q $GH_URL/viking/R-build.git          $P6_SRC_GH_DIR/R-build
 
     echo "Scala"
-    git clone -q https://github.com/scalaenv/scalaenv.git       $THOME/.repos/langs/scalaenv
+    git clone -q $GH_URL/scalaenv/scalaenv.git       $P6_SRC_GH_DIR/scalaenv
 
     echo "Lua"
-    git clone -q https://github.com/cehoffman/luaenv.git        $THOME/.repos/langs/luaenv
-    mkdir -p $THOME/.repos/langs/luaenv/plugins
-    git clone -q https://github.com/cehoffman/lua-build.git     $THOME/.repos/langs/luaenv/plugins/lua-build
+    git clone -q $GH_URL/cehoffman/luaenv.git        $P6_SRC_GH_DIR/luaenv
+    git clone -q $GH_URL/cehoffman/lua-build.git     $P6_SRC_GH_DIR/lua-build
 
     echo "zplug"
-    git clone -q https://github.com/b4b4r07/zplug.git           $THOME/.repos/zsh/zplug
+    git clone -q $GH_URL/b4b4r07/zplug.git           $P6_SRC_GH_DIR/zsh/zplug
 
     echo "zpresto"
-    git clone -q https://github.com/sorin-ionescu/prezto.git    $THOME/.repos/zsh/zprezto
+    git clone -q $GH_URL/sorin-ionescu/prezto.git    $P6_SRC_GH_DIR/zsh/zprezto
 
     echo "Transfering"
     $SUDO rsync \
@@ -136,13 +145,13 @@ main() {
 	  $THOME/ $HOME/
 
     # symklink
-    (cd $HOME ; ln -s .repos/vendor/pgollucci/emacs .emacs.d)
-    (cd $HOME/.emacs.d/defuns ; ln -s $HOME/.repos/vendor/magnars/.emacs.d/defuns/* .)
+    (cd $HOME ; ln -s dev/src/github.com/pgollucci/emacs .emacs.d)
+    (cd $HOME/.emacs.d/defuns ; ln -s $HOME/dev/src/github.com/magnars/.emacs.d/defuns/* .)
 
     #### Private Repo
     if [ $Private -eq 1 ]; then
         echo "Private bits"
-        ( cd $HOME ; git clone -q https://github.com/pgollucci/home-private.git $HOME/.private )
+        ( cd $HOME ; git clone -q $GH_URL/$USER/home-private.git $HOME/.private )
 	(
 	    cd $HOME/.ssh
 	    ln -s $HOME/.private/ssh/2/id* .
@@ -150,7 +159,7 @@ main() {
 	)
 
 	mkdir $HOME/.aws
-	(cd $HOME/.aws ; ln -s .private/aws/map-p6 .)
+	(cd $HOME/.aws ; ln -s .private/aws/map-$USER .)
 
         echo "SSH Pub Keys"
         cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys

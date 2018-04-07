@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export RENV_ROOT=$HOME/.repos/langs/Renv
+    export RENV_ROOT=$P6_SRC_GH_DIR/Renv
     path_if $RENV_ROOT/bin
 
     if [ -x $RENV_ROOT/bin/Renv ]; then

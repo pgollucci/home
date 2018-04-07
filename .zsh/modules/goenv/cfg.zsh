@@ -2,11 +2,12 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export GOENV_ROOT=$HOME/.repos/langs/goenv
+    export GOENV_ROOT=$P6_SRC_GH_DIR/goenv
     path_if $GOENV_ROOT/bin
 
     if [ -x $GOENV_ROOT/bin/goenv ]; then
       export HAS_GOENV=1
+      export GOPATH=$HOME/dev
       eval "$(goenv init - )"
     fi
 }

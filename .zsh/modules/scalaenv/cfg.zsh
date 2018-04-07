@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export SCALAENV_ROOT=$HOME/.repos/langs/scalaenv
+    export SCALAENV_ROOT=$P6_SRC_GH_DIR/scalaenv
     path_if $SCALAENV_ROOT/bin
 
     if [ -x $SCALAENV_ROOT/bin/scalaenv ]; then

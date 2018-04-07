@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export JENV_ROOT=$HOME/.repos/langs/jenv
+    export JENV_ROOT=$P6_SRC_GH_DIR/jenv
     path_if $JENV_ROOT/bin
 
     if [ -x $JENV_ROOT/bin/jenv ]; then

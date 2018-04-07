@@ -62,7 +62,7 @@ default_path() {
 default_cd_aliases() {
 
     local d
-    for d in $HOME/dev/repos/gh $HOME/dev/repos/gh/*; do
+    for d in $P6_SRC_DIR $P6_SRC_GH_DIR; do
 	cd_make_aliases "$d"
     done
 }

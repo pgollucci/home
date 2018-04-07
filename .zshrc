@@ -23,7 +23,11 @@ __load() {
 
     ZDOTDIR=$HOME
     ZSH_DIR=$ZDOTDIR/.zsh
-    ZPLUG_ROOT=$ZDOTDIR/.repos/zsh/zplug
+
+    P6_SRC_DIR=$HOME/dev/src
+    P6_SRC_GH_DIR=$P6_SRC_DIR/github.com
+
+    ZPLUG_ROOT=$P6_SRC_GH_DIR/zsh/zplug
     ZPLUG_HOME=$ZPLUG_ROOT
 
     . $ZSH_DIR/lib/util.zsh

@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export LUAENV_ROOT=$HOME/.repos/langs/luaenv
+    export LUAENV_ROOT=$P6_SRC_GH_DIR/luaenv
     path_if $LUAENV_ROOT/bin
 
     if [ -x $LUAENV_ROOT/bin/luaenv ]; then

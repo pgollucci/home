@@ -2,9 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export VIRTUAL_ENV_DISABLE_PROMPT=1
-
-    export PYENV_ROOT=$HOME/.repos/langs/pyenv
+    export PYENV_ROOT=$P6_SRC_GH_DIR/pyenv
     path_if $PYENV_ROOT/bin
 
     if [ -x $PYENV_ROOT/bin/pyenv ]; then

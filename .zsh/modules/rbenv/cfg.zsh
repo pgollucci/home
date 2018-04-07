@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export RBENV_ROOT=$HOME/.repos/langs/rbenv
+    export RBENV_ROOT=$P6_SRC_GH_DIR/rbenv
     path_if $RBENV_ROOT/bin
 
     if [ -x $RBENV_ROOT/bin/rbenv ]; then

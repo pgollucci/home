@@ -4,7 +4,7 @@ main() {
 
     local gh=https://github.com
     local gh_api=https://api.github.com
-    local orgs_dir=$HOME/dev/repos/gh
+    local orgs_dir=$P6_SRC_GH_DIR
 
     local orgs=" \
 airbrb \
