@@ -60,6 +60,12 @@ main() {
     $SUDO mkdir $THOME
     $SUDO chown $USER $THOME
 
+    echo "Cloning Repos"
+    GH_URL=https://github.com
+
+    echo "home"
+    git clone -q $GH_URL/pgollucci/home.git          $THOME
+
     echo "Dirs"
     mkdir $THOME/.zcache
 
@@ -71,17 +77,6 @@ main() {
     P6_SRC_ME_DIR=$P6_SRC_GH_DIR/$USER
 
     mkdir -p $P6_SRC_GH_DIR $P6_SRC_ASF_DIR $P6_SRC_FBSD_DIR $P6_SRC_ME_DIR
-    mkdir -p $P6_SRC_GH_DIR/rbenv/plugins
-    mkdir -p $P6_SRC_GH_DIR/plenv/plugins
-    mkdir -p $P6_SRC_GH_DIR/Renv/plugins
-    mkdir -p $P6_SRC_GH_DIR/luaenv/plugins
-
-    GH_URL=https://github.com
-
-    echo "Cloning Repos"
-
-    echo "home"
-    git clone -q $GH_URL/pgollucci/home.git          $THOME
 
     echo "emacs"
     git clone -q $GH_URL/pgollucci/emacs.git         $P6_SRC_ME_DIR/emacs
@@ -117,10 +112,15 @@ main() {
     git clone -q $GH_URL/cehoffman/lua-build.git     $P6_SRC_GH_DIR/lua-build
 
     echo "zplug"
-    git clone -q $GH_URL/b4b4r07/zplug.git           $P6_SRC_GH_DIR/zsh/zplug
+    git clone -q $GH_URL/b4b4r07/zplug.git           $P6_SRC_GH_DIR/zplug/zplug
 
     echo "zpresto"
-    git clone -q $GH_URL/sorin-ionescu/prezto.git    $P6_SRC_GH_DIR/zsh/zprezto
+    git clone -q $GH_URL/sorin-ionescu/prezto.git    $P6_SRC_GH_DIR/sorin-ionescu/prezto
+
+    mkdir -p $P6_SRC_GH_DIR/rbenv/plugins
+    mkdir -p $P6_SRC_GH_DIR/plenv/plugins
+    mkdir -p $P6_SRC_GH_DIR/Renv/plugins
+    mkdir -p $P6_SRC_GH_DIR/luaenv/plugins
 
     echo "Transfering"
     $SUDO rsync \
@@ -150,8 +150,8 @@ main() {
 
     #### Private Repo
     if [ $Private -eq 1 ]; then
-        echo "Private bits"
-        ( cd $HOME ; git clone -q $GH_URL/$USER/home-private.git $HOME/.private )
+	echo "Private bits"
+	( cd $HOME ; git clone -q $GH_URL/$USER/home-private.git $HOME/.private )
 	(
 	    cd $HOME/.ssh
 	    ln -s $HOME/.private/ssh/2/id* .
@@ -161,8 +161,8 @@ main() {
 	mkdir $HOME/.aws
 	(cd $HOME/.aws ; ln -s .private/aws/map-$USER .)
 
-        echo "SSH Pub Keys"
-        cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
+	echo "SSH Pub Keys"
+	cat $HOME/.private/ssh/2/id*.pub >> $HOME/.ssh/authorized_keys
 
 	rm -rf $HOME/.private
     fi

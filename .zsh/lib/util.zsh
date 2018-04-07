@@ -1,11 +1,11 @@
 zprezto_load() {
 
-    load_file "$P6_SRC_GH_DIR/zsh/zprezto/init.zsh"
+    load_file "$P6_SRC_GH_DIR/sorin-ionescu/prezto/init.zsh"
 }
 
 zplug_load() {
 
-    load_file "$P6_SRC_GH_DIR/zsh/zplug/init.zsh"
+    load_file "$P6_SRC_GH_DIR/zplug/zplug/init.zsh"
 
     zprezto_load
 }
