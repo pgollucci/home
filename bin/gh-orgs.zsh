@@ -87,9 +87,10 @@ vmware \
 yahoo \
 zeromq \
 "
+
     local org
     for org in $(echo $orgs); do
-	gh_clone_org_repos "$gh" "$gh_api" "$org" "$orgs_dir" "" "2"
+	gh_api_org_repos_clone "$gh" "$gh_api" "$org" "$orgs_dir" "" "2"
     done
 }
 

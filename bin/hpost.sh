@@ -7,7 +7,7 @@ main() {
     $HOME/bin/hlangs.sh install
     $HOME/bin/hpip.sh
     $HOME/bin/hcpan.sh
-    $HOME/bin/repos-mine.zsh
+    $HOME/bin/gh-orgs.zsh
     $HOME/bin/hmisc.sh
 }
 

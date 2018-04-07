@@ -2,7 +2,7 @@ __setup() {
 
     [ -n "$DISABLE_ENVS" ] && return
 
-    export PYENV_ROOT=$P6_SRC_GH_DIR/pyenv
+    export PYENV_ROOT=$P6_SRC_GH_DIR/pyenv/pyenv
     path_if $PYENV_ROOT/bin
 
     if [ -x $PYENV_ROOT/bin/pyenv ]; then
