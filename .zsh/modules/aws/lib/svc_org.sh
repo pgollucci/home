@@ -1,4 +1,4 @@
-#    local subject="/C=US/ST=MD/L=Upper Marlboro/O=${AWS_ORG}/OU=Technology/CN=$account_alias"
+#    local subject="/C=US/ST=MD/L=Upper Marlboro/O=${AWS_ORG}/OU=Technology/CN=$account_aliaS"
 aws_org_account_make() {
     local org="$1"
     local account_email="$2"
@@ -12,11 +12,12 @@ aws_org_account_make() {
     local policy_arn="${10:-arn:aws:iam::aws:policy/AdministratorAccess}"
 
     # lookup account, if not found, make it
-    aws_org_account_create_or_fetch "$account_alias" "$account_email"
+    local account_id=$(aws_org_account_create_or_fetch "$account_alias" "$account_email")
 
+set -x
     # configure: iam password policy
     aws_org_run_as "$account_alias" "aws_iam_password_policy_default"
-
+return
     # configure: iam account signin link
     aws_org_run_as "$account_alias" "aws_iam_signin_link $account_alias"
 
@@ -61,7 +62,7 @@ aws_org_account_create_or_fetch() {
     local account_alias="$1"
     local account_email="$2"
 
-    local account_id=$(aws_util_account_alias_to_id "$account_alias")
+    local account_id=$(aws_util_account_alias_to_id "$account_alias" "$AWS_ACCOUNT_MAP")
     if [ -z "$account_id" ]; then
 	account_id=$(aws_org_account_create "$account_email" "$account_alias")
 	aws_util_account_map "$account_id" "$account_alias"
@@ -117,11 +118,11 @@ aws_org_account_wait_for() {
 }
 
 aws_org_run_as() {
-    local alias="$1"
+    local account_alias="$1"
     local cmd="$2"
 
     # Get Privs
-    aws_sts_org_su "$alias"
+    aws_sts_org_su "$account_alias" "us-east-1" "json" "$AWS_ACCOUNT_MAP" "OrganizationAccountAccessRole" "$AWS_ROLE_SESSION_NAME"
 
     echo "$cmd"
     eval "$cmd"
