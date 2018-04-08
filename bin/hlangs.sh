@@ -22,6 +22,7 @@ install_envs() {
     echo "java:"
     brew cask install $java_ver
     brew cask install $java_ver_dev
+    brew cask install gradle
 
     echo "R:"
     Renv install $R_ver
