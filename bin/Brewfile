@@ -1,13 +1,15 @@
 tap 'caskroom/cask'
 tap 'caskroom/versions'
 
-tap 'homebrew/science'
-
+brew 'mu', args: ['with-emacs']
 tap 'd12frosted/emacs-plus'
 brew 'emacs-plus', args: ['without-spacemacs-icon']
 
 tap 'wallix/awless'
 brew 'awless'
+
+tap 'sbdchd/skim'
+brew 'skim'
 
 cask 'xquartz'
 
@@ -45,7 +47,6 @@ brew 'innotop'
 brew 'irssi'
 brew 'jq'
 brew 'lsof'
-brew 'mu', args: ['with-emacs']
 brew 'mysql'
 brew 'nmap'
 brew 'offlineimap'
@@ -53,7 +54,6 @@ brew 'pass'
 brew 'pinentry-mac'
 brew 'peco'
 brew 'postgresql'
-brew 'sbdchd/skim/skim'
 brew 'sqlite'
 brew 'subversion'
 brew 'swaks'

@@ -44,7 +44,7 @@ main() {
     brew bundle --file=$HOME/bin/Brewfile
     brew prune
     PATH=$OLD_PATH
-    export $PATH
+    export PATH=$PATH
 }
 
 main "$@"
