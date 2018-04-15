@@ -59,7 +59,7 @@ gh_api_user_repos_list() {
     local user="$2"
     local auth="$3"
 
-    local repos=$(gh_paginate "${gh_api}/user/repos?type=owner" "$auth")
+    local repos=$(gh_paginate "${gh_api}/users/$user/repos?type=owner" "$auth")
     echo $repos | _gh_repos_extract "$user"
 }
 
@@ -78,8 +78,7 @@ gh_api_org_repos_clone() {
     local parallel="${6:-8}"
 
     local repos=$(gh_api_org_repos_list "$gh_api" "$org" "$auth")
-
-    run_parallel "0" "$parallel" "$repos" "gh_clone_or_pull_repo" "$gh" "$org" "$dir"
+    run_parallel "0" "$parallel" "$repos" "gh_api_repo_clone_or_pull" "$gh" "$org" "$dir"
 }
 
 gh_api_user_repos_clone() {
@@ -90,8 +89,7 @@ gh_api_user_repos_clone() {
     local auth="$5"
 
     local repos=$(gh_api_user_repos_list  "$gh_api" "$user" "$auth")
-
-    run_parallel "0" "8" "$repos" "gh_clone_or_pull_repo" "$gh" "$user" "$dir"
+    run_parallel "0" "8" "$repos" "gh_api_repo_clone_or_pull" "$gh" "$user" "$dir"
 }
 
 gh_api_repo_clone_or_pull() {
