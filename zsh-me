@@ -1,0 +1,35 @@
+p6dfz::user::modules() {
+  Modules=(
+    p6m7g8/p6df-shell 
+    p6m7g8/p6df-zsh p6m7g8/p6df-bash
+    p6m7g8/p6df-sudo p6m7g8/p6df-homebrew
+    p6m7g8/p6df-git p6m7g8/p6df-github p6m7g8/p6df-svn
+    p6m7g8/p6df-aws p6m7g8/p6df-irc
+    p6m7g8/p6df-emacs p6m7g8/p6df-vim
+    p6m7g8/p6df-dev p6m7g8/p6df-db p6m7g8/p6df-security
+    p6m7g8/p6df-python p6m7g8/p6df-go p6m7g8/p6df-ruby p6m7g8/p6df-perl 
+#    p6m7g8/p6df-lua p6m7g8/p6df-java p6m7g8/p6df-scala p6m7g8/p6df-R
+    p6m7g8/p6df-darwin p6m7g8/p6df-macosx
+  )
+}
+
+p6dfz::user::theme() {
+
+    export PAGER=less
+    export LESS=-R
+    export RUBY_SHELL=ripl
+    export DIFF_OPTIONS=-u
+    export MYSQL_PS1="\v \u@\h:\p (\d)>"
+}
+
+p6dfz::user::prompt() {
+
+  PromptLines=(
+    std
+    lang
+    vc
+    cloud
+    dir
+  )
+}
+
