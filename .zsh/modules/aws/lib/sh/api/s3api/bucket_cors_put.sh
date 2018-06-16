@@ -1,7 +1,0 @@
-aws_s3api_bucket_cors_put() {
-    local bucket="$1"
-    local cors_configuration="$2"
-    shift 2
-
-    cond_log_and_run aws s3api put-bucket-cors --bucket $bucket --cors-configuration $cors_configuration "$@"
-}
