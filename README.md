@@ -1,6 +1,6 @@
 #### Philip M. Gollucci's home dir
 
 ## Install
-- See p6m7g8/p6dfz
+- See https://github.com/p6m7g8/p6dfz
 
-## Do not use me
+## Do not use me (directly)
