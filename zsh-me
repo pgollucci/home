@@ -13,7 +13,7 @@
 #
 #<
 ##############################################################################
-p6dfz::user::modules() {
+p6df::user::modules() {
   Modules=(
     p6m7g8/p6df-shell 
     p6m7g8/p6df-zsh p6m7g8/p6df-bash
@@ -35,7 +35,7 @@ p6dfz::user::modules() {
 #
 #<
 ##############################################################################
-p6dfz::user::theme() {
+p6df::user::theme() {
 
     export PAGER=less
     export LESS=-R
@@ -51,7 +51,7 @@ p6dfz::user::theme() {
 #
 #<
 ##############################################################################
-p6dfz::user::prompt() {
+p6df::user::prompt() {
 
   PromptLines=(
     std
