@@ -9,13 +9,13 @@
 ##############################################################################
 #>
 #
-# 
+#
 #
 #<
 ##############################################################################
 p6df::user::modules() {
   Modules=(
-    p6m7g8/p6df-shell 
+    p6m7g8/p6df-shell
     p6m7g8/p6df-zsh p6m7g8/p6df-bash
     p6m7g8/p6df-sudo p6m7g8/p6df-homebrew
     p6m7g8/p6df-git p6m7g8/p6df-github p6m7g8/p6df-svn
@@ -26,6 +26,32 @@ p6df::user::modules() {
     p6m7g8/p6df-java p6m7g8/p6df-lua p6m7g8/p6df-scala p6m7g8/p6df-R
     p6m7g8/p6df-darwin p6m7g8/p6df-macosx
   )
+}
+
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
+p6df::user::modules::pre_init() {
+
+  export P6_AWS_ORG=p6
+  export DAAS_JC_EMAIL=pgollucci@p6m7g8.com
+  export JC_EMAIL=pgollucci@p6m7g8.com
+}
+
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
+p6df::user::modules::post_init() {
+
+  p6_GLOBAL_aws_shortcuts
 }
 
 ##############################################################################
@@ -55,7 +81,8 @@ p6df::user::prompt() {
 
   PromptLines=(
     std
-    lang
+#    lang
+#    env
     vc
     cloud
     dir
