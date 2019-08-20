@@ -20,6 +20,7 @@ p6df::user::modules() {
     p6m7g8/p6df-sudo p6m7g8/p6df-homebrew
     p6m7g8/p6df-git p6m7g8/p6df-github p6m7g8/p6df-svn
     p6m7g8/p6df-aws p6m7g8/p6df-irc
+    p6m7g8/p6df-terraform p6m7g8/p6df-docker
     p6m7g8/p6df-emacs p6m7g8/p6df-vim
     p6m7g8/p6df-dev p6m7g8/p6df-db p6m7g8/p6df-security
     p6m7g8/p6df-python p6m7g8/p6df-node p6m7g8/p6df-go
@@ -82,6 +83,7 @@ p6df::user::prompt() {
   PromptLines=(
     std
     lang
+    tool
     env
     vc
     cloud
