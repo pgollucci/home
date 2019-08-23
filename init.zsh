@@ -4,7 +4,7 @@ p6df::modules::home::home::symlink() {
 
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home/.fullname .fullname
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home/.organization .organization
-  ln -fs $P6_DFZ_SRC_DIR/pgollucci/home/.ssh .ssh
+  ln -fs $P6_DFZ_SRC_DIR/pgollucci/home-private/ssh .ssh
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home/.signature .signature
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home/.gnupg .gnupg
 
