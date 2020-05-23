@@ -13,3 +13,9 @@ p6df::modules::home::home::symlink() {
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home-private/ssh .ssh
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home-private/gnupg .gnupg
 }
+
+p6df::modules::home::init() {
+
+  export HOMEBREW_GITHUB_API_TOKEN=$P6_GH_TOKEN
+}
+

@@ -52,7 +52,6 @@ p6df::user::modules::pre_init() {
 ##############################################################################
 p6df::user::modules::post_init() {
 
-  p6_GLOBAL_aws_shortcuts
 }
 
 ##############################################################################
@@ -64,6 +63,8 @@ p6df::user::modules::post_init() {
 ##############################################################################
 p6df::user::theme() {
 
+    export AWS_PAGER=
+    export EDITOR=vim
     export PAGER=less
     export LESS=-R
     export RUBY_SHELL=ripl
