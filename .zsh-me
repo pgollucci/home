@@ -29,7 +29,7 @@ p6df::user::modules() {
 
     p6m7g8/p6-cirrus-inc
 
-    p6m7g8/p6-stratosphere-inc
+    p6m7g8/p6-stratosphere
   )
 }
 
