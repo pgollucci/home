@@ -69,7 +69,7 @@ p6df::user::modules::post_init() {
 p6df::user::theme() {
 
     export AWS_PAGER=
-    export EDITOR=vim
+    export EDITOR=emacs # zsh will set key bindings based on this
     export PAGER=less
     export LESS=-R
     export RUBY_SHELL=ripl
