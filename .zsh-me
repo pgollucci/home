@@ -27,8 +27,9 @@ p6df::user::modules() {
     p6m7g8/p6df-java p6m7g8/p6df-lua p6m7g8/p6df-scala p6m7g8/p6df-R
     p6m7g8/p6df-darwin p6m7g8/p6df-macosx
 
-    p6m7g8/p6-cirrus-inc
+    p6m7g8/p6df-jc
 
+    p6m7g8/p6-cirrus-inc
     p6m7g8/p6-stratosphere
   )
 }
