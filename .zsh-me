@@ -40,8 +40,6 @@ p6df::user::modules() {
   )
 }
 
-#p6df::user::modules() { Modules=(p6m7g8/p6df-projen) }
-
 p6df::user::modules::init::pre() {
 
   export P6_AWS_ORG=p6
@@ -64,10 +62,11 @@ p6df::user::modules::init::post() {
 p6df::user::theme() {
 
     export AWS_PAGER=
-    export EDITOR=emacs # zsh will set key bindings based on this
+    export GH_PAGER=
     export PAGER=less
+    export EDITOR=emacs # zsh will set key bindings based on this
     export LESS=-R
-    export RUBY_SHELL=ripl
+    export RUBY_SHELL=ripe
     export DIFF_OPTIONS=-u
     export MYSQL_PS1="\v \u@\h:\p (\d)>"
 }
@@ -79,39 +78,46 @@ p6df::user::theme() {
 #
 #<
 ##############################################################################
-p6df::user::prompt() {
 
-  PromptLines=(
-    zsh::prompt::std
+p6df::user::prompt::my_langs() {
 
-    node::prompt::line
-    python::prompt::line
-    go::prompt::line
-    ruby::prompt::line
-    perl::prompt::line
+    local node=$(p6df::modules::node::prompt::line)
+    local python=$(p6df::modules::python::prompt::line)
+    local ruby=$(p6df::modules::ruby::prompt::line)
+    local perl=$(p6df::modules::perl::prompt::line)
+    local go=$(p6df::modules::go::prompt::line)
 #    lua::prompt::line
 #    R::prompt::line
 #    java::prompt::line
 
-    helm::prompt::line
-    kubernetes::prompt::line
-    docker::prompt::line
-    terraform::prompt::line
+    p6_echo "langs:\t  $node $python $ruby $perl $go"
+}
 
-    jenkins::prompt::line
-##    jira::prompt::line
+p6df::user::prompt() {
 
-    git::prompt::line
-##    svn::prompt::line
+  PromptLines=(
+    p6df::modules::zsh::prompt::std
 
-    local-trex-main::prompt::line
+    p6df::user::prompt::my_langs
 
-    awscdk::prompt::line
-    aws::prompt::line
-#    azure::prompt::line
-#    gcp::prompt::line
+    p6df::modules::helm::prompt::line
+    p6df::modules::kubernetes::prompt::line
+    p6df::modules::docker::prompt::line
+    p6df::modules::terraform::prompt::line
 
-    zsh::prompt::dir
+    p6df::modules::jenkins::prompt::line
+##    p6df::modules::jira::prompt::line
 
+    p6df::modules::git::prompt::line
+##    p6df::modules::svn::prompt::line
+
+    p6df::modules::local-trex-main::prompt::line
+
+    p6df::modules::awscdk::prompt::line
+    p6df::modules::aws::prompt::line
+#    p6df::modules::azure::prompt::line
+#    p6df::modules::gcp::prompt::line
+
+    p6df::modules::zsh::prompt::dir
   )
 }
