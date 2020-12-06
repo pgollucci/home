@@ -69,6 +69,7 @@ p6df::user::theme() {
     export RUBY_SHELL=ripe
     export DIFF_OPTIONS=-u
     export MYSQL_PS1="\v \u@\h:\p (\d)>"
+    export P6_PROMPT_LANG_ENVS=0
 }
 
 ##############################################################################
@@ -81,16 +82,36 @@ p6df::user::theme() {
 
 p6df::user::prompt::my_langs() {
 
-    local node=$(p6df::modules::node::prompt::line)
-    local python=$(p6df::modules::python::prompt::line)
-    local ruby=$(p6df::modules::ruby::prompt::line)
-    local perl=$(p6df::modules::perl::prompt::line)
-    local go=$(p6df::modules::go::prompt::line)
-#    lua::prompt::line
-#    R::prompt::line
-#    java::prompt::line
+  local node_ver=$(p6_lang_version "node")
+  local python_ver=$(p6_lang_version "py")
+  local go_ver=$(p6_lang_version "go")
+  local ruby_ver=$(p6_lang_version "rb")
+  local perl_ver=$(p6_lang_version "pl")
+  local java_ver=$(p6_lang_version "j")
+  local lua_ver=$(p6_lang_version "lua")
+#  local scala_ver=$(p6_lang_version "scala")
+#  local r_ver=$(p6_lang_version "R")
 
-    p6_echo "langs:\t  $node $python $ruby $perl $go"
+  local langs1="node:$node_ver py:$python_ver go:$go_ver"
+  local langs2="rb:$ruby_ver pl:$perl_ver j:$java_ver lua:$lua_ver"
+  local langs3="scala:$scala_ver r:$r_ver rust:"
+
+  p6_echo "langs1:\t  $langs1
+langs2:\t  $langs2
+langs3:\t  $langs3"
+}
+
+p6df::user::prompt::my_langs_envs() {
+
+    if ! p6_string_eq "$P6_PROMPT_LANG_ENVS" "0"; then
+      p6df::modules::node::nodenv::prompt::line
+      p6df::modules::python::pyenv::prompt::line
+      p6df::modules::python::pipenv::prompt::line
+      p6df::modules::go::goenv::prompt::line
+      p6df::modules::ruby::rbenv::prompt::line
+      p6df::modules::perl::plenv::prompt::line
+      p6df::modules::java::jenv::prompt::line
+    fi
 }
 
 p6df::user::prompt() {
@@ -98,25 +119,22 @@ p6df::user::prompt() {
   PromptLines=(
     p6df::modules::zsh::prompt::std
 
-    p6df::user::prompt::my_langs
+    p6df::modules::git::prompt::line
 
-    p6df::modules::helm::prompt::line
-    p6df::modules::kubernetes::prompt::line
-    p6df::modules::docker::prompt::line
-    p6df::modules::terraform::prompt::line
+    p6df::user::prompt::my_langs
+    p6df::user::prompt::my_langs_envs
 
     p6df::modules::jenkins::prompt::line
-##    p6df::modules::jira::prompt::line
-
-    p6df::modules::git::prompt::line
-##    p6df::modules::svn::prompt::line
-
-    p6df::modules::local-trex-main::prompt::line
-
+    p6df::modules::terraform::prompt::line
     p6df::modules::awscdk::prompt::line
+
+    p6df::modules::kubernetes::prompt::line
+    p6df::modules::helm::prompt::line
+    p6df::modules::docker::prompt::line
+
     p6df::modules::aws::prompt::line
-#    p6df::modules::azure::prompt::line
-#    p6df::modules::gcp::prompt::line
+    p6df::modules::azure::prompt::line
+    p6df::modules::gcp::prompt::line
 
     p6df::modules::zsh::prompt::dir
   )
