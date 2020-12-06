@@ -1,5 +1,19 @@
+######################################################################
+#<
+#
+# Function: p6df::modules::home::version()
+#
+#>
+######################################################################
 p6df::modules::home::version() { echo "0.0.1" }
 
+######################################################################
+#<
+#
+# Function: p6df::modules::home::home::symlink()
+#
+#>
+######################################################################
 p6df::modules::home::home::symlink() {
 
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home/README.md README.md
@@ -14,8 +28,14 @@ p6df::modules::home::home::symlink() {
   ln -fs $P6_DFZ_SRC_DIR/pgollucci/home-private/gnupg .gnupg
 }
 
+######################################################################
+#<
+#
+# Function: p6df::modules::home::init()
+#
+#>
+######################################################################
 p6df::modules::home::init() {
 
   export HOMEBREW_GITHUB_API_TOKEN=$P6_GH_TOKEN
 }
-
