@@ -49,7 +49,8 @@ p6df::user::modules::init::pre() {
 
 p6df::user::modules::init::post() {
 
-  true
+  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
+  p6df::modules::home::init
 }
 
 ##############################################################################

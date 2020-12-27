@@ -21,6 +21,8 @@
 [![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/p6m7g8/home/&style=flat)](https://mergify.io)
 [![codecov](https://codecov.io/gh/p6m7g8/home/branch/master/graph/badge.svg?token=14Yj1fZbew)](https://codecov.io/gh/p6m7g8/home)
 [![Known Vulnerabilities](https://snyk.io/test/github/p6m7g8/home/badge.svg?targetFile=package.json)](https://snyk.io/test/github/p6m7g8/home?targetFile=package.json)
+[![Gihub repo dependents](https://badgen.net/github/dependents-repo/p6m7g8/home)](https://github.com/p6m7g8/home/network/dependents?dependent_type=REPOSITORY)
+[![Gihub package dependents](https://badgen.net/github/dependents-pkg/p6m7g8/home)](https://github.com/p6m7g8/home/network/dependents?dependent_type=PACKAGE)
 
 ## Summary
 
@@ -30,7 +32,7 @@
 
 ## Code of Conduct
 
-- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Code of Conduct](https://github.com/p6m7g8/.github/blob/master/CODE_OF_CONDUCT.md)
 
 ## Changes
 
@@ -42,7 +44,6 @@
 
 - p6df::modules::home::home::symlink()
 - p6df::modules::home::init()
-- p6df::modules::home::version()
 
 
 ## Author

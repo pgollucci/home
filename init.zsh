@@ -1,15 +1,6 @@
 ######################################################################
 #<
 #
-# Function: p6df::modules::home::version()
-#
-#>
-######################################################################
-p6df::modules::home::version() { echo "0.0.1" }
-
-######################################################################
-#<
-#
 # Function: p6df::modules::home::home::symlink()
 #
 #>
@@ -37,5 +28,6 @@ p6df::modules::home::home::symlink() {
 ######################################################################
 p6df::modules::home::init() {
 
+  p6df::util::cdpath::if "$P6_DFZ_SRC_DIR/pgollucci"
   export HOMEBREW_GITHUB_API_TOKEN=$P6_GH_TOKEN
 }
