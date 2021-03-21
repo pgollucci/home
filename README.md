@@ -38,12 +38,15 @@
 
 - [Change Log](CHANGELOG.md)
 
-### Usage
+## Usage
 
-#### init.zsh:
+### home:
+
+#### home/init.zsh:
 
 - p6df::modules::home::home::symlink()
 - p6df::modules::home::init()
+
 
 
 ## Author

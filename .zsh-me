@@ -23,18 +23,17 @@ p6df::user::modules() {
     p6m7g8/p6df-darwin
     p6m7g8/p6df-homebrew
     p6m7g8/p6df-github p6m7g8/p6df-svn
-    p6m7g8/p6df-awscdk8s p6m7g8/p6df-awscdktf
+    p6m7g8/p6df-awscdk p6m7g8/p6df-cdk8s p6m7g8/p6df-cdktf p6m7g8/p6df-projen
     p6m7g8/p6df-azure p6m7g8/p6df-gcp p6m7g8/p6df-oci
     p6m7g8/p6df-lua p6m7g8/p6df-perl p6m7g8/p6df-scala p6m7g8/p6df-R
     p6m7g8/p6df-jenkins p6m7g8/p6df-jira p6m7g8/p6df-slack p6m7g8/p6df-irc
-    p6m7g8/p6df-terraform p6m7g8/p6df-helm p6m7g8/p6df-docker p6m7g8/p6df-projen
+    p6m7g8/p6df-terraform p6m7g8/p6df-helm p6m7g8/p6df-docker
     p6m7g8/p6df-mysql p6m7g8/p6df-pgsql p6m7g8/p6df-sqlserver p6m7g8/p6df-sqlite
     p6m7g8/p6df-vscode p6m7g8/p6df-emacs p6m7g8/p6df-vim
 
     p6m7g8/p6df-dev p6m7g8/p6df-security
     p6m7g8/p6df-macosx
-    p6m7g8/p6df-jc
-    # jc okta
+    p6m7g8/p6df-okta
 
     trexsolutions/p6df-local-trex-main
   )
@@ -42,7 +41,7 @@ p6df::user::modules() {
 
 p6df::user::modules::init::pre() {
 
-  export P6_AWS_ORG=p6
+  export P6_AWS_ORG=trexcoe
   export DAAS_JC_EMAIL=pgollucci@p6m7g8.com
   export JC_EMAIL=pgollucci@p6m7g8.com
 }
@@ -51,6 +50,9 @@ p6df::user::modules::init::post() {
 
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
   p6df::modules::home::init
+
+  p6_aws_cli_organization_activate "$P6_AWS_ORG"
+  export PATH="/usr/local/opt/yq@3/bin:$PATH"
 }
 
 ##############################################################################
