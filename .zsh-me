@@ -94,10 +94,11 @@ p6df::user::prompt::my_langs() {
   local lua_ver=$(p6_lang_version "lua")
 #  local scala_ver=$(p6_lang_version "scala")
 #  local r_ver=$(p6_lang_version "R")
+  local rust_ver=$(p6_lang_version "rust")
 
   local langs1="node:$node_ver py:$python_ver go:$go_ver"
   local langs2="rb:$ruby_ver pl:$perl_ver j:$java_ver lua:$lua_ver"
-  local langs3="scala:$scala_ver r:$r_ver rust:"
+  local langs3="rust:$rust_ver scala:$scala_ver r:$r_ver"
 
   p6_echo "langs1:\t  $langs1
 langs2:\t  $langs2
@@ -114,6 +115,7 @@ p6df::user::prompt::my_langs_envs() {
       p6df::modules::ruby::rbenv::prompt::line
       p6df::modules::perl::plenv::prompt::line
       p6df::modules::java::jenv::prompt::line
+      p6df::modules::rust::rustenv::prompt::line
     fi
 }
 
