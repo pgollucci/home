@@ -16,24 +16,22 @@
 p6df::user::modules() {
   Modules=(
     p6m7g8/p6df-openssl
-    p6m7g8/p6df-shell
-    p6m7g8/p6df-zsh
+    p6m7g8/p6df-shell p6m7g8/p6df-zsh
     p6m7g8/p6df-sudo
     p6m7g8/p6df-homebrew
     p6m7g8/p6df-darwin
-    p6m7g8/p6df-homebrew
-    p6m7g8/p6df-github p6m7g8/p6df-svn
+    p6m7g8/p6df-github
     p6m7g8/p6df-awscdk p6m7g8/p6df-cdk8s p6m7g8/p6df-cdktf p6m7g8/p6df-projen
     p6m7g8/p6df-azure p6m7g8/p6df-gcp p6m7g8/p6df-oci
     p6m7g8/p6df-lua p6m7g8/p6df-perl p6m7g8/p6df-scala p6m7g8/p6df-R
     p6m7g8/p6df-jenkins p6m7g8/p6df-jira p6m7g8/p6df-slack p6m7g8/p6df-irc
     p6m7g8/p6df-terraform p6m7g8/p6df-helm p6m7g8/p6df-docker
     p6m7g8/p6df-mysql p6m7g8/p6df-pgsql p6m7g8/p6df-sqlserver p6m7g8/p6df-sqlite
-    p6m7g8/p6df-vscode p6m7g8/p6df-emacs p6m7g8/p6df-vim
+    p6m7g8/p6df-vscode
 
-    p6m7g8/p6df-dev p6m7g8/p6df-security
+    p6m7g8/p6df-dev
+    p6m7g8/p6df-security
     p6m7g8/p6df-macosx
-    p6m7g8/p6df-okta
 
     trexsolutions/p6df-local-trex-main
   )
@@ -49,6 +47,7 @@ p6df::user::modules::init::pre() {
 p6df::user::modules::init::post() {
 
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
+  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/github/token"
   p6df::modules::home::init
 
   p6_aws_cli_organization_activate "$P6_AWS_ORG"
@@ -92,17 +91,15 @@ p6df::user::prompt::my_langs() {
   local perl_ver=$(p6_lang_version "pl")
   local java_ver=$(p6_lang_version "j")
   local lua_ver=$(p6_lang_version "lua")
-#  local scala_ver=$(p6_lang_version "scala")
-#  local r_ver=$(p6_lang_version "R")
+  local scala_ver=$(p6_lang_version "scala")
+  local r_ver=$(p6_lang_version "R")
   local rust_ver=$(p6_lang_version "rust")
 
-  local langs1="node:$node_ver py:$python_ver go:$go_ver"
-  local langs2="rb:$ruby_ver pl:$perl_ver j:$java_ver lua:$lua_ver"
-  local langs3="rust:$rust_ver scala:$scala_ver r:$r_ver"
+  local langs1="node:$node_ver go:$go_ver rust:$rust_ver py:$python_ver rb:$ruby_ver"
+  local langs2="j:$java_ver pl:$perl_ver lua:$lua_vers scala:$scala_ver r:$r_ver"
 
-  p6_echo "langs1:\t  $langs1
-langs2:\t  $langs2
-langs3:\t  $langs3"
+  p6_echo "lang:\t  $langs1
+lang:\t  $langs2"
 }
 
 p6df::user::prompt::my_langs_envs() {
