@@ -15,18 +15,40 @@
 ##############################################################################
 p6df::user::modules() {
   Modules=(
-    p6m7g8/p6df-openssl
-    p6m7g8/p6df-shell p6m7g8/p6df-zsh
+    p6m7g8/p6df-shell 
+    p6m7g8/p6df-zsh
     p6m7g8/p6df-sudo
-    p6m7g8/p6df-homebrew
+    p6m7g8/p6df-homebrew 
     p6m7g8/p6df-darwin
     p6m7g8/p6df-github
-    p6m7g8/p6df-awscdk p6m7g8/p6df-cdk8s p6m7g8/p6df-cdktf p6m7g8/p6df-projen
-    p6m7g8/p6df-azure p6m7g8/p6df-gcp p6m7g8/p6df-oci
-    p6m7g8/p6df-lua p6m7g8/p6df-perl p6m7g8/p6df-scala p6m7g8/p6df-R
-    p6m7g8/p6df-jenkins p6m7g8/p6df-jira p6m7g8/p6df-slack p6m7g8/p6df-irc
-    p6m7g8/p6df-terraform p6m7g8/p6df-helm p6m7g8/p6df-docker
-    p6m7g8/p6df-mysql p6m7g8/p6df-pgsql p6m7g8/p6df-sqlserver p6m7g8/p6df-sqlite
+    p6m7g8/p6df-awscdk
+    p6m7g8/p6df-cdk8s
+    p6m7g8/p6df-cdktf
+    p6m7g8/p6df-projen
+    p6m7g8/p6df-aws
+    p6m7g8/p6df-azure
+    p6m7g8/p6df-gcp
+    p6m7g8/p6df-oci
+    p6m7g8/p6df-node
+    p6m7g8/p6df-python
+    p6m7g8/p6df-go
+    p6m7g8/p6df-ruby
+    p6m7g8/p6df-rust
+    p6m7g8/p6df-perl
+    p6m7g8/p6df-lua
+    p6m7g8/p6df-scala
+    p6m7g8/p6df-R
+    p6m7g8/p6df-jenkins
+    p6m7g8/p6df-jira
+    p6m7g8/p6df-slack
+    p6m7g8/p6df-irc
+    p6m7g8/p6df-terraform
+    p6m7g8/p6df-helm
+    p6m7g8/p6df-docker
+    p6m7g8/p6df-mysql
+    p6m7g8/p6df-pgsql
+    p6m7g8/p6df-sqlserver
+    p6m7g8/p6df-sqlite
     p6m7g8/p6df-vscode
 
     p6m7g8/p6df-dev
@@ -39,7 +61,7 @@ p6df::user::modules() {
 
 p6df::user::modules::init::pre() {
 
-  export P6_AWS_ORG=trexcoe
+  export P6_AWS_ORG=p6
   export DAAS_JC_EMAIL=pgollucci@p6m7g8.com
   export JC_EMAIL=pgollucci@p6m7g8.com
 }
@@ -51,7 +73,6 @@ p6df::user::modules::init::post() {
   p6df::modules::home::init
 
   p6_aws_cli_organization_activate "$P6_AWS_ORG"
-  export PATH="/usr/local/opt/yq@3/bin:$PATH"
 }
 
 ##############################################################################
@@ -72,6 +93,7 @@ p6df::user::theme() {
     export DIFF_OPTIONS=-u
     export MYSQL_PS1="\v \u@\h:\p (\d)>"
     export P6_PROMPT_LANG_ENVS=0
+    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 }
 
 ##############################################################################
@@ -96,7 +118,7 @@ p6df::user::prompt::my_langs() {
   local rust_ver=$(p6_lang_version "rust")
 
   local langs1="node:$node_ver go:$go_ver rust:$rust_ver py:$python_ver rb:$ruby_ver"
-  local langs2="j:$java_ver pl:$perl_ver lua:$lua_vers scala:$scala_ver r:$r_ver"
+  local langs2="j:$java_ver pl:$perl_ver lua:$lua_ver scala:$scala_ver r:$r_ver"
 
   p6_echo "lang:\t  $langs1
 lang:\t  $langs2"
