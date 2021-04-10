@@ -29,6 +29,7 @@ p6df::user::modules() {
     p6m7g8/p6df-azure
     p6m7g8/p6df-gcp
     p6m7g8/p6df-oci
+    p6m7g8/p6df-c
     p6m7g8/p6df-node
     p6m7g8/p6df-python
     p6m7g8/p6df-go
@@ -51,7 +52,6 @@ p6df::user::modules() {
     p6m7g8/p6df-sqlite
     p6m7g8/p6df-vscode
 
-    p6m7g8/p6df-dev
     p6m7g8/p6df-security
     p6m7g8/p6df-macosx
 
