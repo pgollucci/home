@@ -1,9 +1,11 @@
+# shellcheck shell=bats
+
 ##############################################################################
-##
+#<
 #
 # See https://github.com/p6m7g8
 #
-##
+#>
 ##############################################################################
 
 ##############################################################################
@@ -15,57 +17,114 @@
 ##############################################################################
 p6df::user::modules() {
   Modules=(
-    p6m7g8/p6df-shell 
-    p6m7g8/p6df-zsh
+    p6m7g8/p6common
+
     p6m7g8/p6df-sudo
-    p6m7g8/p6df-homebrew 
     p6m7g8/p6df-darwin
+    p6m7g8/p6df-homebrew
+
+    p6m7g8/p6df-shell
+    p6m7g8/p6df-zsh
+
+    p6m7g8/p6df-git
     p6m7g8/p6df-github
-    p6m7g8/p6df-awscdk
-    p6m7g8/p6df-cdk8s
-    p6m7g8/p6df-cdktf
-    p6m7g8/p6df-projen
+
+    p6m7g8/p6df-js
+    p6m7g8/p6df-python
+    p6m7g8/p6df-go
+    p6m7g8/p6df-java
+    p6m7g8/p6df-ruby
+    p6m7g8/p6df-rust
+    p6m7g8/p6df-perl
+    p6m7g8/p6df-r
+    p6m7g8/p6df-scala
+    p6m7g8/p6df-lua
+    p6m7g8/p6df-c
+
     p6m7g8/p6df-aws
     p6m7g8/p6df-azure
     p6m7g8/p6df-gcp
     p6m7g8/p6df-oci
-    p6m7g8/p6df-c
-    p6m7g8/p6df-node
-    p6m7g8/p6df-python
-    p6m7g8/p6df-go
-    p6m7g8/p6df-ruby
-    p6m7g8/p6df-rust
-    p6m7g8/p6df-perl
-    p6m7g8/p6df-lua
-    p6m7g8/p6df-scala
-    p6m7g8/p6df-R
-    p6m7g8/p6df-jenkins
-    p6m7g8/p6df-jira
-    p6m7g8/p6df-slack
-    p6m7g8/p6df-irc
-    p6m7g8/p6df-terraform
-    p6m7g8/p6df-helm
-    p6m7g8/p6df-docker
+    p6m7g8/p6df-armkit
+    p6m7g8/p6df-heroku
+
+    p6m7g8/p6df-awscdk
+    p6m7g8/p6df-cdk8s
+    p6m7g8/p6df-cdktf
+    p6m7g8/p6df-projen
+    p6m7g8/p6df-rails
+
     p6m7g8/p6df-mysql
+    p6m7g8/p6df-oracle
     p6m7g8/p6df-pgsql
-    p6m7g8/p6df-sqlserver
     p6m7g8/p6df-sqlite
+    p6m7g8/p6df-sqlserver
+
+    p6m7g8/p6df-irc
+    p6m7g8/p6df-slack
+
+    p6m7g8/p6df-databricks
+    p6m7g8/p6df-okta
+
+    p6m7g8/p6df-docker
+    p6m7g8/p6df-kubernetes
+    p6m7g8/p6df-helm
+    p6m7g8/p6df-terraform
+    p6m7g8/p6df-jenkins
+
+    p6m7g8/p6df-jira
+
+    p6m7g8/p6df-wakatime
+    p6m7g8/p6df-vim
     p6m7g8/p6df-vscode
 
-    p6m7g8/p6df-security
     p6m7g8/p6df-macosx
-
-    trexsolutions/p6df-local-trex-main
   )
 }
 
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
+p6df::user::apps() {
+  Apps=(
+    p6m7g8/p6-account-vending-machine
+    p6m7g8/p6-casino-craps
+    p6m7g8/p6-cirrus
+    p6m7g8/p6-docs
+    p6m7g8/p6-namer
+    pgollucci/p6-cdklz
+    p6m7g8/p6-projen-project-awesome-list
+
+    pgollucci/p6-casino-craps
+    pgollucci/p6-cdk8s-hello-world
+    pgollucci/p6-cdktf-hello-world
+    pgollucci/p6-go-hello-world
+  )
+}
+
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
 p6df::user::modules::init::pre() {
 
   export P6_AWS_ORG=p6
-  export DAAS_JC_EMAIL=pgollucci@p6m7g8.com
-  export JC_EMAIL=pgollucci@p6m7g8.com
 }
 
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
 p6df::user::modules::init::post() {
 
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
@@ -84,16 +143,17 @@ p6df::user::modules::init::post() {
 ##############################################################################
 p6df::user::theme() {
 
-    export AWS_PAGER=
-    export GH_PAGER=
-    export PAGER=less
-    export EDITOR=emacs # zsh will set key bindings based on this
-    export LESS=-R
-    export RUBY_SHELL=ripe
-    export DIFF_OPTIONS=-u
-    export MYSQL_PS1="\v \u@\h:\p (\d)>"
-    export P6_PROMPT_LANG_ENVS=0
-    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+  export AWS_PAGER=
+  export GH_PAGER=
+  export GIT_PAGER=
+  export PAGER=less
+  export EDITOR=emacs # zsh will set key bindings based on this
+  export LESS=-R
+  export RUBY_SHELL=ripe
+  export DIFF_OPTIONS=-u
+  export MYSQL_PS1="\v \u@\h:\p (\d)>"
+  export P6_PROMPT_LANG_ENVS=0
+  export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 }
 
 ##############################################################################
@@ -107,15 +167,16 @@ p6df::user::theme() {
 p6df::user::prompt::my_langs() {
 
   local node_ver=$(p6_lang_version "node")
-  local python_ver=$(p6_lang_version "py")
   local go_ver=$(p6_lang_version "go")
-  local ruby_ver=$(p6_lang_version "rb")
-  local perl_ver=$(p6_lang_version "pl")
-  local java_ver=$(p6_lang_version "j")
-  local lua_ver=$(p6_lang_version "lua")
-  local scala_ver=$(p6_lang_version "scala")
-  local r_ver=$(p6_lang_version "R")
   local rust_ver=$(p6_lang_version "rust")
+  local python_ver=$(p6_lang_version "py")
+  local ruby_ver=$(p6_lang_version "rb")
+
+  local java_ver=$(p6_lang_version "j")
+  local perl_ver=$(p6_lang_version "pl")
+  #  local lua_ver=$(p6_lang_version "lua")
+  #  local scala_ver=$(p6_lang_version "scala")
+  #  local r_ver=$(p6_lang_version "R")
 
   local langs1="node:$node_ver go:$go_ver rust:$rust_ver py:$python_ver rb:$ruby_ver"
   local langs2="j:$java_ver pl:$perl_ver lua:$lua_ver scala:$scala_ver r:$r_ver"
@@ -124,20 +185,34 @@ p6df::user::prompt::my_langs() {
 lang:\t  $langs2"
 }
 
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
 p6df::user::prompt::my_langs_envs() {
 
-    if ! p6_string_eq "$P6_PROMPT_LANG_ENVS" "0"; then
-      p6df::modules::node::nodenv::prompt::line
-      p6df::modules::python::pyenv::prompt::line
-      p6df::modules::python::pipenv::prompt::line
-      p6df::modules::go::goenv::prompt::line
-      p6df::modules::ruby::rbenv::prompt::line
-      p6df::modules::perl::plenv::prompt::line
-      p6df::modules::java::jenv::prompt::line
-      p6df::modules::rust::rustenv::prompt::line
-    fi
+  if ! p6_string_eq "$P6_PROMPT_LANG_ENVS" "0"; then
+    p6df::modules::node::nodenv::prompt::line
+    p6df::modules::python::pyenv::prompt::line
+    p6df::modules::python::pipenv::prompt::line
+    p6df::modules::go::goenv::prompt::line
+    p6df::modules::ruby::rbenv::prompt::line
+    p6df::modules::perl::plenv::prompt::line
+    p6df::modules::java::jenv::prompt::line
+    p6df::modules::rust::rustenv::prompt::line
+  fi
 }
 
+##############################################################################
+#>
+#
+#
+#
+#<
+##############################################################################
 p6df::user::prompt() {
 
   PromptLines=(
