@@ -104,6 +104,9 @@ p6df::user::apps() {
     pgollucci/p6-cdktf-hello-world
     pgollucci/p6-go-hello-world
   )
+
+  p6df::util::cdpath::if $P6_DFZ_SRC_APP_DIR/p6m7g8
+  p6df::util::cdpath::if $P6_DFZ_SRC_APP_DIR/pgollucci
 }
 
 ##############################################################################
