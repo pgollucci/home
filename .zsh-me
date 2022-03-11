@@ -157,6 +157,8 @@ p6df::user::theme() {
   export MYSQL_PS1="\v \u@\h:\p (\d)>"
   export P6_PROMPT_LANG_ENVS=0
   export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
+  alias pjp="$P6_DFZ_SRC_APPS_DIR/pgollucci/projen/bin/projen"
 }
 
 ##############################################################################
