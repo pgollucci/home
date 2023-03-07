@@ -1,9 +1,9 @@
-# shellcheck shell=bats
+# shellcheck shell=bash
 
 ##############################################################################
 #<
 #
-# See https://github.com/p6m7g8
+# See https://github.com/p6m7g8-dotfiles
 #
 #>
 ##############################################################################
@@ -16,78 +16,103 @@
 #<
 ##############################################################################
 p6df::user::modules() {
-  Modules=(
-    p6m7g8-dotfiles/p6common
 
-    p6m7g8-dotfiles/p6df-sudo
-    p6m7g8-dotfiles/p6df-darwin
-    p6m7g8-dotfiles/p6df-homebrew
+  p6df::core::module::add::lazy p6df-zsh
+  p6df::core::module::add::lazy p6df-darwin
+  p6df::core::module::add::lazy p6df-docker
+  p6df::core::module::add::lazy p6df-git
+  p6df::core::module::add::lazy p6df-github
+  p6df::core::module::add::lazy p6df-kubernetes
+  p6df::core::module::add::lazy p6df-macosx
+  p6df::core::module::add::lazy p6df-nmap
+  # p6df::core::module::add::lazy p6df-okta
+  # p6df::core::module::add::lazy p6df-pagerduty
+  # p6df::core::module::add::lazy p6df-proxy
+  # p6df::core::module::add::lazy p6df-pgsql
+  # p6df::core::module::add::lazy p6df-python
+  # p6df::core::module::add::lazy p6df-rails
+  # p6df::core::module::add::lazy p6df-ruby
+  p6df::core::module::add::lazy p6df-shell
+  # p6df::core::module::add::lazy p6df-slack
+  # p6df::core::module::add::lazy p6df-sqlite
+  # p6df::core::module::add::lazy p6df-sudo
+  # p6df::core::module::add::lazy p6df-teleport
+  # p6df::core::module::add::lazy p6df-tmux
+  # p6df::core::module::add::lazy p6df-terraform
+  # p6df::core::module::add::lazy p6df-vim
+  # p6df::core::module::add::lazy p6df-vscode
+  p6df::core::module::add::lazy p6df-aws
 
-    p6m7g8-dotfiles/p6df-shell
-    p6m7g8-dotfiles/p6df-zsh
+  # p6df::core::module::add::lazy p6df-R
+  # p6df::core::module::add::lazy p6df-armkit
+  # p6df::core::module::add::lazy p6df-awscdk
+  # p6df::core::module::add::lazy p6df-azure
+  # p6df::core::module::add::lazy p6df-bash
+  # p6df::core::module::add::lazy p6df-c
+  # p6df::core::module::add::lazy p6df-carerev
+  # p6df::core::module::add::lazy p6df-cdk8s
+  # p6df::core::module::add::lazy p6df-cdktf
+  # p6df::core::module::add::lazy p6df-comet
+  # p6df::core::module::add::lazy p6df-darwin
+  # p6df::core::module::add::lazy p6df-databricks
+  # p6df::core::module::add::lazy p6df-datadog
+  # p6df::core::module::add::lazy p6df-docker
+  # p6df::core::module::add::lazy p6df-elasticsearch
+  # p6df::core::module::add::lazy p6df-freebsd-bugzilla
+  # p6df::core::module::add::lazy p6df-gcp
+  # p6df::core::module::add::lazy p6df-git
+  # p6df::core::module::add::lazy p6df-github
+  # p6df::core::module::add::lazy p6df-go
+  # p6df::core::module::add::lazy p6df-graphql
+  # p6df::core::module::add::lazy p6df-h20
+  # p6df::core::module::add::lazy p6df-helm
+  # p6df::core::module::add::lazy p6df-heroku
+  # p6df::core::module::add::lazy p6df-irc
+  # p6df::core::module::add::lazy p6df-java
+  # p6df::core::module::add::lazy p6df-jenkins
+  # p6df::core::module::add::lazy p6df-jira
+  # p6df::core::module::add::lazy p6df-js
+  # p6df::core::module::add::lazy p6df-julia
+  # p6df::core::module::add::lazy p6df-jupyter
+  # p6df::core::module::add::lazy p6df-kafka
+  # p6df::core::module::add::lazy p6df-kibana
+  # p6df::core::module::add::lazy p6df-kubernetes
+  # p6df::core::module::add::lazy p6df-macosx
+  # p6df::core::module::add::lazy p6df-nmap
+  # p6df::core::module::add::lazy p6df-oci
+  # p6df::core::module::add::lazy p6df-okta
+  # p6df::core::module::add::lazy p6df-oracle
+  # p6df::core::module::add::lazy p6df-pagerduty
+  # p6df::core::module::add::lazy p6df-perl
+  # p6df::core::module::add::lazy p6df-proxy
+  # p6df::core::module::add::lazy p6df-pgsql
+  # p6df::core::module::add::lazy p6df-poudriere
+  # p6df::core::module::add::lazy p6df-projen
+  # p6df::core::module::add::lazy p6df-python
+  # p6df::core::module::add::lazy p6df-rails
+  # p6df::core::module::add::lazy p6df-redis
+  # p6df::core::module::add::lazy p6df-rollbar
+  # p6df::core::module::add::lazy p6df-ruby
+  p6df::core::module::add::lazy p6df-rust
+  # p6df::core::module::add::lazy p6df-scala
+  # p6df::core::module::add::lazy p6df-secoda
+  # p6df::core::module::add::lazy p6df-shell
+  # p6df::core::module::add::lazy p6df-short
+  # p6df::core::module::add::lazy p6df-slab
+  # p6df::core::module::add::lazy p6df-slack
+  # p6df::core::module::add::lazy p6df-snowflake
+  # p6df::core::module::add::lazy p6df-solidity
+  # p6df::core::module::add::lazy p6df-sqlite
+  # p6df::core::module::add::lazy p6df-sqlserver
+  # p6df::core::module::add::lazy p6df-sudo
+  # p6df::core::module::add::lazy p6df-teleport
+  # p6df::core::module::add::lazy p6df-tmux
+  # p6df::core::module::add::lazy p6df-terraform
+  # p6df::core::module::add::lazy p6df-vim
+  # p6df::core::module::add::lazy p6df-vscode
+  # p6df::core::module::add::lazy p6df-zsh
 
-    p6m7g8-dotfiles/p6df-git
-    p6m7g8-dotfiles/p6df-github
-
-    p6m7g8-dotfiles/p6df-js
-    p6m7g8-dotfiles/p6df-python
-    p6m7g8-dotfiles/p6df-go
-    p6m7g8-dotfiles/p6df-java
-    p6m7g8-dotfiles/p6df-ruby
-    p6m7g8-dotfiles/p6df-rust
-    p6m7g8-dotfiles/p6df-perl
-    p6m7g8-dotfiles/p6df-r
-    p6m7g8-dotfiles/p6df-scala
-    p6m7g8-dotfiles/p6df-lua
-    p6m7g8-dotfiles/p6df-c
-
-    p6m7g8-dotfiles/p6df-aws
-    p6m7g8-dotfiles/p6df-azure
-    p6m7g8-dotfiles/p6df-gcp
-    p6m7g8-dotfiles/p6df-oci
-
-    p6m7g8-dotfiles/p6df-awscdk
-    p6m7g8-dotfiles/p6df-cdk8s
-    p6m7g8-dotfiles/p6df-cdktf
-    p6m7g8-dotfiles/p6df-projen
-
-    p6m7g8-dotfiles/p6df-mysql
-    p6m7g8-dotfiles/p6df-oracle
-    p6m7g8-dotfiles/p6df-pgsql
-    p6m7g8-dotfiles/p6df-sqlite
-    p6m7g8-dotfiles/p6df-sqlserver
-
-    p6m7g8-dotfiles/p6df-irc
-    p6m7g8-dotfiles/p6df-slack
-
-    p6m7g8-dotfiles/p6df-docker
-    p6m7g8-dotfiles/p6df-kubernetes
-    p6m7g8-dotfiles/p6df-helm
-    p6m7g8-dotfiles/p6df-terraform
-    p6m7g8-dotfiles/p6df-jenkins
-
-    p6m7g8-dotfiles/p6df-jira
-
-    p6m7g8-dotfiles/p6df-wakatime
-    p6m7g8-dotfiles/p6df-vim
-    p6m7g8-dotfiles/p6df-vscode
-
-    p6m7g8-dotfiles/p6df-macosx
-
-    ## !! ALPHA !!
-    p6m7g8-dotfiles/p6df-armkit
-    p6m7g8-dotfiles/p6df-databricks
-    p6m7g8-dotfiles/p6df-datadog
-    p6m7g8-dotfiles/p6df-elastic.co
-    p6m7g8-dotfiles/p6df-heroku
-    p6m7g8-dotfiles/p6df-newrelic
-    p6m7g8-dotfiles/p6df-okta
-    p6m7g8-dotfiles/p6df-pagerduty
-    p6m7g8-dotfiles/p6df-rails
-    p6m7g8-dotfiles/p6df-rollbar
-    p6m7g8-dotfiles/p6df-slab
-    p6m7g8-dotfiles/p6df-teleport
-  )
+  p6df::core::module::add::export
 }
 
 ##############################################################################
@@ -97,19 +122,10 @@ p6df::user::modules() {
 #
 #<
 ##############################################################################
-p6df::user::apps() {
-  Apps=(
-    p6m7g8/p6-account-vending-machine
-    p6m7g8/p6-casino-craps
-    p6m7g8/p6-cirrus
-    p6m7g8/p6-docs
-    p6m7g8/p6-namer
-    p6m7g8/p6-cdklz
-    p6m7g8/p6-projen-project-awesome-list
-  )
+p6df::user::prompt() {
 
-  p6df::util::cdpath::if $P6_DFZ_SRC_APP_DIR/p6m7g8
-  p6df::util::cdpath::if $P6_DFZ_SRC_APP_DIR/pgollucci
+  p6df::core::prompt::line::add "p6df::modules::zsh::std::prompt::line"
+  p6df::core::prompt::line::add "p6df::modules::zsh::dir::prompt::line"
 }
 
 ##############################################################################
@@ -121,7 +137,7 @@ p6df::user::apps() {
 ##############################################################################
 p6df::user::modules::init::pre() {
 
-  export P6_AWS_ORG=p6
+  p6_env_export P6_AWS_ORG "p6"
 }
 
 ##############################################################################
@@ -133,11 +149,14 @@ p6df::user::modules::init::pre() {
 ##############################################################################
 p6df::user::modules::init::post() {
 
-  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/github/token"
-  p6df::modules::home::init
+  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
 
-  p6_aws_cli_organization_activate "$P6_AWS_ORG"
+  p6_env_export HOMEBREW_GITHUB_API_TOKEN "$GH_TOKEN"
+
+  p6df::core::path::cd::if $P6_DFZ_SRC_DIR/pgollucci
+  p6df::core::path::cd::if $P6_DFZ_SRC_GH_DIR/p6m7g8
+  p6df::core::path::cd::if $P6_DFZ_SRC_GH_DIR/pgollucci
 }
 
 ##############################################################################
@@ -153,100 +172,12 @@ p6df::user::theme() {
   p6_env_export "GH_PAGER" ""
   p6_env_export "GIT_PAGER" ""
   p6_env_export "PAGER" "less"
+  p6_env_export "MANPAGER" "sh -c 'col -bx | bat -l man -p'"
+
   p6_env_export "EDITOR" "emacs" # zsh will set key bindings based on this
   p6_env_export "LESS" "-R"
   p6_env_export "RUBY_SHELL" "ripe"
   p6_env_export "DIFF_OPTIONS" "-u"
   p6_env_export "MYSQL_PS1" '\v \u@\h:\p (\d)>'
-  p6_env_export "MANPAGER" "sh -c 'col -bx | bat -l man -p'"
-
-  alias pjp="$P6_DFZ_SRC_APPS_DIR/pgollucci/projen/bin/projen"
-}
-
-##############################################################################
-#>
-#
-#
-#
-#<
-##############################################################################
-
-p6df::user::prompt::my_langs() {
-
-  local node_ver=$(p6_lang_version "node")
-  local go_ver=$(p6_lang_version "go")
-#  local rust_ver=$(p6_lang_version "rust")
-  local python_ver=$(p6_lang_version "py")
-  local ruby_ver=$(p6_lang_version "rb")
-
-  local java_ver=$(p6_lang_version "j")
-  local perl_ver=$(p6_lang_version "pl")
-  #  local lua_ver=$(p6_lang_version "lua")
-  #  local scala_ver=$(p6_lang_version "scala")
-  #  local r_ver=$(p6_lang_version "R")
-
-  local langs1="node:$node_ver go:$go_ver py:$python_ver rb:$ruby_ver j:$java_ver pl:$perl_ver"
-  local langs2="rust:$rust_ver lua:$lua_ver scala:$scala_ver r:$r_ver"
-
-#  p6_echo "lang:\t  $langs1
-#lang:\t  $langs2"
-
-  p6_echo "lang:\t  $langs1"
-}
-
-##############################################################################
-#>
-#
-#
-#
-#<
-##############################################################################
-p6df::user::prompt::my_langs_envs() {
-
-  if ! p6_string_eq "$P6_PROMPT_LANG_ENVS" "0"; then
-    p6df::modules::js::nodenv::prompt::line
-    p6df::modules::python::pyenv::prompt::line
-    p6df::modules::python::pipenv::prompt::line
-    p6df::modules::go::goenv::prompt::line
-    p6df::modules::ruby::rbenv::prompt::line
-    p6df::modules::perl::plenv::prompt::line
-    p6df::modules::java::jenv::prompt::line
-    p6df::modules::rust::rustenv::prompt::line
-  fi
-}
-
-##############################################################################
-#>
-#
-#
-#
-#<
-##############################################################################
-p6df::user::prompt() {
-
-  PromptLines=(
-    p6df::modules::zsh::prompt::std
-
-#    p6df::modules::github::prompt::line
-    p6df::modules::git::prompt::line
-
-    p6df::user::prompt::my_langs
-#    p6df::user::prompt::my_langs_envs
-
-#    p6df::modules::jenkins::prompt::line
-#    p6df::modules::terraform::prompt::line
-#    p6df::modules::awscdk::prompt::line
-
-#    p6df::modules::kubernetes::prompt::line
-#    p6df::modules::helm::prompt::line
-#    p6df::modules::docker::prompt::line
-#     p6df::modules::heroku::prompt::line
-#     p6df::modules::teleport::prompt::line
-
-#    p6df::modules::aws::prompt::line
-#    p6df::modules::azure::prompt::line
-#    p6df::modules::gcp::prompt::line
-
-    p6df::modules::zsh::prompt::dir
-  )
+  p6_env_export "VIRTUAL_ENV_DISABLE_PROMPT" "true"
 }
