@@ -17,100 +17,81 @@
 ##############################################################################
 p6df::user::modules() {
 
-  p6df::core::module::add::lazy p6df-zsh
-  p6df::core::module::add::lazy p6df-darwin
-  p6df::core::module::add::lazy p6df-docker
-  p6df::core::module::add::lazy p6df-git
-  p6df::core::module::add::lazy p6df-github
-  p6df::core::module::add::lazy p6df-kubernetes
-  p6df::core::module::add::lazy p6df-macosx
-  p6df::core::module::add::lazy p6df-nmap
-  # p6df::core::module::add::lazy p6df-okta
-  # p6df::core::module::add::lazy p6df-pagerduty
-  # p6df::core::module::add::lazy p6df-proxy
-  # p6df::core::module::add::lazy p6df-pgsql
-  # p6df::core::module::add::lazy p6df-python
-  # p6df::core::module::add::lazy p6df-rails
-  # p6df::core::module::add::lazy p6df-ruby
-  p6df::core::module::add::lazy p6df-shell
-  # p6df::core::module::add::lazy p6df-slack
-  # p6df::core::module::add::lazy p6df-sqlite
-  # p6df::core::module::add::lazy p6df-sudo
-  # p6df::core::module::add::lazy p6df-teleport
-  # p6df::core::module::add::lazy p6df-tmux
-  # p6df::core::module::add::lazy p6df-terraform
-  # p6df::core::module::add::lazy p6df-vim
-  # p6df::core::module::add::lazy p6df-vscode
-  p6df::core::module::add::lazy p6df-aws
-
-  # p6df::core::module::add::lazy p6df-R
-  # p6df::core::module::add::lazy p6df-armkit
-  # p6df::core::module::add::lazy p6df-awscdk
-  # p6df::core::module::add::lazy p6df-azure
-  # p6df::core::module::add::lazy p6df-bash
-  # p6df::core::module::add::lazy p6df-c
-  # p6df::core::module::add::lazy p6df-carerev
-  # p6df::core::module::add::lazy p6df-cdk8s
-  # p6df::core::module::add::lazy p6df-cdktf
-  # p6df::core::module::add::lazy p6df-comet
-  # p6df::core::module::add::lazy p6df-darwin
-  # p6df::core::module::add::lazy p6df-databricks
-  # p6df::core::module::add::lazy p6df-datadog
-  # p6df::core::module::add::lazy p6df-docker
-  # p6df::core::module::add::lazy p6df-elasticsearch
-  # p6df::core::module::add::lazy p6df-freebsd-bugzilla
-  # p6df::core::module::add::lazy p6df-gcp
-  # p6df::core::module::add::lazy p6df-git
-  # p6df::core::module::add::lazy p6df-github
-  # p6df::core::module::add::lazy p6df-go
-  # p6df::core::module::add::lazy p6df-graphql
-  # p6df::core::module::add::lazy p6df-h20
-  # p6df::core::module::add::lazy p6df-helm
-  # p6df::core::module::add::lazy p6df-heroku
-  # p6df::core::module::add::lazy p6df-irc
-  # p6df::core::module::add::lazy p6df-java
-  # p6df::core::module::add::lazy p6df-jenkins
-  # p6df::core::module::add::lazy p6df-jira
-  # p6df::core::module::add::lazy p6df-js
-  # p6df::core::module::add::lazy p6df-julia
-  # p6df::core::module::add::lazy p6df-jupyter
-  # p6df::core::module::add::lazy p6df-kafka
-  # p6df::core::module::add::lazy p6df-kibana
-  # p6df::core::module::add::lazy p6df-kubernetes
-  # p6df::core::module::add::lazy p6df-macosx
-  # p6df::core::module::add::lazy p6df-nmap
-  # p6df::core::module::add::lazy p6df-oci
-  # p6df::core::module::add::lazy p6df-okta
-  # p6df::core::module::add::lazy p6df-oracle
-  # p6df::core::module::add::lazy p6df-pagerduty
-  # p6df::core::module::add::lazy p6df-perl
-  # p6df::core::module::add::lazy p6df-proxy
-  # p6df::core::module::add::lazy p6df-pgsql
-  # p6df::core::module::add::lazy p6df-poudriere
-  # p6df::core::module::add::lazy p6df-projen
-  # p6df::core::module::add::lazy p6df-python
-  # p6df::core::module::add::lazy p6df-rails
-  # p6df::core::module::add::lazy p6df-redis
-  # p6df::core::module::add::lazy p6df-rollbar
-  # p6df::core::module::add::lazy p6df-ruby
-  p6df::core::module::add::lazy p6df-rust
-  # p6df::core::module::add::lazy p6df-scala
-  # p6df::core::module::add::lazy p6df-secoda
-  # p6df::core::module::add::lazy p6df-shell
-  # p6df::core::module::add::lazy p6df-short
-  # p6df::core::module::add::lazy p6df-slab
-  # p6df::core::module::add::lazy p6df-slack
-  # p6df::core::module::add::lazy p6df-snowflake
-  # p6df::core::module::add::lazy p6df-solidity
-  # p6df::core::module::add::lazy p6df-sqlite
-  # p6df::core::module::add::lazy p6df-sqlserver
-  # p6df::core::module::add::lazy p6df-sudo
-  # p6df::core::module::add::lazy p6df-teleport
-  # p6df::core::module::add::lazy p6df-tmux
-  # p6df::core::module::add::lazy p6df-terraform
-  # p6df::core::module::add::lazy p6df-vim
-  # p6df::core::module::add::lazy p6df-vscode
-  # p6df::core::module::add::lazy p6df-zsh
+	 p6df::core::module::add::lazy p6df-zsh
+ 	 p6df::core::module::add::lazy p6df-aws
+	 p6df::core::module::add::lazy p6df-awscdk
+	 p6df::core::module::add::lazy p6df-awssam
+#	p6df::core::module::add::lazy p6df-comet
+	 p6df::core::module::add::lazy p6df-cdk8s
+	 p6df::core::module::add::lazy p6df-cdktf
+	 p6df::core::module::add::lazy p6df-darwin
+	 p6df::core::module::add::lazy p6df-databricks
+#	p6df::core::module::add::lazy p6df-datadog
+	 p6df::core::module::add::lazy p6df-docker
+	 p6df::core::module::add::lazy p6df-git
+	 p6df::core::module::add::lazy p6df-github
+	 p6df::core::module::add::lazy p6df-helm
+#	 p6df::core::module::add::lazy p6df-huggingface
+	 p6df::core::module::add::lazy p6df-jupyter
+	 p6df::core::module::add::lazy p6df-kafka
+	 p6df::core::module::add::lazy p6df-kubernetes
+	 p6df::core::module::add::lazy p6df-macosx
+	 p6df::core::module::add::lazy p6df-nmap
+	 p6df::core::module::add::lazy p6df-okta
+#	 p6df::core::module::add::lazy p6df-openai
+	 p6df::core::module::add::lazy p6df-pagerduty
+	 p6df::core::module::add::lazy p6df-pgsql
+	 p6df::core::module::add::lazy p6df-projen
+	 p6df::core::module::add::lazy p6df-proxy
+	 p6df::core::module::add::lazy p6df-shell
+	 p6df::core::module::add::lazy p6df-snowflake
+	 p6df::core::module::add::lazy p6df-sudo
+	 p6df::core::module::add::lazy p6df-terraform
+ 	 p6df::core::module::add::lazy p6df-tmux
+	 p6df::core::module::add::lazy p6df-vim
+	 p6df::core::module::add::lazy p6df-vscode
+	
+#	p6df::core::module::add::lazy p6df-R
+#	p6df::core::module::add::lazy p6df-armkit
+#	p6df::core::module::add::lazy p6df-azure
+#	p6df::core::module::add::lazy p6df-bash
+#	p6df::core::module::add::lazy p6df-c
+#	p6df::core::module::add::lazy p6df-crunchydb
+#	p6df::core::module::add::lazy p6df-elasticsearch
+#	p6df::core::module::add::lazy p6df-freebsd-bugzilla
+#	p6df::core::module::add::lazy p6df-gcp
+#	p6df::core::module::add::lazy p6df-go
+#	p6df::core::module::add::lazy p6df-graphql
+#	p6df::core::module::add::lazy p6df-h20
+#	p6df::core::module::add::lazy p6df-heroku
+#	p6df::core::module::add::lazy p6df-irc
+#	p6df::core::module::add::lazy p6df-java
+#	p6df::core::module::add::lazy p6df-jenkins
+#	p6df::core::module::add::lazy p6df-jira
+#	p6df::core::module::add::lazy p6df-js
+#	p6df::core::module::add::lazy p6df-julia
+#	p6df::core::module::add::lazy p6df-kibana
+#	p6df::core::module::add::lazy p6df-linkedin
+#	p6df::core::module::add::lazy p6df-lua
+#	p6df::core::module::add::lazy p6df-mysql
+#	p6df::core::module::add::lazy p6df-newrelic
+#	p6df::core::module::add::lazy p6df-oci
+#	p6df::core::module::add::lazy p6df-oracle
+#	p6df::core::module::add::lazy p6df-perl
+#	p6df::core::module::add::lazy p6df-poudriere
+#	p6df::core::module::add::lazy p6df-rails
+#	p6df::core::module::add::lazy p6df-redis
+#	p6df::core::module::add::lazy p6df-rollbar
+#	p6df::core::module::add::lazy p6df-ruby
+#	p6df::core::module::add::lazy p6df-scala
+#	p6df::core::module::add::lazy p6df-secoda
+#	p6df::core::module::add::lazy p6df-short
+#	p6df::core::module::add::lazy p6df-slab
+#	p6df::core::module::add::lazy p6df-slack
+#	p6df::core::module::add::lazy p6df-solidity
+#	p6df::core::module::add::lazy p6df-sqlite
+#	p6df::core::module::add::lazy p6df-sqlserver
+#	p6df::core::module::add::lazy p6df-teleport
 
   p6df::core::module::add::export
 }
@@ -150,6 +131,7 @@ p6df::user::modules::init::pre() {
 p6df::user::modules::init::post() {
 
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/github/token"
+  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/hf/token"
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
 
   p6_env_export HOMEBREW_GITHUB_API_TOKEN "$GH_TOKEN"
