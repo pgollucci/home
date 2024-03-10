@@ -18,10 +18,10 @@
 p6df::user::modules() {
 
 	p6df::core::module::add::lazy p6df-zsh
+ 	p6df::core::module::add::lazy p6df-1password
 	p6df::core::module::add::lazy p6df-akuity
 	p6df::core::module::add::lazy p6df-argocd
 	p6df::core::module::add::lazy p6df-arkestro
-#	p6df::core::module::add::lazy p6df-armkit
 	p6df::core::module::add::lazy p6df-aws
 	p6df::core::module::add::lazy p6df-awscdk
 	p6df::core::module::add::lazy p6df-awssam
@@ -30,22 +30,22 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6df-c
 	p6df::core::module::add::lazy p6df-cdk8s
 	p6df::core::module::add::lazy p6df-cdktf
+	p6df::core::module::add::lazy p6df-cloudflare
 #	p6df::core::module::add::lazy p6df-comet
 #	p6df::core::module::add::lazy p6df-crunchydb
 	p6df::core::module::add::lazy p6df-cucumber
 	p6df::core::module::add::lazy p6df-darwin
 #	p6df::core::module::add::lazy p6df-databricks
 	p6df::core::module::add::lazy p6df-datadog
+	p6df::core::module::add::lazy p6df-dbt
 	p6df::core::module::add::lazy p6df-docker
 #	p6df::core::module::add::lazy p6df-elastic.co
 #	p6df::core::module::add::lazy p6df-elasticsearch
-#	p6df::core::module::add::lazy p6df-freebsd-bugzilla
 #	p6df::core::module::add::lazy p6df-gcp
 	p6df::core::module::add::lazy p6df-git
 	p6df::core::module::add::lazy p6df-github
 	p6df::core::module::add::lazy p6df-go
 	p6df::core::module::add::lazy p6df-graphql
-#	p6df::core::module::add::lazy p6df-h20
 	p6df::core::module::add::lazy p6df-helm
 	p6df::core::module::add::lazy p6df-heroku
 	p6df::core::module::add::lazy p6df-homebrew
@@ -58,7 +58,6 @@ p6df::user::modules() {
 #	p6df::core::module::add::lazy p6df-julia
 	p6df::core::module::add::lazy p6df-jupyter
 #	p6df::core::module::add::lazy p6df-kafka
-#	p6df::core::module::add::lazy p6df-kibana
 	p6df::core::module::add::lazy p6df-kubernetes
 #	p6df::core::module::add::lazy p6df-linkedin
 	p6df::core::module::add::lazy p6df-lua
@@ -74,7 +73,6 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6df-perl
 	p6df::core::module::add::lazy p6df-pgsql
 	p6df::core::module::add::lazy p6df-playwright
-#	p6df::core::module::add::lazy p6df-poudriere
 	p6df::core::module::add::lazy p6df-projen
 	p6df::core::module::add::lazy p6df-proxy
 	p6df::core::module::add::lazy p6df-python
@@ -116,7 +114,6 @@ p6df::user::prompt() {
 
   p6df::core::prompt::line::add "p6df::modules::zsh::std::prompt::line"
   p6df::core::prompt::line::add "p6df::modules::zsh::dir::prompt::line"
-  p6df::core::prompt::line::add "p6df::modules::rb::env::prompt::info"
 }
 
 ##############################################################################
