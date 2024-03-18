@@ -146,10 +146,13 @@ p6df::user::modules::init::post() {
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
 
   p6_env_export HOMEBREW_GITHUB_API_TOKEN "$GH_TOKEN"
+  p6_env_export P6_DFZ_GITHUB_REVIEWER "p6m7g8-automation"
+  p6_env_export P6_DFZ_GITHUB_BRANCH_TMPL "USER/KIND/PRN/REST"
+
+  p6df::modules::heroku::app::set "arkestro-staging"
 
   p6df::core::path::cd::if $P6_DFZ_SRC_DIR/pgollucci
   p6df::core::path::cd::if $P6_DFZ_SRC_GH_DIR/p6m7g8
-  p6df::core::path::cd::if $P6_DFZ_SRC_GH_DIR/pgollucci
 }
 
 ##############################################################################
