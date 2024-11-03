@@ -22,6 +22,9 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zsh
 
+	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-arkestro
+	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-ldar
+
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6aws
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6awscdk
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6git
@@ -139,6 +142,7 @@ p6df::user::prompt() {
   p6df::core::prompt::line::add "p6df::modules::zsh::dir::prompt::line"
   p6df::core::prompt::line::add "p6df::modules::rb::env::prompt::info"
   p6df::core::prompt::line::add "p6df::modules::pipenv::prompt::info"
+  p6df::core::prompt::line::add "p6df::modules::js::pm::prompt::info"
 }
 
 ##############################################################################
@@ -150,9 +154,9 @@ p6df::user::prompt() {
 ##############################################################################
 p6df::user::modules::init::pre() {
 
-#  p6_env_export P6_AWS_ORG "p6"
+  p6_env_export P6_AWS_ORG "p6"
 #  p6_env_export P6_AWS_ORG "arkestro-legacy"
-  p6_env_export P6_AWS_ORG "arkestro-org"
+#  p6_env_export P6_AWS_ORG "arkestro-org"
 }
 
 ##############################################################################
@@ -168,6 +172,8 @@ p6df::user::modules::init::post() {
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/hf/token"
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/npm/token"
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/ld/env"
+  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/pd/token"
+  p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home-private/p6/aws"
 
   p6_file_load "$P6_DFZ_SRC_DIR/pgollucci/home/init.zsh"
 
@@ -188,13 +194,14 @@ p6df::user::modules::init::post() {
 ##############################################################################
 p6df::user::theme() {
 
+  bindkey -e
   p6_env_export "AWS_PAGER" ""
   p6_env_export "GH_PAGER" ""
   p6_env_export "GIT_PAGER" ""
   p6_env_export "PAGER" "less"
   p6_env_export "MANPAGER" "sh -c 'col -bx | bat -l man -p'"
 
-  p6_env_export "EDITOR" "emacs" # zsh will set key bindings based on this
+  p6_env_export "EDITOR" "vim"
   p6_env_export "LESS" "-R"
   p6_env_export "RUBY_SHELL" "ripe"
   p6_env_export "DIFF_OPTIONS" "-u"
