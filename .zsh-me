@@ -58,6 +58,7 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-dbt
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-docker
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-eslint
+	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-go
@@ -95,13 +96,14 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vim
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vscode
 
+	p6df::core::module::add::lazy p6m7g8/p6-cirrus
+
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-azure
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-comet
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-crunchydb
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-databricks
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-elasticsearch
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-elastic.co
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-graphql
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-heroku
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-huggingface
