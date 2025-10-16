@@ -99,11 +99,8 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8/p6-cirrus
 
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-azure
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-comet
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-crunchydb
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-databricks
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-elasticsearch
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-elastic.co
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-graphql
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-heroku
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-huggingface
@@ -118,15 +115,9 @@ p6df::user::modules() {
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-openai
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oracle
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-R
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rollbar
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-secoda
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-short
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-slab
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-solidity
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sqlserver
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-teleport
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-wakatime
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-workato
 
 	p6df::core::module::add::export
 }
@@ -156,9 +147,9 @@ p6df::user::prompt() {
 ##############################################################################
 p6df::user::modules::init::pre() {
 
-#  p6_env_export P6_AWS_ORG "p6"
+  p6_env_export P6_AWS_ORG "p6"
 #  p6_env_export P6_AWS_ORG "arkestro-legacy"
-  p6_env_export P6_AWS_ORG "arkestro-org"
+#  p6_env_export P6_AWS_ORG "arkestro-org"
 }
 
 ##############################################################################

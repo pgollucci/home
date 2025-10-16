@@ -1,0 +1,23 @@
+name: pull-request-lint
+
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - edited
+
+jobs:
+  lint:
+    name: Lint PR title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Lint PR title
+        uses: p6m7g8-actions/p6-gh-pr-title-linter@main
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}

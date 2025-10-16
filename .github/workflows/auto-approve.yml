@@ -1,0 +1,22 @@
+name: auto-approve
+
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    name: Auto-Approve PR
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Auto-Approve PR
+        uses: p6m7g8-actions/p6-gh-pr-auto-approve@main
+        with:
+          bot_token: ${{ secrets.P6_A_GH_TOKEN }}
