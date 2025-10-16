@@ -1,0 +1,17 @@
+name: PR Labeler
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 14 * * *'
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    name: Mark PRs as Stale
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Mark PR
+        uses: p6m7g8-actions/p6-gh-pr-stale@main
