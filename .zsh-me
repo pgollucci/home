@@ -58,7 +58,6 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-dbt
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-docker
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-eslint
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-go
@@ -70,7 +69,6 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jupyter
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-kubernetes
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-launchdarkly
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-linkedin
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-lua
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-macosx
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-nmap
@@ -78,7 +76,6 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-perl
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pgsql
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-playwright
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-projen
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-proxy
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-python
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rails
@@ -99,6 +96,7 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8/p6-cirrus
 
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-azure
+	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-crunchydb
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-databricks
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-graphql
@@ -108,12 +106,14 @@ p6df::user::modules() {
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jenkins
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-julia
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-kafka
+        # p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-linkedin
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-mysql
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-newrelic
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oci
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-okta
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-openai
+	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-kaggle
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oracle
+	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-projen
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-R
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-solidity
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sqlserver
@@ -147,9 +147,9 @@ p6df::user::prompt() {
 ##############################################################################
 p6df::user::modules::init::pre() {
 
-  p6_env_export P6_AWS_ORG "p6"
+#  p6_env_export P6_AWS_ORG "p6"
 #  p6_env_export P6_AWS_ORG "arkestro-legacy"
-#  p6_env_export P6_AWS_ORG "arkestro-org"
+  p6_env_export P6_AWS_ORG "arkestro-org"
 }
 
 ##############################################################################
