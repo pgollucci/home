@@ -50,7 +50,7 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-bash
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-c
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cdk8s
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cdktf
+	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cdktf
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cloudflare
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cucumber
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-darwin
