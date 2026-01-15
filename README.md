@@ -17,12 +17,6 @@
 ### Badges
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/p6m7g8/home)
-[![Mergify](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/p6m7g8/home/&style=flat)](https://mergify.io)
-[![codecov](https://codecov.io/gh/p6m7g8/home/branch/master/graph/badge.svg?token=14Yj1fZbew)](https://codecov.io/gh/p6m7g8/home)
-[![Known Vulnerabilities](https://snyk.io/test/github/p6m7g8/home/badge.svg?targetFile=package.json)](https://snyk.io/test/github/p6m7g8/home?targetFile=package.json)
-[![Gihub repo dependents](https://badgen.net/github/dependents-repo/p6m7g8/home)](https://github.com/p6m7g8/home/network/dependents?dependent_type=REPOSITORY)
-[![Gihub package dependents](https://badgen.net/github/dependents-pkg/p6m7g8/home)](https://github.com/p6m7g8/home/network/dependents?dependent_type=PACKAGE)
 
 ## Summary
 
@@ -46,8 +40,7 @@
 
 - p6df::modules::home::home::symlink()
 - p6df::modules::home::init()
-
-
+- p6df::modules::home::profile::select::me()
 
 ## Author
 
