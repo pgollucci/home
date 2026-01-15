@@ -22,25 +22,38 @@
 
 ## Contributing
 
-- [How to Contribute](CONTRIBUTING.md)
+- [How to Contribute](<https://github.com//.github/blob/main/CONTRIBUTING.md>)
 
 ## Code of Conduct
 
-- [Code of Conduct](https://github.com/p6m7g8/.github/blob/master/CODE_OF_CONDUCT.md)
-
-## Changes
-
-- [Change Log](CHANGELOG.md)
+- [Code of Conduct](<https://github.com//.github/blob/main/CODE_OF_CONDUCT.md>)
 
 ## Usage
 
-### home:
+### Aliases
 
-#### home/init.zsh:
+### Functions
 
+## home
+
+### home/init.zsh
+
+- p6df::modules::home::deps()
 - p6df::modules::home::home::symlink()
-- p6df::modules::home::init()
+- p6df::modules::home::profile::1password()
+- p6df::modules::home::profile::aws()
 - p6df::modules::home::profile::select::me()
+
+## Hierarchy
+
+```text
+.
+├── init.zsh
+├── LICENSE
+└── README.md
+
+1 directory, 3 files
+```
 
 ## Author
 
