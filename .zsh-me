@@ -25,6 +25,7 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-arkestro
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-ldar
 
+	# p6df::core::module::add::lazy p6m7g8-dotfiles/p61password
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6aws
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6awscdk
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6git
@@ -74,6 +75,7 @@ p6df::user::modules() {
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-nmap
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pagerduty
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-perl
+	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-profile
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pgsql
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-playwright
 	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-proxy
@@ -135,6 +137,7 @@ p6df::user::prompt() {
   p6df::core::prompt::line::add "p6df::modules::zsh::dir::prompt::line"
   p6df::core::prompt::line::add "p6df::modules::rb::env::prompt::info"
   p6df::core::prompt::line::add "p6df::modules::uv::env::prompt::info"
+  p6df::core::prompt::line::add "p6df::modules::perl::env::prompt::info"
   p6df::core::prompt::line::add "p6df::modules::js::pm::prompt::info"
 }
 
