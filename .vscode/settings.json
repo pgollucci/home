@@ -1,9 +1,21 @@
 {
     "cSpell.words": [
+        "akuity",
         "arkestro",
+        "awscdk",
+        "awssam",
+        "cdktf",
         "Gollucci",
+        "huggingface",
         "Jagdmann",
+        "kaggle",
+        "ldar",
+        "newrelic",
+        "nmap",
         "pgollucci",
-        "shellcheck"
+        "pgsql",
+        "projen",
+        "shellcheck",
+        "TMPL"
     ]
 }
