@@ -1,20 +1,8 @@
-# home
+# P6's POSIX.2: home
 
 ## Table of Contents
 
-
-### home
-- [home](#home)
-  - [Badges](#badges)
-  - [Distributions](#distributions)
-  - [Summary](#summary)
-  - [Contributing](#contributing)
-  - [Code of Conduct](#code-of-conduct)
-  - [Changes](#changes)
-    - [Usage](#usage)
-  - [Author](#author)
-
-### Badges
+## Badges
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -42,7 +30,12 @@
 - p6df::modules::home::home::symlink()
 - p6df::modules::home::profile::1password()
 - p6df::modules::home::profile::aws()
+- p6df::modules::home::profile::github()
+- p6df::modules::home::profile::launchdarkly()
+- p6df::modules::home::profile::npm()
+- p6df::modules::home::profile::pagerduty()
 - p6df::modules::home::profile::select::me()
+- p6df::modules::home::profile::vscode()
 
 ## Hierarchy
 
