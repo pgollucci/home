@@ -4,18 +4,22 @@
         "arkestro",
         "awscdk",
         "awssam",
+        "bindkey",
         "cdktf",
+        "crunchydb",
         "Gollucci",
         "huggingface",
         "Jagdmann",
         "kaggle",
         "ldar",
+        "MANPAGER",
         "newrelic",
         "nmap",
         "pgollucci",
         "pgsql",
         "projen",
         "shellcheck",
+        "vscodes",
         "TMPL"
     ]
 }
