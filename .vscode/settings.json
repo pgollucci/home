@@ -6,6 +6,8 @@
         "awssam",
         "bindkey",
         "cdktf",
+        "claudecode",
+        "cloudsmith",
         "crunchydb",
         "Gollucci",
         "huggingface",
@@ -15,11 +17,12 @@
         "MANPAGER",
         "newrelic",
         "nmap",
+        "Npmjs",
         "pgollucci",
         "pgsql",
         "projen",
         "shellcheck",
-        "vscodes",
-        "TMPL"
+        "TMPL",
+        "vscodes"
     ]
 }
