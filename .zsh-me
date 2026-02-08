@@ -9,11 +9,6 @@
 ######################################################################
 p6df::user::modules() {
 
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6common
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-core
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df
-	p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zsh
-
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-1password
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-akuity
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-alfred
@@ -21,7 +16,7 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-aws
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-awscdk
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-awssam
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-bash
+	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-bash
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-c
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cdk8s
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-claudecode
@@ -35,11 +30,10 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-docker
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-eslint
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gemini
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
+	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
+	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-go
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-helm
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-homebrew
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-java
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-js
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jira
@@ -51,7 +45,7 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-nmap
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-openai
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pagerduty
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-perl
+	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-perl
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pgsql
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-playwright
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-proxy
@@ -70,6 +64,7 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-tmux
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vim
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vscode
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zsh
 
 	 p6df::core::module::add::lazy p6m7g8/p6-stratosphere
 	 p6df::core::module::add::lazy p6m7g8/p6-cirrus

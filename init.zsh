@@ -52,16 +52,15 @@ p6df::modules::home::profile::select::me() {
 
   local github_user=$(p6_1password_cli_item_get_username "Github/pgollucci/gh_token/classic")
   local gh_token=$(p6_1password_cli_item_get_api_key "Github/pgollucci/gh_token/classic")
-  local gemini_token=$(p6_1password_cli_item_get_api_key "Github/pgollucci/gemini/pat")
   local npm_token=$(p6_1password_cli_item_get_api_key "Npmjs/npm_token")
-  local claude_token=$(p6_1password_cli_item_get_api_key "Claude Code/oauth_token")
+  local claude_token=$(p6_1password_cli_item_get_api_key "ClaudeCode/oauth_token")
   local code_env=$(p6_1password_cli_item_get_code "OpenAI")
 
   p6df::modules::aws::profile::on "$profile" "$aws_org"
   p6df::modules::claudecode::profile::on "$profile" "$claude_token"
   p6df::modules::copilot::profile::on "$profile"
   p6df::modules::gemini::profile::on "$profile"
-  p6df::modules::github::profile::on "$profile" "$github_user" "$gh_token" "$gemini_token"
+  p6df::modules::github::profile::on "$profile" "$github_user" "$gh_token"
   p6df::modules::js::profile::on "$profile" "$npm_user" "$npm_token"
   p6df::modules::openai::profile::on "$profile" "$code_env"
   p6df::modules::vscode::profile::on "$profile"
