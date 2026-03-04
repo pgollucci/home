@@ -23,12 +23,14 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cloudflare
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cloudsmith
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-copilot
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-confluence
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cucumber
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-darwin
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-datadog
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-dbt
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-docker
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-eslint
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-figma
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gemini
 	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
 	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
