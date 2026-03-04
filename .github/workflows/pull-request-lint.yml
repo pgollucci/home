@@ -1,6 +1,7 @@
+---
 name: pull-request-lint
 
-on:
+'on':
   pull_request_target:
     types:
       - labeled

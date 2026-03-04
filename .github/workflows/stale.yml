@@ -1,6 +1,7 @@
+---
 name: PR Labeler
 
-on:
+'on':
   workflow_dispatch: {}
   schedule:
     - cron: '0 14 * * *'
