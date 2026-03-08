@@ -10,6 +10,7 @@
 p6df::user::modules() {
 
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-1password
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-azure
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-akuity
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-alfred
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-argocd
@@ -31,10 +32,12 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-docker
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-eslint
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-figma
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gemini
 	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
 	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-go
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-granola
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-helm
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-java
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-js
@@ -58,21 +61,25 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rust
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-scala
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-shell
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rippling
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-slack
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-snowflake
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-storybook
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-superset
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sqlite
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sudo
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-terraform
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-tmux
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vim
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vscode
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zoom
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zsh
 
 	 p6df::core::module::add::lazy p6m7g8/p6-stratosphere
 	 p6df::core::module::add::lazy p6m7g8/p6-cirrus
 
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-arkestro
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-ldar
+	 p6df::core::module::add::lazy bid-ops-development/p6df-arkestro
+	 p6df::core::module::add::lazy luckydoganimalrescue/p6df-ldar
 
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p61password
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6aws
@@ -88,9 +95,7 @@ p6df::user::modules() {
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6python
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6sqlite
 
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-azure
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-databricks
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-graphql
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-heroku
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-huggingface
