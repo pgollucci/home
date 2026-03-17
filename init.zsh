@@ -60,6 +60,7 @@ p6df::modules::home::profile::select::me() {
   local code_env=$(p6_1password_cli_item_get_code "OpenAI")
   local linkedin_access_token=$(p6_1password_cli_item_get_api_key "LinkedIn/oauth_token" 2>/dev/null || true)
   local linkedin_person_urn=$(p6_1password_cli_item_get_code "LinkedIn/person_urn" 2>/dev/null || true)
+  local greenhouse_api_key=$(p6_1password_cli_item_get_api_key "Greenhouse/api_key" 2>/dev/null || true)
 
   p6df::modules::aws::profile::on "$profile" "$aws_org"
   p6df::modules::claudecode::profile::on "$profile" "$claude_token"
@@ -67,6 +68,7 @@ p6df::modules::home::profile::select::me() {
   p6df::modules::gemini::profile::on "$profile"
   p6df::modules::github::profile::on "$profile" "$github_user" "$gh_token"
   p6df::modules::js::profile::on "$profile" "$npm_user" "$npm_token"
+  p6df::modules::greenhouse::profile::on "$profile" "$greenhouse_api_key"
   p6df::modules::linkedin::profile::on "$profile" "$linkedin_access_token" "$linkedin_person_urn"
   p6df::modules::openai::profile::on "$profile" "$code_env"
   p6df::modules::vscode::profile::on "$profile"
