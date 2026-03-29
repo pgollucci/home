@@ -1,7 +1,6 @@
----
 name: Enqueue PR to Merge Queue (after CI)
 
-'on':
+on:
   workflow_run:
     workflows: ["Build"]
     types: [completed]

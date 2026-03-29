@@ -1,0 +1,26 @@
+name: Codex Code Review
+on:
+  pull_request:
+    types: [opened, ready_for_review, synchronize]
+  push:
+    branches:
+      - gh-readonly-queue/**
+  merge_group: {}
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:
+  codex-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip on queue refs
+        if: github.event_name == 'merge_group' || github.event_name == 'push'
+        run: echo "Skipping review in queue context"
+      - name: Run codex review
+        if: github.event_name == 'pull_request' && github.event.pull_request.draft == false && github.event.pull_request.head.repo.fork == false
+        uses: p6m7g8-actions/codex@main
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}

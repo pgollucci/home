@@ -1,7 +1,6 @@
----
 name: auto-approve
 
-'on':
+on:
   pull_request_target:
     types:
       - labeled

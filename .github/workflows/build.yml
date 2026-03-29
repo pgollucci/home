@@ -1,15 +1,14 @@
----
 name: Build
 
-'on':
+on:
   pull_request: {}
   workflow_dispatch: {}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - name: Build
-        uses: p6m7g8-actions/p6df-build@main
-        with:
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: NextJS Build
+        uses: p6m7g8-actions/next-build@main
