@@ -13,65 +13,101 @@ p6df::user::modules() {
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-azure
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-akuity
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-alfred
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-anthropic
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-argocd
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-atlassian
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-aws
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-awscdk
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-awssam
-	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-bash
+         p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-bash
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-c
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cdk8s
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-claudecode
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-chatgpt
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cisco
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-claude
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cloudflare
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cloudsmith
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-copilot
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-codex
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-confluence
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-cucumber
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-darwin
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-databricks
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-datadog
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-dbt
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-drata
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-docker
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-euc
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-eslint
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-figma
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gcp
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gemini
-	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
-	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-ghcopilot
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-git
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-github
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-go
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-granola
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-graphql
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-greenhouse
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-gws
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-helm
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-heroku
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-huggingface
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-intacct
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-irc
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-java
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jenkins
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-js
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jira
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-julia
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jupyter
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-kubernetes
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-launchdarkly
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-lattice
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-linkedin
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-loom
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-lua
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-m365
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-macosx
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-miro
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-mysql
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-nmap
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oci
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-okta
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oneschema
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-openai
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oracle
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pagerduty
-	  p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-perl
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-perl
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pgsql
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-playwright
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-postman
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-proxy
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-pusher
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-python
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-R
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rails
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-redis
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-ruby
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rust
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-scala
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-shell
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-signadot
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-rippling
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-slack
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-snowflake
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-storybook
-	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-superset
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-solidity
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sqlite
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sqlserver
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-statuspage
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-storybook
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sudo
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-superset
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-teleport
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-terraform
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-tmux
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vim
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-vscode
+	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-whisper
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zoom
 	 p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-zsh
 
@@ -94,23 +130,6 @@ p6df::user::modules() {
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6pgsql
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6python
 	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6sqlite
-
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-databricks
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-graphql
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-heroku
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-huggingface
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-irc
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-jenkins
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-julia
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-linkedin
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-mysql
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oci
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-okta
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-oracle
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-R
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-solidity
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-sqlserver
-	# p6df::core::module::add::lazy p6m7g8-dotfiles/p6df-teleport
 
 	p6df::core::module::add::export
 
@@ -141,7 +160,7 @@ p6df::user::prompt() {
 ######################################################################
 p6df::user::modules::init::pre() {
 
-	p6_return_void
+  p6_return_void
 }
 
 ######################################################################
@@ -158,6 +177,7 @@ p6df::user::modules::init::post() {
 
   p6df::core::path::cd::if $P6_DFZ_SRC_DIR/pgollucci
   p6df::core::path::cd::if $P6_DFZ_SRC_GH_DIR/p6m7g8
+  p6df::core::path::cd::if $P6_DFZ_SRC_GH_DIR/p6m7g8-actions
 
   p6_return_void
 }
